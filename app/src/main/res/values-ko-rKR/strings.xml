@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyRestaurantGallery</string>
+    <string name="app_name_for_display">맛집 갤러리</string>
+    <string name="search">검색</string>
+</resources>
