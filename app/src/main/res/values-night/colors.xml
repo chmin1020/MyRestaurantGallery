@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#909E7F</color>
+    <color name="colorPrimaryDark">#6A786B</color>
+    <color name="colorAccent">#19BA20</color>
+
+    <color name="bigList_head">#89CC8C</color>
+    <color name="bigList_content">#ACD5AE</color>
+    <color name="bigList_date">#9FEFA2</color>
+
+    <color name="smallList">#ABD3AD</color>
+
+    <color name="addCart">#9DBF74</color>
+    <color name="saveBtn">#CEE8B0</color>
+
+    <color name="regularText">#FFFFFF</color>
+</resources>
