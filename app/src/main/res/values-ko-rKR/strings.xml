@@ -2,9 +2,12 @@
     <string name="app_name">MyRestaurantGallery</string>
     <string name="app_name_for_display">맛집 갤러리</string>
     <string name="search">검색</string>
+    <string name="save">저장</string>
 
     <!--예시 문구-->
     <string name="example_name">맛집 이름</string>
     <string name="example_genre">구분</string>
     <string name="example_location">위치</string>
+    <string name="example_memo">메모할 내용이 있다면 작성하세요 :)</string>
+
 </resources>

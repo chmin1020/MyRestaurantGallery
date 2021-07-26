@@ -2,9 +2,13 @@
     <string name="app_name">MyRestaurantGallery</string>
     <string name="app_name_for_display">Restaurant Gallery</string>
     <string name="search">Search</string>
+    <string name="save">Save</string>
 
     <!--examples-->
     <string name="example_name">name</string>
     <string name="example_genre">genre</string>
     <string name="example_location">location</string>
+    <string name="example_memo">Write the memo if you want :)</string>
+
+
 </resources>
