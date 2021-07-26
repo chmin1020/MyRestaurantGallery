@@ -15,6 +15,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.fallTurtle.myrestaurantgallery.activity.AddActivity" android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name="com.fallTurtle.myrestaurantgallery.activity.AddActivity"/>
     </application>
 </manifest>
