@@ -7,7 +7,7 @@ class Piece{
     private var name:String? = null
     private var location:String? = null
     private var genre:String? = null
-    private var rate:Float? = null
+    private var rate:Int? = null
 
     fun getImage() :Bitmap?{
         return image
@@ -25,7 +25,7 @@ class Piece{
         return genre
     }
 
-    fun getRate() :Float?{
+    fun getRate() :Int?{
         return rate
     }
 

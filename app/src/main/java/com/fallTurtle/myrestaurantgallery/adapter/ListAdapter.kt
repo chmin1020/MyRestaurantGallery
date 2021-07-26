@@ -23,7 +23,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         holder.ivImage.setImageBitmap(FList?.get(position)?.getImage())
         holder.tvName.text = FList?.get(position)?.getName()
-        holder.tvLocation.text = FList?.get(position)?.getLocation()
         holder.tvGenre.text = FList?.get(position)?.getGenre()
         holder.tvRate.text = FList?.get(position)?.getRate().toString()
     }
@@ -36,7 +35,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         var ivImage:ImageView = itemView.findViewById(R.id.iv_image)
         var tvName:TextView = itemView.findViewById(R.id.tv_name)
-        var tvLocation:TextView = itemView.findViewById(R.id.tv_location)
         var tvGenre:TextView = itemView.findViewById(R.id.tv_genre)
         var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
     }

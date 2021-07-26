@@ -41,30 +41,27 @@
         android:layout_marginBottom = "2dp"
         android:layout_marginStart="3dp"
         android:layout_marginEnd="3dp"
-        android:weightSum="3">
-
-        <TextView
-            android:id="@+id/tv_location"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/example_location"
-            android:textAlignment="center"/>
+        android:weightSum="10">
 
         <TextView
             android:id="@+id/tv_genre"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="8"
             android:text="@string/example_genre"
             android:textAlignment="center"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/star"/>
 
         <TextView
             android:id="@+id/tv_rate"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textAlignment="center"/>
+            android:layout_weight="1"/>
     </LinearLayout>
 
 
