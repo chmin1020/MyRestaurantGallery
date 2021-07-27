@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="genre_spinner">
+        <item name="Korean">한식</item>
+        <item name="Chinese">중식</item>
+        <item name="Japanese">일식</item>
+        <item name="Western">양식</item>
+        <item name="Coffee and Desert">카페,디저트</item>
+        <item name="Bar">술집</item>
+        <item name="Etc">기타</item>
+    </string-array>
+</resources>

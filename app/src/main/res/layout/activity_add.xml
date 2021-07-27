@@ -66,6 +66,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:maxLines="1"
         android:hint="@string/example_name"/>
 
@@ -73,13 +77,23 @@
         android:id="@+id/sp_genre"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:entries="@array/genre_spinner"
+        android:spinnerMode="dialog"/>
 
     <EditText
         android:id="@+id/et_location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:maxLines="1"
         android:hint="@string/example_location"/>
 
@@ -88,6 +102,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
+        android:background="@drawable/edit_text_border"
+        android:paddingTop="5dp"
+        android:paddingStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:hint="@string/example_memo"
         android:gravity="start"/>
 

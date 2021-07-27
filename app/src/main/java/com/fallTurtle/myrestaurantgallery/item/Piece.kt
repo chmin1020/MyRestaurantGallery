@@ -28,7 +28,4 @@ class Piece{
     fun getRate() :Int?{
         return rate
     }
-
-
-
 }

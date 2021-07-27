@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="genre_spinner">
+        <item name="Korean">Korean</item>
+        <item name="Chinese">Chinese</item>
+        <item name="Japanese">Japanese</item>
+        <item name="Western">Western</item>
+        <item name="Coffee and Desert">Coffee and Desert</item>
+        <item name="Bar">Bar</item>
+        <item name="Etc">Etc</item>
+    </string-array>
+</resources>
