@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "63887686662",
+    "project_id": "myrestaurantgallery",
+    "storage_bucket": "myrestaurantgallery.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63887686662:android:21fe2ae276fe56e2871787",
+        "android_client_info": {
+          "package_name": "com.fallTurtle.myrestaurantgallery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "63887686662-goal9np908a18vdspv65j9oqfd62d9i6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fallTurtle.myrestaurantgallery",
+            "certificate_hash": "4a63f3b910c49ef65093c0d55cac86115124a66d"
+          }
+        },
+        {
+          "client_id": "63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY8i0Bz5XqaByxfROJmzGR-C_nOYL0cOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
