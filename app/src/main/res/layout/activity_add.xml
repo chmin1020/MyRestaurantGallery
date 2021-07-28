@@ -43,13 +43,23 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/iv_image"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
-        android:layout_margin="25dp"
-        android:background="@drawable/grid_border"/>
+        android:layout_margin="20dp"
+        android:background="@drawable/grid_border">
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/korean_food"/>
+
+    </LinearLayout>
+
 
     <RatingBar
         android:id="@+id/rb_ratingBar"
@@ -101,15 +111,15 @@
         android:id="@+id/et_memo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_weight="5"
         android:background="@drawable/edit_text_border"
-        android:paddingTop="5dp"
-        android:paddingStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:gravity="start"
         android:hint="@string/example_memo"
-        android:gravity="start"/>
+        android:paddingStart="5dp"
+        android:paddingTop="5dp" />
 
 </LinearLayout>
