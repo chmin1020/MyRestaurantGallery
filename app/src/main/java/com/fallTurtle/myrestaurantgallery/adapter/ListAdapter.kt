@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,11 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         holder.tvName.text = FList?.get(position)?.getName()
         holder.tvGenre.text = FList?.get(position)?.getGenre()
         holder.tvRate.text = FList?.get(position)?.getRate().toString()
+
+        holder.itemView.setOnClickListener{
+            val record = Intent()
+            //미완
+        }
     }
 
     override fun getItemCount(): Int {
