@@ -25,8 +25,6 @@ class AddActivity : AppCompatActivity() {
     private var imgUsed = false
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result: ActivityResult ->
         imgUri = result.data?.data
-        Log.d("uri!",imgUri.toString())
-
         if(imgUri != null) {
             binding.ivImage.setImageURI(imgUri)
             imgUsed = true
@@ -54,10 +52,21 @@ class AddActivity : AppCompatActivity() {
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     )
                 getImg.launch(gallery)
+                imgDlg.closeDialog()
             }
 
             imgDlg.setOnDefaultClickListener {
                 imgUsed = false
+                when(binding.spGenre.selectedItemPosition){
+                    0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
+                    1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
+                    2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
+                    3 -> binding.ivImage.setImageResource(R.drawable.western_food)
+                    4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
+                    5 -> binding.ivImage.setImageResource(R.drawable.drink)
+                    6 -> binding.ivImage.setImageResource(R.drawable.etc)
+                }
+                imgDlg.closeDialog()
             }
             imgDlg.create()
         }
@@ -67,27 +76,13 @@ class AddActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if(!imgUsed) {
                     when (position) {
-                        0 -> {
-                            binding.ivImage.setImageResource(R.drawable.korean_food)
-                        }
-                        1 -> {
-                            binding.ivImage.setImageResource(R.drawable.chinese_food)
-                        }
-                        2 -> {
-                            binding.ivImage.setImageResource(R.drawable.japanese_food)
-                        }
-                        3 -> {
-                            binding.ivImage.setImageResource(R.drawable.western_food)
-                        }
-                        4 -> {
-                            binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
-                        }
-                        5 -> {
-                            binding.ivImage.setImageResource(R.drawable.drink)
-                        }
-                        6 -> {
-                            binding.ivImage.setImageResource(R.drawable.etc)
-                        }
+                        0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
+                        1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
+                        2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
+                        3 -> binding.ivImage.setImageResource(R.drawable.western_food)
+                        4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
+                        5 -> binding.ivImage.setImageResource(R.drawable.drink)
+                        6 -> binding.ivImage.setImageResource(R.drawable.etc)
                     }
                 }
             }
