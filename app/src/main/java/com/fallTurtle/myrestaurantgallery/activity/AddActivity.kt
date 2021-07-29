@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
+import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 
 
 class AddActivity : AppCompatActivity() {
@@ -45,9 +46,20 @@ class AddActivity : AppCompatActivity() {
         }
 
         binding.ivImage.setOnClickListener{
-            val gallery =
-                Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            getImg.launch(gallery)
+            val imgDlg = ImgDialog(this)
+            imgDlg.setOnGalleryClickListener {
+                val gallery =
+                    Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    )
+                getImg.launch(gallery)
+            }
+
+            imgDlg.setOnDefaultClickListener {
+                imgUsed = false
+            }
+            imgDlg.create()
         }
 
         binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)

@@ -6,4 +6,5 @@
 
     <color name="colorET">#FFFCE6</color>
     <color name="regularText">#000000</color>
+    <color name="regularBG">#F6F6F6</color>
 </resources>
