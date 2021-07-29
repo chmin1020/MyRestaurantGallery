@@ -33,6 +33,10 @@ class ImgDialog(context: Context) {
         dialog.show()
     }
 
+    fun closeDialog(){
+        dialog.dismiss()
+    }
+
     fun setOnGalleryClickListener(listener: View.OnClickListener){
         onGalleryClickListener = listener
     }
