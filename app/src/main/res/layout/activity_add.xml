@@ -118,7 +118,6 @@
         android:background="@drawable/edit_text_border"
         android:gravity="start"
         android:hint="@string/example_memo"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp" />
+        android:padding ="5dp"/>
 
 </LinearLayout>

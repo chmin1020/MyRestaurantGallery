@@ -32,16 +32,20 @@
             android:id="@+id/iv_addPic"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
+            android:layout_weight="1"
             android:layout_margin="5dp"
+            android:paddingTop = "5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/add_picture"/>
 
         <ImageView
             android:id="@+id/iv_menu"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:layout_margin="5dp"
+            android:paddingTop = "5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/vert"/>
 
     </LinearLayout>
