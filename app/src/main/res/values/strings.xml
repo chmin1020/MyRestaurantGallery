@@ -10,5 +10,9 @@
     <string name="example_location">location</string>
     <string name="example_memo">Write the memo if you want :)</string>
 
+    <!--img dialog-->
+    <string name="title_message">image setting</string>
+    <string name="gallery_message">choose a picture from gallery</string>
+    <string name="default_message">use default image</string>
 
 </resources>

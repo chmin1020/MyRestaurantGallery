@@ -10,4 +10,9 @@
     <string name="example_location">위치</string>
     <string name="example_memo">메모할 내용이 있다면 작성하세요 :)</string>
 
+    <!--이미지 다이얼로그-->
+    <string name="title_message">사진 설정</string>
+    <string name="gallery_message">앨범에서 사진 선택</string>
+    <string name="default_message">기본 이미지로 변경</string>
+
 </resources>
