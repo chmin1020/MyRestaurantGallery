@@ -3,6 +3,11 @@
     <string name="app_name_for_display">Restaurant Gallery</string>
     <string name="search">Search</string>
     <string name="save">Save</string>
+    <string name="edit">Edit</string>
+
+    <!--for login-->
+    <string name="login_welcome">Welcome to My Restaurant Gallery!</string>
+    <string name="login_explain">Please log in with your Google account for using this app.</string>
 
     <!--examples-->
     <string name="example_name">name</string>
