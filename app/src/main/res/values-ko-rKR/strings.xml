@@ -3,6 +3,11 @@
     <string name="app_name_for_display">맛집 갤러리</string>
     <string name="search">검색</string>
     <string name="save">저장</string>
+    <string name="edit">수정</string>
+
+    <!--로그인 문구-->
+    <string name="login_welcome">나의 맛집 갤러리에 오신 것을 환영합니다!</string>
+    <string name="login_explain">앱 이용을 위해 구글 계정 로그인해주세요</string>
 
     <!--예시 문구-->
     <string name="example_name">맛집 이름</string>
