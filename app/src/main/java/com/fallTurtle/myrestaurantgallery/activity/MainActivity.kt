@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     //binding
@@ -27,6 +28,10 @@ class MainActivity : AppCompatActivity() {
         binding.ivAddPic.setOnClickListener{
             val addIntent = Intent(this, AddActivity::class.java)
             startActivity(addIntent)
+        }
+
+        binding.ivMenu.setOnClickListener{
+            FirebaseAuth.getInstance().signOut();
         }
     }
 

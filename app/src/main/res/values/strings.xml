@@ -8,6 +8,8 @@
     <!--for login-->
     <string name="login_welcome">Welcome to My Restaurant Gallery!</string>
     <string name="login_explain">Please log in with your Google account for using this app.</string>
+    <string name="logout">logout</string>
+    <string name="withdrawal">withdrawal</string>
 
     <!--examples-->
     <string name="example_name">name</string>
