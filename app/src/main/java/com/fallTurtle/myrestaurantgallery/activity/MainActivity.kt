@@ -47,8 +47,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_withdrawal -> {
                     FirebaseAuth.getInstance().currentUser!!.delete()
                     Toast.makeText(this,R.string.withdrawal_success,Toast.LENGTH_SHORT).show()
-                    val login = Intent(this,LoginActivity::class.java)
-                    startActivity(login)
+                    finishAffinity()
                     true
                 }
                 else -> false
