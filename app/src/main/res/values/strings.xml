@@ -10,6 +10,9 @@
     <string name="login_explain">Please log in with your Google account for using this app.</string>
     <string name="logout">logout</string>
     <string name="withdrawal">withdrawal</string>
+    <string name="withdrawal_ask">Are you sure to want withdrawal? All of your data will be removed.</string>
+    <string name="logout_success">logout is completed</string>
+    <string name="withdrawal_success">withdrawal is completed</string>
 
     <!--examples-->
     <string name="example_name">name</string>
