@@ -41,13 +41,14 @@ class LoginActivity: AppCompatActivity() {
             signIn()
         }
 
+        Log.d("currentUser",mAuth!!.currentUser.toString())
+
         //if already login -> skip this activity
         if(mAuth!!.currentUser!= null){
             val start = Intent(application,MainActivity::class.java)
             startActivity(start)
             finish()
         }
-
     }
 
     private fun signIn(){
