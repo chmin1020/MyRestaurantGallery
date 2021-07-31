@@ -10,6 +10,9 @@
     <string name="login_explain">앱 이용을 위해 구글 계정 로그인해주세요</string>
     <string name="logout">로그아웃</string>
     <string name="withdrawal">앱 탈퇴</string>
+    <string name="withdrawal_ask">정말 탈퇴하시겠습니까? 저장하신 정보는 삭제됩니다.</string>
+    <string name="logout_success">로그아웃 완료</string>
+    <string name="withdrawal_success">탈퇴 완료</string>
 
     <!--예시 문구-->
     <string name="example_name">맛집 이름</string>

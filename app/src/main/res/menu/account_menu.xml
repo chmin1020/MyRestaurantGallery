@@ -3,9 +3,9 @@
     <item
         android:title="@string/logout"
         android:enabled="true"
-        android:id="@+id/logout"/>
+        android:id="@+id/menu_logout"/>
     <item
         android:title="@string/withdrawal"
         android:enabled="true"
-        android:id="@+id/withdrawal"/>
+        android:id="@+id/menu_withdrawal"/>
 </menu>

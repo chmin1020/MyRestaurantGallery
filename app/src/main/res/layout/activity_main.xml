@@ -10,52 +10,41 @@
 
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_weight="1"
         android:theme="?attr/actionBarTheme"
-        app:menu="@menu/account_menu"/>
-    
-    <LinearLayout
-        android:id="@+id/ll_actionBar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:weightSum="6"
-        android:orientation="horizontal">
+        app:menu="@menu/account_menu">
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:textSize="25sp"
-            android:textStyle="bold|italic"
-            android:text="@string/app_name_for_display"/>
-
-        <ImageView
-            android:id="@+id/iv_addPic"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:paddingTop = "5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/add_picture"/>
+            android:weightSum="6">
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/app_name_for_display"
+                android:textSize="25sp"
+                android:textStyle="bold|italic" />
 
-        <ImageView
-            android:id="@+id/iv_menu"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:paddingTop = "5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/vert" />
+            <ImageView
+                android:id="@+id/iv_addPic"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:src="@drawable/add_picture" />
 
-    </LinearLayout>
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
         android:id="@+id/ll_searchBar"
