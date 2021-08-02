@@ -4,6 +4,8 @@
     <string name="search">Search</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!--for login-->
     <string name="login_welcome">Welcome to My Restaurant Gallery!</string>
