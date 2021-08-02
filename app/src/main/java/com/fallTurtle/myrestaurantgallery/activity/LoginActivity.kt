@@ -37,11 +37,10 @@ class LoginActivity: AppCompatActivity() {
             .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         mClient = GoogleSignIn.getClient(this,gso)
 
+        //login button
         binding.signInButton.setOnClickListener{
             signIn()
         }
-
-        Log.d("currentUser",mAuth!!.currentUser.toString())
 
         //if already login -> skip this activity
         if(mAuth!!.currentUser!= null){
@@ -72,7 +71,6 @@ class LoginActivity: AppCompatActivity() {
                 }
             }
     }
-
     private fun updateUI(user: FirebaseUser?) { //update ui code here
         if (user != null) {
             val intent = Intent(this, MainActivity::class.java)
