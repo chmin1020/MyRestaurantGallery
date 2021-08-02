@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -9,12 +10,19 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.lang.String.format
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 class AddActivity : AppCompatActivity() {
@@ -22,7 +30,8 @@ class AddActivity : AppCompatActivity() {
     private val binding get()= mBinding!!
 
     //fireStore
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
+    private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
@@ -47,10 +56,12 @@ class AddActivity : AppCompatActivity() {
                 "genre" to binding.spGenre.selectedItem.toString(),
                 "location" to binding.etLocation.text.toString(),
                 "memo" to binding.etMemo.text.toString(),
-                "rate" to binding.rbRatingBar.numStars
+                "rate" to binding.rbRatingBar.numStars,
+                "date" to SimpleDateFormat("yyyy-mm-dd").format(Date(System.currentTimeMillis()))
             )
+            val id = newRes["date"].toString() + newRes["name"].toString() + newRes["genre"].toString()
 
-            db.collection("restaurants").add(newRes)
+            docRef.collection("restaurants").document(id).set(newRes)
 
             Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
             finish()
