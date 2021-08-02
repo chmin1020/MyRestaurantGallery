@@ -13,11 +13,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class AddActivity : AppCompatActivity() {
     private var mBinding: ActivityAddBinding? = null
     private val binding get()= mBinding!!
+
+    //fireStore
+    val db = Firebase.firestore
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
@@ -37,7 +42,16 @@ class AddActivity : AppCompatActivity() {
 
         binding.ivClear.setOnClickListener{ finish() }
         binding.tvSave.setOnClickListener {
-            //저장~~
+            val newRes = hashMapOf(
+                "name" to binding.etName.text.toString(),
+                "genre" to binding.spGenre.selectedItem.toString(),
+                "location" to binding.etLocation.text.toString(),
+                "memo" to binding.etMemo.text.toString(),
+                "rate" to binding.rbRatingBar.numStars
+            )
+
+            db.collection("restaurants").add(newRes)
+
             Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
             finish()
         }
