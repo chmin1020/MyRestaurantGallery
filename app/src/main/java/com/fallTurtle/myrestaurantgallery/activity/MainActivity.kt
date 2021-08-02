@@ -1,25 +1,33 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
-import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
+import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+
 
 class MainActivity : AppCompatActivity() {
     //binding
     private var mBinding:ActivityMainBinding? = null
     private val binding get()= mBinding!!
 
-    //recyclerview adapter
+    //recyclerview & Firebase
     private val listAdapter = ListAdapter()
+    private var list  = ArrayList<Piece>()
+    private val mAuth = FirebaseAuth.getInstance()
+    private var docRef: DocumentReference? = null
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         //recyclerView setting
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
         binding.recyclerView.adapter = listAdapter
+        updateDB()
 
         //add new things
         binding.ivAddPic.setOnClickListener{
@@ -57,11 +66,29 @@ class MainActivity : AppCompatActivity() {
                         }
                         .setNegativeButton(R.string.no){dialog, which ->}
                         .show()
-
                    true
                 }
                 else -> false
             }
+        }
+    }
+
+    //database를 갱신하는 메소드
+    fun updateDB() {
+        if (mAuth.currentUser != null) docRef =
+            db.collection("users").document(mAuth.currentUser!!.email.toString())
+        listAdapter.update(list)
+        if (mAuth.currentUser != null) {
+            docRef!!.collection("restaurants")
+                .addSnapshotListener { value, e ->
+                    list.clear()
+                    if (value != null) {
+                        for (doc in value) {
+                            list.add(doc.toObject(Piece::class.java))
+                        }
+                    }
+                    listAdapter.update(list)
+                }
         }
     }
 }

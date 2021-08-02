@@ -13,8 +13,8 @@ import java.util.ArrayList
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
-    private var UfList: List<Piece>? = ArrayList()
-    private var FList: List<Piece>? = ArrayList()
+    private var UfList: ArrayList<Piece>? = ArrayList()
+    private var FList: ArrayList<Piece>? = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -36,6 +36,12 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     override fun getItemCount(): Int {
         if(FList == null) return 0
         else return FList!!.size
+    }
+
+    fun update(item : ArrayList<Piece>?){
+        this.FList = item
+        this.UfList = item
+        notifyDataSetChanged()
     }
 
     class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

@@ -9,6 +9,7 @@ class Piece{
     private var location:String? = null
     private var genre:String? = null
     private var rate:Int? = null
+    private var date:String? = null
 
     fun setImgUsed(tf: Boolean){
         imgUsed = tf
@@ -36,5 +37,9 @@ class Piece{
 
     fun getRate() :Int?{
         return rate
+    }
+
+    fun getDate() :String?{
+        return date
     }
 }
