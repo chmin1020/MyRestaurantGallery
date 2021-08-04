@@ -30,8 +30,15 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
         holder.itemView.setOnClickListener { v ->
             val record = Intent(v.context, RecordActivity::class.java)
+            record.putExtra("dbID", FList?.get(position)?.getDBID())
+            record.putExtra("name", FList?.get(position)?.getName())
+            record.putExtra("genre", FList?.get(position)?.getGenre())
+            record.putExtra("rate", FList?.get(position)?.getRate())
+            record.putExtra("imgUsed", FList?.get(position)?.getImgUsed())
+            record.putExtra("date", FList?.get(position)?.getDate())
+            record.putExtra("location", FList?.get(position)?.getLocation())
+            record.putExtra("memo", FList?.get(position)?.getMemo())
             v.context.startActivity(record)
-        //미완
         }
     }
 

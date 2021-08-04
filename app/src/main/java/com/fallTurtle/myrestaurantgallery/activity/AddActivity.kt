@@ -56,7 +56,7 @@ class AddActivity : AppCompatActivity() {
                 "genre" to binding.spGenre.selectedItem.toString(),
                 "location" to binding.etLocation.text.toString(),
                 "memo" to binding.etMemo.text.toString(),
-                "rate" to binding.rbRatingBar.numStars,
+                "rate" to binding.rbRatingBar.rating,
                 "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
                 "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
                         + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())).toString()
