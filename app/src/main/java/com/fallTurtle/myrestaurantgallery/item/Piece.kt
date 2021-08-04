@@ -11,6 +11,7 @@ class Piece{
     private var genre:String? = null
     private var rate:Int? = null
     private var date:String? = null
+    private var memo:String? = null
 
     fun setDBID(id: String){
         dbID = id
@@ -28,27 +29,59 @@ class Piece{
         return imgUsed
     }
 
+    fun setImage(tf: Boolean){
+        imgUsed = tf
+    }
+
     fun getImage() :Bitmap?{
         return image
+    }
+
+    fun setName(nm : String?){
+        name = nm
     }
 
     fun getName() :String?{
         return name
     }
 
+    fun setLocation(lc : String?) {
+        location = lc
+    }
+
     fun getLocation() :String?{
         return location
+    }
+
+    fun setGenre(gr : String?){
+        genre = gr
     }
 
     fun getGenre() :String?{
         return genre
     }
 
+    fun setRate(rt : Int?){
+        rate = rt
+    }
+
     fun getRate() :Int?{
         return rate
     }
 
+    fun setDate(dt : String?){
+        date = dt
+    }
+
     fun getDate() :String?{
         return date
+    }
+
+    fun setMemo(mm : String?){
+        memo = mm
+    }
+
+    fun getMemo() :String?{
+        return memo
     }
 }
