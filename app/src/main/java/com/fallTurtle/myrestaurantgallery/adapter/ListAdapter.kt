@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
+import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.item.Piece
 import java.util.ArrayList
 
@@ -27,9 +28,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         holder.tvGenre.text = FList?.get(position)?.getGenre()
         holder.tvRate.text = FList?.get(position)?.getRate().toString()
 
-        holder.itemView.setOnClickListener{
-            val record = Intent()
-            //미완
+        holder.itemView.setOnClickListener { v ->
+            val record = Intent(v.context, RecordActivity::class.java)
+            v.context.startActivity(record)
+        //미완
         }
     }
 
