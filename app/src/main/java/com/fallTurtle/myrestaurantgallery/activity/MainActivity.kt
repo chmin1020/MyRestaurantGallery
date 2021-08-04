@@ -62,7 +62,15 @@ class MainActivity : AppCompatActivity() {
                     AlertDialog.Builder(this)
                         .setMessage(R.string.withdrawal_ask)
                         .setPositiveButton(R.string.yes) {dialog, which ->
-                            db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
+                            for(item in list){
+                                db.collection("users")
+                                    .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                                    .collection("restaurants")
+                                    .document(item.getDBID()!!).delete()
+                            }
+                            db.collection("users")
+                                .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
+
                             FirebaseAuth.getInstance().currentUser!!.delete()
                             Toast.makeText(this, R.string.withdrawal_success, Toast.LENGTH_SHORT).show()
                             finishAffinity()
