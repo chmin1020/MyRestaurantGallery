@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -13,6 +14,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -60,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                     AlertDialog.Builder(this)
                         .setMessage(R.string.withdrawal_ask)
                         .setPositiveButton(R.string.yes) {dialog, which ->
+                            db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
                             FirebaseAuth.getInstance().currentUser!!.delete()
                             Toast.makeText(this, R.string.withdrawal_success, Toast.LENGTH_SHORT).show()
                             finishAffinity()

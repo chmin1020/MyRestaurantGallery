@@ -31,6 +31,8 @@ class LoginActivity: AppCompatActivity() {
         mBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.d("currentUser", FirebaseAuth.getInstance().currentUser.toString())
+
         //for login operations
         mAuth = FirebaseAuth.getInstance()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

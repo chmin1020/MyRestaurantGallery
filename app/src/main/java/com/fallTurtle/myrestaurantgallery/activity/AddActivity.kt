@@ -57,9 +57,11 @@ class AddActivity : AppCompatActivity() {
                 "location" to binding.etLocation.text.toString(),
                 "memo" to binding.etMemo.text.toString(),
                 "rate" to binding.rbRatingBar.numStars,
-                "date" to SimpleDateFormat("yyyy-mm-dd").format(Date(System.currentTimeMillis()))
+                "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
+                "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
+                        + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())).toString()
             )
-            val id = newRes["date"].toString() + newRes["name"].toString() + newRes["genre"].toString()
+            val id = newRes["dbID"].toString()
 
             docRef.collection("restaurants").document(id).set(newRes)
 
