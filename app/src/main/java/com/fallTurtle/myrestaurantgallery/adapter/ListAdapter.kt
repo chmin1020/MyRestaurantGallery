@@ -6,16 +6,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.ArrayList
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
     private var UfList: ArrayList<Piece>? = ArrayList()
     private var FList: ArrayList<Piece>? = ArrayList()
+
+    private val db = Firebase.firestore
+    private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -39,6 +47,18 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             record.putExtra("location", FList?.get(position)?.getLocation())
             record.putExtra("memo", FList?.get(position)?.getMemo())
             v.context.startActivity(record)
+        }
+        holder.itemView.setOnLongClickListener{ v->
+            AlertDialog.Builder(v.context)
+                .setMessage(R.string.delete_message)
+                .setPositiveButton(R.string.yes) {dialog, which ->
+                    docRef.collection("restaurants").document(FList?.get(position)?.getDBID().toString()).delete()
+                    Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
+                    update(FList)
+                }
+                .setNegativeButton(R.string.no) {dialog, which -> }
+                .show()
+            return@setOnLongClickListener true
         }
     }
 
