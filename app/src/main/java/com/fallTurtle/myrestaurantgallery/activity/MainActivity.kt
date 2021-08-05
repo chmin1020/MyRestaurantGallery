@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         //add new things
         binding.ivAddPic.setOnClickListener{
             val addIntent = Intent(this, AddActivity::class.java)
+            addIntent.putExtra("isEdit", false)
             startActivity(addIntent)
         }
 

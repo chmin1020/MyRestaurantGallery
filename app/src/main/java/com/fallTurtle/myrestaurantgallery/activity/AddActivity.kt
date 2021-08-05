@@ -2,15 +2,14 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
@@ -19,10 +18,7 @@ import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.lang.String.format
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -73,29 +69,31 @@ class AddActivity : AppCompatActivity() {
         }
         else{
             binding.tvSave.setOnClickListener {
-                val newRes = hashMapOf(
-                    "name" to binding.etName.text.toString(),
-                    "genre" to binding.spGenre.selectedItem.toString(),
-                    "location" to binding.etLocation.text.toString(),
-                    "memo" to binding.etMemo.text.toString(),
-                    "rate" to binding.rbRatingBar.rating,
-                    "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
-                    "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
-                            + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())).toString()
-                )
-                val id = newRes["dbID"].toString()
+                if(binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()){
+                    Toast.makeText(this,R.string.satisfy_warning,Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    val newRes = hashMapOf(
+                        "name" to binding.etName.text.toString(),
+                        "genre" to binding.spGenre.selectedItem.toString(),
+                        "location" to binding.etLocation.text.toString(),
+                        "memo" to binding.etMemo.text.toString(),
+                        "rate" to binding.rbRatingBar.rating,
+                        "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
+                        "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
+                                + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis()))
+                            .toString()
+                    )
+                    val id = newRes["dbID"].toString()
+                    docRef.collection("restaurants").document(id).set(newRes)
 
-                docRef.collection("restaurants").document(id).set(newRes)
-
-                Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-                finish()
+                    Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
         }
 
-
         binding.ivClear.setOnClickListener{ finish() }
-
-
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
             imgDlg.setOnGalleryClickListener {
