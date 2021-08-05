@@ -29,6 +29,7 @@ class RecordActivity : AppCompatActivity() {
         //adapter 데이터 받기
         piece.setDBID(intent.getStringExtra("dbID").toString())
         piece.setName(intent.getStringExtra("name"))
+        piece.setGenreNum(intent.getIntExtra("genreNum", 0))
         piece.setGenre(intent.getStringExtra("genre"))
         piece.setRate(intent.getIntExtra("rate",0))
         piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
@@ -42,12 +43,25 @@ class RecordActivity : AppCompatActivity() {
         binding.tvMemo.text = piece.getMemo()
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
+        if(!piece.getImgUsed()){
+            when(piece.getGenreNum()!!){
+                0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
+                1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
+                2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
+                3 -> binding.ivImage.setImageResource(R.drawable.western_food)
+                4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
+                5 -> binding.ivImage.setImageResource(R.drawable.drink)
+                6 -> binding.ivImage.setImageResource(R.drawable.etc)
+            }
+        }
+
         //edit 데이터 보내기
         binding.tvEdit.setOnClickListener{
             val edit = Intent(this, AddActivity::class.java)
             edit.putExtra("isEdit", true)
             edit.putExtra("dbID",piece.getDBID())
             edit.putExtra("name",piece.getName())
+            edit.putExtra("genreNum",piece.getGenreNum())
             edit.putExtra("genre",piece.getGenre())
             edit.putExtra("location",piece.getLocation())
             edit.putExtra("imgUsed",piece.getImgUsed())

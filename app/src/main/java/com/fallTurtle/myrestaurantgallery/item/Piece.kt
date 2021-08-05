@@ -8,6 +8,7 @@ class Piece{
     private var image:Bitmap? = null
     private var name:String? = null
     private var location:String? = null
+    private var genreNum:Int? = null
     private var genre:String? = null
     private var rate:Int? = null
     private var date:String? = null
@@ -51,6 +52,14 @@ class Piece{
 
     fun getLocation() :String?{
         return location
+    }
+
+    fun setGenreNum(gn : Int?){
+        genreNum = gn
+    }
+
+    fun getGenreNum() :Int?{
+        return genreNum
     }
 
     fun setGenre(gr : String?){
