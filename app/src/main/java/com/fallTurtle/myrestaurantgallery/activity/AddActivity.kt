@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
+import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -49,25 +50,51 @@ class AddActivity : AppCompatActivity() {
         mBinding = ActivityAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.ivClear.setOnClickListener{ finish() }
-        binding.tvSave.setOnClickListener {
-            val newRes = hashMapOf(
-                "name" to binding.etName.text.toString(),
-                "genre" to binding.spGenre.selectedItem.toString(),
-                "location" to binding.etLocation.text.toString(),
-                "memo" to binding.etMemo.text.toString(),
-                "rate" to binding.rbRatingBar.rating,
-                "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
-                "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
-                        + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())).toString()
-            )
-            val id = newRes["dbID"].toString()
+        val isEdit = intent.getBooleanExtra("isEdit", false)
 
-            docRef.collection("restaurants").document(id).set(newRes)
+        if(isEdit){
+            var piece = Piece()
 
-            Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-            finish()
+            //adapter 데이터 받기
+            piece.setDBID(intent.getStringExtra("dbID").toString())
+            piece.setName(intent.getStringExtra("name"))
+            piece.setGenre(intent.getStringExtra("genre"))
+            piece.setRate(intent.getIntExtra("rate",0))
+            piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
+            piece.setDate(intent.getStringExtra("date"))
+            piece.setLocation(intent.getStringExtra("location"))
+            piece.setMemo(intent.getStringExtra("memo"))
+
+            binding.etName.setText(piece.getName())
+            //binding.spGenre
+            binding.etLocation.setText(piece.getLocation())
+            binding.etMemo.setText(piece.getMemo())
+            binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
         }
+        else{
+            binding.tvSave.setOnClickListener {
+                val newRes = hashMapOf(
+                    "name" to binding.etName.text.toString(),
+                    "genre" to binding.spGenre.selectedItem.toString(),
+                    "location" to binding.etLocation.text.toString(),
+                    "memo" to binding.etMemo.text.toString(),
+                    "rate" to binding.rbRatingBar.rating,
+                    "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
+                    "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
+                            + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())).toString()
+                )
+                val id = newRes["dbID"].toString()
+
+                docRef.collection("restaurants").document(id).set(newRes)
+
+                Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+
+
+        binding.ivClear.setOnClickListener{ finish() }
+
 
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
