@@ -41,6 +41,18 @@ class AddActivity : AppCompatActivity() {
         }
     }
 
+    private fun selectImg(position : Int){
+        when(position){
+            0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
+            1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
+            2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
+            3 -> binding.ivImage.setImageResource(R.drawable.western_food)
+            4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
+            5 -> binding.ivImage.setImageResource(R.drawable.drink)
+            6 -> binding.ivImage.setImageResource(R.drawable.etc)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityAddBinding.inflate(layoutInflater)
@@ -48,12 +60,22 @@ class AddActivity : AppCompatActivity() {
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
 
+        //spinner
+        binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
+        binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(!imgUsed) selectImg(position)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         if(isEdit){
-            var piece = Piece()
+            val piece = Piece()
 
             //adapter 데이터 받기
             piece.setDBID(intent.getStringExtra("dbID").toString())
             piece.setName(intent.getStringExtra("name"))
+            piece.setGenreNum(intent.getIntExtra("genreNum", 0))
             piece.setGenre(intent.getStringExtra("genre"))
             piece.setRate(intent.getIntExtra("rate",0))
             piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
@@ -62,10 +84,12 @@ class AddActivity : AppCompatActivity() {
             piece.setMemo(intent.getStringExtra("memo"))
 
             binding.etName.setText(piece.getName())
-            //binding.spGenre
+            binding.spGenre.setSelection(piece.getGenreNum()!!)
             binding.etLocation.setText(piece.getLocation())
             binding.etMemo.setText(piece.getMemo())
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
+
+            selectImg(piece.getGenreNum()!!)
         }
         else{
             binding.tvSave.setOnClickListener {
@@ -75,6 +99,7 @@ class AddActivity : AppCompatActivity() {
                 else {
                     val newRes = hashMapOf(
                         "name" to binding.etName.text.toString(),
+                        "genreNum" to binding.spGenre.selectedItemPosition,
                         "genre" to binding.spGenre.selectedItem.toString(),
                         "location" to binding.etLocation.text.toString(),
                         "memo" to binding.etMemo.text.toString(),
@@ -108,36 +133,10 @@ class AddActivity : AppCompatActivity() {
 
             imgDlg.setOnDefaultClickListener {
                 imgUsed = false
-                when(binding.spGenre.selectedItemPosition){
-                    0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
-                    1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
-                    2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
-                    3 -> binding.ivImage.setImageResource(R.drawable.western_food)
-                    4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
-                    5 -> binding.ivImage.setImageResource(R.drawable.drink)
-                    6 -> binding.ivImage.setImageResource(R.drawable.etc)
-                }
+                selectImg(binding.spGenre.selectedItemPosition)
                 imgDlg.closeDialog()
             }
             imgDlg.create()
-        }
-
-        binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
-        binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(!imgUsed) {
-                    when (position) {
-                        0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
-                        1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
-                        2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
-                        3 -> binding.ivImage.setImageResource(R.drawable.western_food)
-                        4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
-                        5 -> binding.ivImage.setImageResource(R.drawable.drink)
-                        6 -> binding.ivImage.setImageResource(R.drawable.etc)
-                    }
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 }
