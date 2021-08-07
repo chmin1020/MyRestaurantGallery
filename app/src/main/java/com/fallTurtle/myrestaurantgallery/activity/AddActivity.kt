@@ -79,7 +79,6 @@ class AddActivity : AppCompatActivity() {
             piece.setGenre(intent.getStringExtra("genre"))
             piece.setRate(intent.getIntExtra("rate",0))
             piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
-            piece.setDate(intent.getStringExtra("date"))
             piece.setLocation(intent.getStringExtra("location"))
             piece.setMemo(intent.getStringExtra("memo"))
 
@@ -90,32 +89,6 @@ class AddActivity : AppCompatActivity() {
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
             selectImg(piece.getGenreNum()!!)
-        }
-        else{
-            binding.tvSave.setOnClickListener {
-                if(binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()){
-                    Toast.makeText(this,R.string.satisfy_warning,Toast.LENGTH_SHORT).show()
-                }
-                else {
-                    val newRes = hashMapOf(
-                        "name" to binding.etName.text.toString(),
-                        "genreNum" to binding.spGenre.selectedItemPosition,
-                        "genre" to binding.spGenre.selectedItem.toString(),
-                        "location" to binding.etLocation.text.toString(),
-                        "memo" to binding.etMemo.text.toString(),
-                        "rate" to binding.rbRatingBar.rating,
-                        "date" to SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis())),
-                        "dbID" to binding.etName.text.toString() + binding.etLocation.text.toString()
-                                + SimpleDateFormat("yyyy-MM-dd").format(Date(System.currentTimeMillis()))
-                            .toString()
-                    )
-                    val id = newRes["dbID"].toString()
-                    docRef.collection("restaurants").document(id).set(newRes)
-
-                    Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-            }
         }
 
         binding.ivClear.setOnClickListener{ finish() }
@@ -137,6 +110,32 @@ class AddActivity : AppCompatActivity() {
                 imgDlg.closeDialog()
             }
             imgDlg.create()
+        }
+        binding.tvSave.setOnClickListener {
+            if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
+                Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
+            } else {
+                val newRes = mapOf(
+                    "name" to binding.etName.text.toString(),
+                    "genreNum" to binding.spGenre.selectedItemPosition,
+                    "genre" to binding.spGenre.selectedItem.toString(),
+                    "location" to binding.etLocation.text.toString(),
+                    "memo" to binding.etMemo.text.toString(),
+                    "rate" to binding.rbRatingBar.rating,
+                    "dbID" to binding.etName.text.toString()
+                            + SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis()))
+                        .toString()
+                )
+                if (isEdit) {
+                    Log.d("isEdit","ddd")
+                    newRes.plus(mapOf("dbID" to intent.getStringExtra("dbID").toString()))
+                    docRef.collection("restaurants").document(newRes["dbID"].toString()).update(newRes)
+                } else {
+                    docRef.collection("restaurants").document(newRes["dbID"].toString()).set(newRes)
+                }
+                Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
     }
 }
