@@ -1,6 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.app.Activity
 import android.content.Intent
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,11 +33,34 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.ivImage.setImageBitmap(FList?.get(position)?.getImage())
+        //그리드 뷰 크기 조정
+        val displayMetrics = DisplayMetrics()
+        holder.itemView.context.display!!.getRealMetrics(displayMetrics)
+
+        holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
+        holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
+        holder.itemView.requestLayout()
+
+        //뷰 항목 채우기
+        if(FList?.get(position)?.getImgUsed() == false){
+            when(FList?.get(position)?.getGenreNum()) {
+                0 -> holder.ivImage.setImageResource(R.drawable.korean_food)
+                1 -> holder.ivImage.setImageResource(R.drawable.chinese_food)
+                2 -> holder.ivImage.setImageResource(R.drawable.japanese_food)
+                3 -> holder.ivImage.setImageResource(R.drawable.western_food)
+                4 -> holder.ivImage.setImageResource(R.drawable.coffee_and_drink)
+                5 -> holder.ivImage.setImageResource(R.drawable.drink)
+                6 -> holder.ivImage.setImageResource(R.drawable.etc)
+            }
+        }
+        else {
+            holder.ivImage.setImageBitmap(FList?.get(position)?.getImage())
+        }
         holder.tvName.text = FList?.get(position)?.getName()
         holder.tvGenre.text = FList?.get(position)?.getGenre()
         holder.tvRate.text = FList?.get(position)?.getRate().toString()
 
+        //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->
             val record = Intent(v.context, RecordActivity::class.java)
             record.putExtra("dbID", FList?.get(position)?.getDBID())
@@ -48,6 +73,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             record.putExtra("memo", FList?.get(position)?.getMemo())
             v.context.startActivity(record)
         }
+        //길게 누를 시 삭제 질의
         holder.itemView.setOnLongClickListener{ v->
             AlertDialog.Builder(v.context)
                 .setMessage(R.string.delete_message)
