@@ -44,7 +44,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             record.putExtra("genre", FList?.get(position)?.getGenre())
             record.putExtra("rate", FList?.get(position)?.getRate())
             record.putExtra("imgUsed", FList?.get(position)?.getImgUsed())
-            record.putExtra("date", FList?.get(position)?.getDate())
             record.putExtra("location", FList?.get(position)?.getLocation())
             record.putExtra("memo", FList?.get(position)?.getMemo())
             v.context.startActivity(record)

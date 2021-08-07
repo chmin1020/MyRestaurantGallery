@@ -33,7 +33,6 @@ class RecordActivity : AppCompatActivity() {
         piece.setGenre(intent.getStringExtra("genre"))
         piece.setRate(intent.getIntExtra("rate",0))
         piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
-        piece.setDate(intent.getStringExtra("date"))
         piece.setLocation(intent.getStringExtra("location"))
         piece.setMemo(intent.getStringExtra("memo"))
 
@@ -66,8 +65,8 @@ class RecordActivity : AppCompatActivity() {
             edit.putExtra("location",piece.getLocation())
             edit.putExtra("imgUsed",piece.getImgUsed())
             edit.putExtra("memo",piece.getMemo())
-            edit.putExtra("date",piece.getDate())
             edit.putExtra("rate",piece.getRate())
+            finish()
             startActivity(edit)
         }
 
