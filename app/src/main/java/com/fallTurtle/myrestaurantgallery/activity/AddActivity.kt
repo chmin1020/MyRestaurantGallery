@@ -115,6 +115,11 @@ class AddActivity : AppCompatActivity() {
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             } else {
+                lateinit var id:String
+
+                if(isEdit) id = intent.getStringExtra("dbID").toString()
+                else id =  SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
+
                 val newRes = mapOf(
                     "name" to binding.etName.text.toString(),
                     "genreNum" to binding.spGenre.selectedItemPosition,
@@ -122,17 +127,10 @@ class AddActivity : AppCompatActivity() {
                     "location" to binding.etLocation.text.toString(),
                     "memo" to binding.etMemo.text.toString(),
                     "rate" to binding.rbRatingBar.rating,
-                    "dbID" to binding.etName.text.toString()
-                            + SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis()))
-                        .toString()
+                    "dbID" to id
                 )
-                if (isEdit) {
-                    Log.d("isEdit","ddd")
-                    newRes.plus(mapOf("dbID" to intent.getStringExtra("dbID").toString()))
-                    docRef.collection("restaurants").document(newRes["dbID"].toString()).update(newRes)
-                } else {
-                    docRef.collection("restaurants").document(newRes["dbID"].toString()).set(newRes)
-                }
+
+                docRef.collection("restaurants").document(id).set(newRes)
                 Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
                 finish()
             }
