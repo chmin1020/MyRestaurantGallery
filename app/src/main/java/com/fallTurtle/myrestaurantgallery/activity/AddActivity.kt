@@ -115,10 +115,8 @@ class AddActivity : AppCompatActivity() {
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             } else {
-                lateinit var id:String
-
-                if(isEdit) id = intent.getStringExtra("dbID").toString()
-                else id =  SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
+                val id:String = if(isEdit) intent.getStringExtra("dbID").toString()
+                    else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
 
                 val newRes = mapOf(
                     "name" to binding.etName.text.toString(),
@@ -132,6 +130,10 @@ class AddActivity : AppCompatActivity() {
 
                 docRef.collection("restaurants").document(id).set(newRes)
                 Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+                if(isEdit) {
+                    val back = Intent()
+                    setResult(RESULT_OK, back)
+                }
                 finish()
             }
         }
