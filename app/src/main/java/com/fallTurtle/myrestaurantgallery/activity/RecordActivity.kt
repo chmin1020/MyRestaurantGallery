@@ -21,6 +21,8 @@ class RecordActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
+    private val REQUEST_TEST = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityRecordBinding.inflate(layoutInflater)
@@ -66,8 +68,8 @@ class RecordActivity : AppCompatActivity() {
             edit.putExtra("imgUsed",piece.getImgUsed())
             edit.putExtra("memo",piece.getMemo())
             edit.putExtra("rate",piece.getRate())
-            finish()
-            startActivity(edit)
+            //finish()
+            startActivityForResult(edit, REQUEST_TEST);
         }
 
         //아이템 삭제하기
@@ -86,4 +88,12 @@ class RecordActivity : AppCompatActivity() {
         //액티비티 탈출
         binding.ivClear.setOnClickListener{ finish() }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == REQUEST_TEST && resultCode == RESULT_OK && data != null){
+            finish();
+        }
+    }
+
 }
