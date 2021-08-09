@@ -53,9 +53,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
                 6 -> holder.ivImage.setImageResource(R.drawable.etc)
             }
         }
-        else {
-            holder.ivImage.setImageBitmap(FList?.get(position)?.getImage())
-        }
         holder.tvName.text = FList?.get(position)?.getName()
         holder.tvGenre.text = FList?.get(position)?.getGenre()
         holder.tvRate.text = FList?.get(position)?.getRate().toString()
