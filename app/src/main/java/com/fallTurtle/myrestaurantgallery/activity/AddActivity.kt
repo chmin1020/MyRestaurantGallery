@@ -25,6 +25,7 @@ import java.util.*
 class AddActivity : AppCompatActivity() {
     private var mBinding: ActivityAddBinding? = null
     private val binding get()= mBinding!!
+    private val piece = Piece() //for edit
 
     //fireStore
     private val db = Firebase.firestore
@@ -70,8 +71,6 @@ class AddActivity : AppCompatActivity() {
         }
 
         if(isEdit){
-            val piece = Piece()
-
             //adapter 데이터 받기
             piece.setDBID(intent.getStringExtra("dbID").toString())
             piece.setName(intent.getStringExtra("name"))
@@ -79,6 +78,7 @@ class AddActivity : AppCompatActivity() {
             piece.setGenre(intent.getStringExtra("genre"))
             piece.setRate(intent.getIntExtra("rate",0))
             piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
+            imgUsed = piece.getImgUsed()
             piece.setLocation(intent.getStringExtra("location"))
             piece.setMemo(intent.getStringExtra("memo"))
 
@@ -88,10 +88,24 @@ class AddActivity : AppCompatActivity() {
             binding.etMemo.setText(piece.getMemo())
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
-            selectImg(piece.getGenreNum()!!)
+            if(!piece.getImgUsed()) selectImg(piece.getGenreNum()!!)
         }
 
-        binding.ivClear.setOnClickListener{ finish() }
+        binding.ivClear.setOnClickListener{
+            if(isEdit) {
+                val back = Intent(this, RecordActivity::class.java)
+                back.putExtra("dbID",piece.getDBID())
+                back.putExtra("name",piece.getName())
+                back.putExtra("genreNum",piece.getGenreNum())
+                back.putExtra("genre",piece.getGenre())
+                back.putExtra("location",piece.getLocation())
+                back.putExtra("imgUsed",piece.getImgUsed())
+                back.putExtra("memo",piece.getMemo())
+                back.putExtra("rate",piece.getRate())
+                startActivity(back)
+            }
+
+            finish() }
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
             imgDlg.setOnGalleryClickListener {
@@ -123,6 +137,7 @@ class AddActivity : AppCompatActivity() {
                     "genreNum" to binding.spGenre.selectedItemPosition,
                     "genre" to binding.spGenre.selectedItem.toString(),
                     "location" to binding.etLocation.text.toString(),
+                    "imgUsed" to imgUsed,
                     "memo" to binding.etMemo.text.toString(),
                     "rate" to binding.rbRatingBar.rating,
                     "dbID" to id
@@ -130,10 +145,6 @@ class AddActivity : AppCompatActivity() {
 
                 docRef.collection("restaurants").document(id).set(newRes)
                 Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-                if(isEdit) {
-                    val back = Intent()
-                    setResult(RESULT_OK, back)
-                }
                 finish()
             }
         }
