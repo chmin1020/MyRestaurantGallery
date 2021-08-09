@@ -117,7 +117,7 @@ class AddActivity : AppCompatActivity() {
             val imgDlg = ImgDialog(this)
             imgDlg.setOnGalleryClickListener {
                 val gallery =
-                    Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 getImg.launch(gallery)
                 imgDlg.closeDialog()
             }
