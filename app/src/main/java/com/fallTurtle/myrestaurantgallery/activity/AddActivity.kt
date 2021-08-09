@@ -1,9 +1,10 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.loader.content.CursorLoader
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
@@ -19,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import java.io.File
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,6 +36,7 @@ class AddActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
     private val str = Firebase.storage
+    private val strRef = str.reference
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
@@ -112,10 +117,7 @@ class AddActivity : AppCompatActivity() {
             val imgDlg = ImgDialog(this)
             imgDlg.setOnGalleryClickListener {
                 val gallery =
-                    Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    )
+                    Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 getImg.launch(gallery)
                 imgDlg.closeDialog()
             }
@@ -134,28 +136,48 @@ class AddActivity : AppCompatActivity() {
                 val id:String = if(isEdit) intent.getStringExtra("dbID").toString()
                     else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
 
-
                 if(imgUsed) {
+                    val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                        .child(imgUri!!.lastPathSegment.toString())
+                    //val path = FirebaseAuth.getInstance().currentUser!!.email.toString() + "/" + imgUri!!.lastPathSegment.toString()
+                    val stream = FileInputStream(File(getPath(imgUri)))
 
-                }
-                else {
-                    val newRes = mapOf(
-                        "image" to null,
-                        "name" to binding.etName.text.toString(),
-                        "genreNum" to binding.spGenre.selectedItemPosition,
-                        "genre" to binding.spGenre.selectedItem.toString(),
-                        "location" to binding.etLocation.text.toString(),
-                        "imgUsed" to imgUsed,
-                        "memo" to binding.etMemo.text.toString(),
-                        "rate" to binding.rbRatingBar.rating,
-                        "dbID" to id
-                    )
+                    val uploadTask = realRef.putStream(stream)
 
-                    docRef.collection("restaurants").document(id).set(newRes)
-                    Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+                    uploadTask.addOnFailureListener {
+                        // Handle unsuccessful uploads
+                    }.addOnSuccessListener {
+                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                        // ...
+                    }
                 }
+
+                val newRes = mapOf(
+                    "image" to imgUri!!.lastPathSegment.toString(),
+                    "name" to binding.etName.text.toString(),
+                    "genreNum" to binding.spGenre.selectedItemPosition,
+                    "genre" to binding.spGenre.selectedItem.toString(),
+                    "location" to binding.etLocation.text.toString(),
+                    "imgUsed" to imgUsed,
+                    "memo" to binding.etMemo.text.toString(),
+                    "rate" to binding.rbRatingBar.rating, "dbID" to id
+                )
+
+                docRef.collection("restaurants").document(id).set(newRes)
+                Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+
                 finish()
             }
         }
+    }
+
+    //제대로 된 uri 가져오기
+    fun getPath(uri: Uri?): String {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursorLoader = CursorLoader(this, uri!!, proj, null, null, null)
+        val cursor: Cursor? = cursorLoader.loadInBackground()
+        val index: Int = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor.moveToFirst()
+        return cursor.getString(index)
     }
 }

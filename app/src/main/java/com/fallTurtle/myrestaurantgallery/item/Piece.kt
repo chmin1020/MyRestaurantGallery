@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 class Piece{
     private var dbID:String? = null
     private var imgUsed:Boolean = false
-    private var image:Bitmap? = null
+    private var image:String? = null
     private var name:String? = null
     private var location:String? = null
     private var genreNum:Int? = null
@@ -29,11 +29,11 @@ class Piece{
         return imgUsed
     }
 
-    fun setImage(tf: Boolean){
-        imgUsed = tf
+    fun setImage(tf: String?){
+        image = tf
     }
 
-    fun getImage() :Bitmap?{
+    fun getImage() :String?{
         return image
     }
 

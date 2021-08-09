@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,9 +15,10 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +33,24 @@ class MainActivity : AppCompatActivity() {
     private var docRef: DocumentReference? = null
     private val db = Firebase.firestore
 
+    //앱 실행 전 권한을 받기 위한 다이얼로그
+    private fun showPermissionDialog() {
+        val permissionListener: PermissionListener = object : PermissionListener {
+            override fun onPermissionGranted() {
+                val addIntent = Intent(this@MainActivity, AddActivity::class.java)
+                addIntent.putExtra("isEdit", false)
+                startActivity(addIntent)
+            }
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                Toast.makeText(this@MainActivity, "권한이 없으면 레시피 저장 기능 사용이 불가능합니다.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+        TedPermission.with(this)
+            .setPermissionListener(permissionListener)
+            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE).check()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -44,9 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         //add new things
         binding.ivAddPic.setOnClickListener{
-            val addIntent = Intent(this, AddActivity::class.java)
-            addIntent.putExtra("isEdit", false)
-            startActivity(addIntent)
+            showPermissionDialog()
         }
 
         //logout and withdrawal with toolbar_menu
