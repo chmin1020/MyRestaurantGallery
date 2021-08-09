@@ -17,6 +17,7 @@ import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.util.ArrayList
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
@@ -26,6 +27,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
+    private val str = Firebase.storage
+    private val strRef = str.reference
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -42,7 +45,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기
-        if(FList?.get(position)?.getImgUsed() == false){
+        if(FList?.get(position)?.getImgUsed() == true) {
+
+        }
+        else{
             when(FList?.get(position)?.getGenreNum()) {
                 0 -> holder.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> holder.ivImage.setImageResource(R.drawable.chinese_food)
@@ -65,6 +71,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             record.putExtra("genreNum", FList?.get(position)?.getGenreNum())
             record.putExtra("genre", FList?.get(position)?.getGenre())
             record.putExtra("rate", FList?.get(position)?.getRate())
+            record.putExtra("image",FList?.get(position)?.getImage())
             record.putExtra("imgUsed", FList?.get(position)?.getImgUsed())
             record.putExtra("location", FList?.get(position)?.getLocation())
             record.putExtra("memo", FList?.get(position)?.getMemo())
@@ -75,6 +82,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             AlertDialog.Builder(v.context)
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
+                    if(FList?.get(position)?.getImgUsed() == true){
+                        strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                            .child(FList?.get(position)?.getImage().toString()).delete()
+                    }
                     docRef.collection("restaurants").document(FList?.get(position)?.getDBID().toString()).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                     update(FList)
