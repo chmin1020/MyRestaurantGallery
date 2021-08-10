@@ -1,6 +1,5 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
-import android.app.Activity
 import android.content.Intent
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.fallTurtle.myrestaurantgallery.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.item.Piece
@@ -46,6 +46,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
         //뷰 항목 채우기
         if(FList?.get(position)?.getImgUsed() == true) {
+            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.toString())
+                .child(FList?.get(position)?.getImage().toString())
+                GlideApp.with(holder.itemView)
+                .load(realRef).into(holder.ivImage)
 
         }
         else{

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.fallTurtle.myrestaurantgallery.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.item.Piece
@@ -47,7 +48,13 @@ class RecordActivity : AppCompatActivity() {
         binding.tvMemo.text = piece.getMemo()
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
-        if(!piece.getImgUsed()){
+        if(piece.getImgUsed()) {
+            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.toString())
+                .child(piece.getImage().toString())
+            GlideApp.with(this)
+                .load(realRef).into(binding.ivImage)
+        }
+        else{
             when(piece.getGenreNum()!!){
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
