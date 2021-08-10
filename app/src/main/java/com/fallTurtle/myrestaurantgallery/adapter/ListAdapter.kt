@@ -46,7 +46,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
         //뷰 항목 채우기
         if(FList?.get(position)?.getImgUsed() == true) {
-            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.toString())
+            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
                 .child(FList?.get(position)?.getImage().toString())
                 GlideApp.with(holder.itemView)
                 .load(realRef).into(holder.ivImage)

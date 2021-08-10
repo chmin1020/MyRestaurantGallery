@@ -49,7 +49,7 @@ class RecordActivity : AppCompatActivity() {
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
         if(piece.getImgUsed()) {
-            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.toString())
+            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
                 .child(piece.getImage().toString())
             GlideApp.with(this)
                 .load(realRef).into(binding.ivImage)
