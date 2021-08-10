@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.loader.content.CursorLoader
+import com.fallTurtle.myrestaurantgallery.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
@@ -83,6 +84,7 @@ class AddActivity : AppCompatActivity() {
             piece.setName(intent.getStringExtra("name"))
             piece.setGenreNum(intent.getIntExtra("genreNum", 0))
             piece.setGenre(intent.getStringExtra("genre"))
+            piece.setImage(intent.getStringExtra("image"))
             piece.setRate(intent.getIntExtra("rate",0))
             piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
             imgUsed = piece.getImgUsed()
@@ -95,7 +97,14 @@ class AddActivity : AppCompatActivity() {
             binding.etMemo.setText(piece.getMemo())
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
-            if(!piece.getImgUsed()) selectImg(piece.getGenreNum()!!)
+            if(piece.getImgUsed()){
+                val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                    .child(piece.getImage().toString())
+                GlideApp.with(this)
+                    .load(realRef).into(binding.ivImage)
+            }
+            else selectImg(piece.getGenreNum()!!)
+
         }
 
         binding.ivClear.setOnClickListener{
