@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("onCreate","ddd")
 
         //recyclerView setting
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -107,7 +106,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume(){
         super.onResume()
         updateDB()
-        Log.d("onResume","ddd")
     }
 
     //database를 갱신하는 메소드

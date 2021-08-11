@@ -54,8 +54,8 @@
             android:id="@+id/iv_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:scaleType="fitXY"
+            android:layout_margin="12dp"
+            android:scaleType="centerInside"
             android:src="@drawable/korean_food"/>
 
     </LinearLayout>

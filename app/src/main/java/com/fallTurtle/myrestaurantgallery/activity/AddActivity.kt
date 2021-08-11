@@ -115,6 +115,7 @@ class AddActivity : AppCompatActivity() {
                 back.putExtra("genreNum",piece.getGenreNum())
                 back.putExtra("genre",piece.getGenre())
                 back.putExtra("location",piece.getLocation())
+                back.putExtra("image",piece.getImage())
                 back.putExtra("imgUsed",piece.getImgUsed())
                 back.putExtra("memo",piece.getMemo())
                 back.putExtra("rate",piece.getRate())

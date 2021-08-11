@@ -7,16 +7,22 @@
     android:layout_margin="5dp"
     android:weightSum="7">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:background="@drawable/grid_border">
+
         <ImageView
             android:id="@+id/iv_image"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5"
-            android:maxWidth="160dp"
-            android:maxHeight="130dp"
-            android:padding="10dp"
-            android:background="@drawable/grid_border"
-            android:src="@drawable/search"/>
+            android:layout_height="match_parent"
+            android:layout_margin="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/etc"/>
+
+    </LinearLayout>
+
 
 
     <TextView
