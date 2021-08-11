@@ -28,7 +28,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
     private val str = Firebase.storage
-    private val strRef = str.reference
+    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -46,11 +46,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
         //뷰 항목 채우기
         if(FList?.get(position)?.getImgUsed() == true) {
-            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                .child(FList?.get(position)?.getImage().toString())
                 GlideApp.with(holder.itemView)
-                .load(realRef).into(holder.ivImage)
-
+                .load(strRef.child(FList?.get(position)?.getImage().toString())).into(holder.ivImage)
         }
         else{
             when(FList?.get(position)?.getGenreNum()) {
