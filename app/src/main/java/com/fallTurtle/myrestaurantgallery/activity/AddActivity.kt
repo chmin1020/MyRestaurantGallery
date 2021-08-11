@@ -162,6 +162,10 @@ class AddActivity : AppCompatActivity() {
                         strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
                     }
                 }
+                else{
+                    if(isEdit && piece.getImgUsed())
+                        strRef.child(piece.getImage().toString()).delete()
+                }
 
                 val newRes = mapOf(
                     "image" to image,
