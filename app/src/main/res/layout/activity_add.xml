@@ -66,6 +66,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_gravity="center"
+        android:layout_margin="8dp"
         android:numStars="5"
         android:rating="0"
         android:stepSize="1"/>
