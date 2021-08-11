@@ -37,7 +37,7 @@ class AddActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
     private val str = Firebase.storage
-    private val strRef = str.reference
+    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
@@ -98,8 +98,7 @@ class AddActivity : AppCompatActivity() {
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
             if(piece.getImgUsed()){
-                val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                    .child(piece.getImage().toString())
+                val realRef = strRef.child(piece.getImage().toString())
                 GlideApp.with(this)
                     .load(realRef).into(binding.ivImage)
             }
@@ -143,27 +142,29 @@ class AddActivity : AppCompatActivity() {
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             } else {
-                val id:String = if(isEdit) intent.getStringExtra("dbID").toString()
+                val id:String = if(isEdit) piece.getDBID().toString()
                     else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
+                var image: String? = null
 
                 if(imgUsed) {
-                    val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                        .child(imgUri!!.lastPathSegment.toString())
-                    //val path = FirebaseAuth.getInstance().currentUser!!.email.toString() + "/" + imgUri!!.lastPathSegment.toString()
-                    val stream = FileInputStream(File(getPath(imgUri)))
+                    image = if(isEdit){
+                        if(imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString())) {
+                            strRef.child(piece.getImage().toString()).delete()
+                            imgUri!!.lastPathSegment.toString()
+                        } else
+                            piece.getImage().toString()
+                    } else {
+                        imgUri!!.lastPathSegment.toString()
+                    }
 
-                    val uploadTask = realRef.putStream(stream)
-
-                    uploadTask.addOnFailureListener {
-                        // Handle unsuccessful uploads
-                    }.addOnSuccessListener {
-                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                        // ...
+                    if(!isEdit || (imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString()))) {
+                        val stream = FileInputStream(File(getPath(imgUri)))
+                        strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
                     }
                 }
 
                 val newRes = mapOf(
-                    "image" to imgUri!!.lastPathSegment.toString(),
+                    "image" to image,
                     "name" to binding.etName.text.toString(),
                     "genreNum" to binding.spGenre.selectedItemPosition,
                     "genre" to binding.spGenre.selectedItem.toString(),
@@ -172,7 +173,6 @@ class AddActivity : AppCompatActivity() {
                     "memo" to binding.etMemo.text.toString(),
                     "rate" to binding.rbRatingBar.rating, "dbID" to id
                 )
-
                 docRef.collection("restaurants").document(id).set(newRes)
                 Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
 
@@ -182,7 +182,7 @@ class AddActivity : AppCompatActivity() {
     }
 
     //제대로 된 uri 가져오기
-    fun getPath(uri: Uri?): String {
+    private fun getPath(uri: Uri?): String {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         val cursorLoader = CursorLoader(this, uri!!, proj, null, null, null)
         val cursor: Cursor? = cursorLoader.loadInBackground()

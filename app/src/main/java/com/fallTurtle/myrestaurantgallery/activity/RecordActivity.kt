@@ -24,7 +24,7 @@ class RecordActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
     private val str = Firebase.storage
-    private val strRef = str.reference
+    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +49,8 @@ class RecordActivity : AppCompatActivity() {
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
 
         if(piece.getImgUsed()) {
-            val realRef = strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                .child(piece.getImage().toString())
             GlideApp.with(this)
-                .load(realRef).into(binding.ivImage)
+                .load(strRef.child(piece.getImage().toString())).into(binding.ivImage)
         }
         else{
             when(piece.getGenreNum()!!){
@@ -89,8 +87,7 @@ class RecordActivity : AppCompatActivity() {
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
                     if(piece.getImgUsed()){
-                        strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                            .child(piece.getImage().toString()).delete()
+                        strRef.child(piece.getImage().toString()).delete()
                     }
                     docRef.collection("restaurants").document(piece.getDBID().toString()).delete()
                     Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
