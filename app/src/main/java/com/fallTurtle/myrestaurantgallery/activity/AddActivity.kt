@@ -13,7 +13,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.loader.content.CursorLoader
-import com.fallTurtle.myrestaurantgallery.GlideApp
+import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -179,11 +180,10 @@ class AddActivity : AppCompatActivity() {
                     "rate" to binding.rbRatingBar.rating, "dbID" to id
                 )
                 docRef.collection("restaurants").document(id).set(newRes)
-                Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-
+                //Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
                 val progress = Intent(this, ProgressActivity::class.java)
                 startActivity(progress)
-                finish()
+
             }
         }
     }

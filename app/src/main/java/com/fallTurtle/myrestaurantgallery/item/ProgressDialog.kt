@@ -13,6 +13,7 @@ class ProgressDialog(context: Context) {
     private val dialog = Dialog(context)
 
     fun create() {
+        dialog.setCancelable(false)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         mBinding = ProgressDialogBinding.inflate(dialog.layoutInflater)
         dialog.setContentView(binding.root)

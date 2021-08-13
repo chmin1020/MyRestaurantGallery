@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery
+package com.fallTurtle.myrestaurantgallery.etc
 
 import android.content.Context
 import com.bumptech.glide.Glide
