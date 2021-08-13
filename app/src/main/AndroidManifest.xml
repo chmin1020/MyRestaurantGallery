@@ -23,5 +23,6 @@
         <activity android:name="com.fallTurtle.myrestaurantgallery.activity.RecordActivity"/>
         <activity android:name="com.fallTurtle.myrestaurantgallery.activity.MainActivity"
             android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name="com.fallTurtle.myrestaurantgallery.activity.ProgressActivity"/>
     </application>
 </manifest>
