@@ -10,13 +10,16 @@
     <ProgressBar
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:indeterminateDrawable="@drawable/progress_image" />
+        android:indeterminateDrawable="@drawable/progress_image"
+        android:clickable="false"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="Loading..."
+        android:text="@string/loading"
         android:textStyle="bold"
-        android:textColor="@android:color/white"
-        android:textSize="16dp" />
+        android:textColor="@color/regularText"
+        android:textAlignment="center"
+        android:textSize="16sp" />
 </LinearLayout>
