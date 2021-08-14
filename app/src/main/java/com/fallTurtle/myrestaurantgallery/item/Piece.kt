@@ -1,7 +1,5 @@
 package com.fallTurtle.myrestaurantgallery.item
 
-import android.graphics.Bitmap
-
 class Piece{
     private var dbID:String? = null
     private var imgUsed:Boolean = false
