@@ -94,6 +94,8 @@
         android:maxLines="1"
         android:text="@string/example_name"
         android:textColor="@color/regularText"
+        android:textAlignment="center"
+        android:textSize="20sp"
         android:padding ="10dp"/>
 
     <TextView
@@ -105,6 +107,8 @@
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
         android:padding ="10dp"/>
 
     <TextView
@@ -118,6 +122,8 @@
         android:layout_marginRight="10dp"
         android:text="@string/example_location"
         android:textColor="@color/regularText"
+        android:textAlignment="center"
+        android:textSize="20sp"
         android:maxLines="1"
         android:padding ="10dp"/>
 
@@ -132,6 +138,8 @@
         android:layout_weight="5"
         android:background="@drawable/edit_text_border"
         android:gravity="start"
+        android:textSize="18sp"
+        android:textColor="@color/regularText"
         android:padding ="5dp"/>
 
 </LinearLayout>
