@@ -5,9 +5,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityProgressBinding
 import com.fallTurtle.myrestaurantgallery.item.ProgressDialog
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.squareup.okhttp.Dispatcher
+import kotlinx.coroutines.*
 
 class ProgressActivity: AppCompatActivity() {
     var mBinding : ActivityProgressBinding? = null
@@ -25,9 +24,9 @@ class ProgressActivity: AppCompatActivity() {
         val pd = ProgressDialog(this)
         pd.create()
 
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             delay(3000)
-            //toastMake("저장되었습니다.")
+            toastMake("저장되었습니다.")
             finish()
         }
     }
