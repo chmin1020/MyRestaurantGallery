@@ -5,9 +5,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -21,10 +19,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.util.ArrayList
 
-class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
+class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filterable {
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
-    private var UfList: ArrayList<Piece>? = ArrayList()
-    private var FList: ArrayList<Piece>? = ArrayList()
+    private var UfList: List<Piece>? = ArrayList()
+    private var FList: List<Piece>? = ArrayList()
 
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
@@ -103,7 +101,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         else return FList!!.size
     }
 
-    fun update(item : ArrayList<Piece>?){
+    fun update(item : List<Piece>?){
         this.FList = item
         this.UfList = item
         notifyDataSetChanged()
@@ -114,5 +112,42 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         var tvName:TextView = itemView.findViewById(R.id.tv_name)
         var tvGenre:TextView = itemView.findViewById(R.id.tv_genre)
         var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                FList =
+                    if (constraint == null || constraint.isEmpty())  //검색 창에 입력된 내용이 없을 시 전체 리스트 출력
+                        UfList
+                    else{
+                        val filteringList: MutableList<Piece> = ArrayList<Piece>()
+                        val chk = constraint.toString().trim { it <= ' ' }
+                        for (i in UfList?.indices!!) {  //필터되지 않은 전체 리스트에서 조건에 맞는 것만 filteringList에 추가
+                            if (UfList?.get(i)?.getName()?.contains(chk)!!) {
+                                UfList!![i].let { filteringList.add(it) }
+                            }
+                            else if(UfList?.get(i)?.getLocation()?.contains(chk)!!){
+                                UfList!![i].let { filteringList.add(it) }
+                            }
+                            else if(UfList?.get(i)?.getGenre()?.contains(chk)!!) {
+                                UfList!![i].let { filteringList.add(it) }
+                            }
+                            else if(UfList?.get(i)?.getMemo()?.contains(chk)!!){
+                                UfList!![i].let { filteringList.add(it) }
+                            }
+                        }
+                        filteringList
+                    }
+                val filterResults = FilterResults()
+                filterResults.values = FList
+                return filterResults
+            }
+            //완성된 filterResults를 출력
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                FList = results.values as ArrayList<Piece>
+                notifyDataSetChanged()
+            }
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
@@ -101,6 +103,15 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        //검색 기능 textWatcher를 통해 구현
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                listAdapter.filter.filter(binding.etSearch.text)
+            }
+        })
     }
 
     override fun onResume(){
@@ -109,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //database를 갱신하는 메소드
-    fun updateDB() {
+    private fun updateDB() {
         if (mAuth.currentUser != null) docRef =
             db.collection("users").document(mAuth.currentUser!!.email.toString())
         listAdapter.update(list)
