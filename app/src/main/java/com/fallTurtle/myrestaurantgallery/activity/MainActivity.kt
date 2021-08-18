@@ -112,6 +112,11 @@ class MainActivity : AppCompatActivity() {
                 listAdapter.filter.filter(binding.etSearch.text)
             }
         })
+
+        //검색 설정 초기화 버튼
+        binding.ivReset.setOnClickListener {
+            binding.etSearch.text.clear()
+        }
     }
 
     override fun onResume(){
