@@ -77,9 +77,17 @@
             android:id="@+id/iv_sort"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:layout_margin="8dp"
             android:src="@drawable/sort" />
+
+        <ImageView
+            android:id="@+id/iv_reset"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:layout_margin="8dp"
+            android:src="@drawable/reset"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
