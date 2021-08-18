@@ -52,6 +52,26 @@ class AddActivity : AppCompatActivity() {
         }
     }
 
+    //수정 취소 시 실행될 함수
+    private fun backToRecord(isEdit: Boolean){
+        if(isEdit) {
+            val back = Intent(this, RecordActivity::class.java)
+            back.putExtra("dbID",piece.getDBID())
+            back.putExtra("name",piece.getName())
+            back.putExtra("genreNum",piece.getGenreNum())
+            back.putExtra("genre",piece.getGenre())
+            back.putExtra("location",piece.getLocation())
+            back.putExtra("image",piece.getImage())
+            back.putExtra("imgUsed",piece.getImgUsed())
+            back.putExtra("memo",piece.getMemo())
+            back.putExtra("rate",piece.getRate())
+            startActivity(back)
+        }
+
+        finish()
+    }
+
+    //spinner 이미지 고르기
     private fun selectImg(position : Int){
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
@@ -62,6 +82,16 @@ class AddActivity : AppCompatActivity() {
             5 -> binding.ivImage.setImageResource(R.drawable.drink)
             6 -> binding.ivImage.setImageResource(R.drawable.etc)
         }
+    }
+
+    //제대로 된 uri 가져오기
+    private fun getPath(uri: Uri?): String {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursorLoader = CursorLoader(this, uri!!, proj, null, null, null)
+        val cursor: Cursor? = cursorLoader.loadInBackground()
+        val index: Int = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor.moveToFirst()
+        return cursor.getString(index)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,21 +139,8 @@ class AddActivity : AppCompatActivity() {
         }
 
         binding.ivClear.setOnClickListener{
-            if(isEdit) {
-                val back = Intent(this, RecordActivity::class.java)
-                back.putExtra("dbID",piece.getDBID())
-                back.putExtra("name",piece.getName())
-                back.putExtra("genreNum",piece.getGenreNum())
-                back.putExtra("genre",piece.getGenre())
-                back.putExtra("location",piece.getLocation())
-                back.putExtra("image",piece.getImage())
-                back.putExtra("imgUsed",piece.getImgUsed())
-                back.putExtra("memo",piece.getMemo())
-                back.putExtra("rate",piece.getRate())
-                startActivity(back)
-            }
-
-            finish() }
+            backToRecord(isEdit)
+        }
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
             imgDlg.setOnGalleryClickListener {
@@ -141,13 +158,17 @@ class AddActivity : AppCompatActivity() {
             imgDlg.create()
         }
         binding.tvSave.setOnClickListener {
+            //이름과 장소는 필수!
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
-            } else {
+            }
+            //저장 과정
+            else {
                 val id:String = if(isEdit) piece.getDBID().toString()
                     else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
                 var image: String? = null
 
+                //이미지 설정
                 if(imgUsed) {
                     image = if(isEdit){
                         if(imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString())) {
@@ -177,24 +198,24 @@ class AddActivity : AppCompatActivity() {
                     "location" to binding.etLocation.text.toString(),
                     "imgUsed" to imgUsed,
                     "memo" to binding.etMemo.text.toString(),
-                    "rate" to binding.rbRatingBar.rating, "dbID" to id
+                    "rate" to binding.rbRatingBar.rating,
+                    "dbID" to id
                 )
                 docRef.collection("restaurants").document(id).set(newRes)
-                //Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+
+                //로딩 화면 실행
                 val progress = Intent(this, ProgressActivity::class.java)
+                progress.putExtra("isEdit", isEdit)
                 startActivity(progress)
                 finish()
             }
         }
     }
 
-    //제대로 된 uri 가져오기
-    private fun getPath(uri: Uri?): String {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursorLoader = CursorLoader(this, uri!!, proj, null, null, null)
-        val cursor: Cursor? = cursorLoader.loadInBackground()
-        val index: Int = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(index)
+    override fun onBackPressed() {
+        super.onBackPressed()
+        backToRecord(intent.getBooleanExtra("isEdit", false))
     }
+
+
 }

@@ -79,7 +79,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_margin="8dp"
-            android:src="@drawable/sort"/>
+            android:src="@drawable/sort" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
