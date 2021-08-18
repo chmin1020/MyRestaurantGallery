@@ -25,8 +25,11 @@ class ProgressActivity: AppCompatActivity() {
         pd.create()
 
         CoroutineScope(Dispatchers.Main).launch {
-            delay(3000)
-            toastMake("저장되었습니다.")
+            delay(2500)
+            if(intent.getBooleanExtra("isEdit", false))
+                toastMake("수정되었습니다.")
+            else
+                toastMake("저장되었습니다.")
             finish()
         }
     }
