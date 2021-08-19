@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     private val mAuth = FirebaseAuth.getInstance()
     private var docRef: DocumentReference? = null
     private val db = Firebase.firestore
+
+    private val str = Firebase.storage
+    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
 
     //앱 실행 전 권한을 받기 위한 다이얼로그
     private fun showPermissionDialog() {
@@ -84,6 +88,11 @@ class MainActivity : AppCompatActivity() {
                         .setMessage(R.string.withdrawal_ask)
                         .setPositiveButton(R.string.yes) {dialog, which ->
                             for(item in list){
+                                //storage 내부 이미지 삭제부터
+                                if(item.getImgUsed()){
+                                    strRef.child(item.getImage()!!).delete()
+                                }
+
                                 db.collection("users")
                                     .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
                                     .collection("restaurants")
