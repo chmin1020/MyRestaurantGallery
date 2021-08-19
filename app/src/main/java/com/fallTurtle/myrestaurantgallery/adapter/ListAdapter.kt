@@ -83,8 +83,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
                     if(FList?.get(position)?.getImgUsed() == true){
-                        strRef.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                            .child(FList?.get(position)?.getImage().toString()).delete()
+                        strRef.child(FList?.get(position)?.getImage().toString()).delete()
                     }
                     docRef.collection("restaurants").document(FList?.get(position)?.getDBID().toString()).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
