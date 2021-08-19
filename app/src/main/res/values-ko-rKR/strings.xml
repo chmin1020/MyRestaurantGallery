@@ -29,7 +29,12 @@
     <string name="gallery_message">앨범에서 사진 선택</string>
     <string name="default_message">기본 이미지로 변경</string>
     <string name="delete_message">정말 삭제하시겠습니까?</string>
+
+
     <string name="delete_complete">삭제 완료</string>
+    <string name="save_complete">저장 완료</string>
+    <string name="edit_complete">수정 완료</string>
+    <string name="error_happened">오류 발생</string>
 
     <!--기타-->
     <string name="satisfy_warning">맛집 이름과 위치 기입은 필수입니다!</string>

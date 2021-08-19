@@ -205,7 +205,9 @@ class AddActivity : AppCompatActivity() {
 
                 //로딩 화면 실행
                 val progress = Intent(this, ProgressActivity::class.java)
-                progress.putExtra("isEdit", isEdit)
+                if(isEdit) progress.putExtra("endCode", 0)
+                else progress.putExtra("endCode", 1)
+
                 startActivity(progress)
                 finish()
             }

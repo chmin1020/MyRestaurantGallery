@@ -29,7 +29,11 @@
     <string name="gallery_message">choose a picture from gallery</string>
     <string name="default_message">use default image</string>
     <string name="delete_message">Do you want to delete?</string>
+
     <string name="delete_complete">Delete complete</string>
+    <string name="save_complete">Save complete</string>
+    <string name="edit_complete">Edit complete</string>
+    <string name="error_happened">error!!</string>
 
     <!--etc-->
     <string name="satisfy_warning">Entering the restaurant name and location is mandatory!</string>

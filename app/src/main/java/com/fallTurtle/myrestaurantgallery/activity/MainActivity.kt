@@ -73,9 +73,9 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.menu_logout -> {
                     FirebaseAuth.getInstance().signOut()
-                    Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show()
-                    val login = Intent(this, LoginActivity::class.java)
-                    startActivity(login)
+                    val progress = Intent(this, ProgressActivity::class.java)
+                    progress.putExtra("endCode",2)
+                    startActivity(progress)
                     finish()
                     true
                 }
@@ -93,8 +93,10 @@ class MainActivity : AppCompatActivity() {
                                 .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
 
                             FirebaseAuth.getInstance().currentUser!!.delete()
-                            Toast.makeText(this, R.string.withdrawal_success, Toast.LENGTH_SHORT).show()
-                            finishAffinity()
+                            val progress = Intent(this, ProgressActivity::class.java)
+                            progress.putExtra("endCode",3)
+                            startActivity(progress)
+                            finish()
                         }
                         .setNegativeButton(R.string.no){dialog, which ->}
                         .show()
