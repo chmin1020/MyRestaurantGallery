@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
                                 if(item.getImgUsed()){
                                     strRef.child(item.getImage()!!).delete()
                                 }
-
                                 db.collection("users")
                                     .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
                                     .collection("restaurants")
@@ -101,7 +100,14 @@ class MainActivity : AppCompatActivity() {
                             db.collection("users")
                                 .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
 
-                            FirebaseAuth.getInstance().currentUser!!.delete()
+                            FirebaseAuth.getInstance().currentUser!!.delete().addOnCompleteListener{ task->
+                                if(task.isSuccessful){
+                                    FirebaseAuth.getInstance().signOut()
+                                }
+                                else{
+                                    Toast.makeText(this,"error",Toast.LENGTH_SHORT).show()
+                                }
+                            }
                             val progress = Intent(this, ProgressActivity::class.java)
                             progress.putExtra("endCode",3)
                             startActivity(progress)
