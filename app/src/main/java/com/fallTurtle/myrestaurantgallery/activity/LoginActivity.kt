@@ -18,8 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity: AppCompatActivity() {
     //binding
-    private var mBinding: ActivityLoginBinding? = null
-    private val binding get()= mBinding!!
+    private lateinit var binding: ActivityLoginBinding
 
     //google Login
     private var mAuth : FirebaseAuth? = null
@@ -28,7 +27,7 @@ class LoginActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         Log.d("currentUser", FirebaseAuth.getInstance().currentUser.toString())

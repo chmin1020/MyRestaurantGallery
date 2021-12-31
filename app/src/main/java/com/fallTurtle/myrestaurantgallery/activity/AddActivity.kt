@@ -31,8 +31,7 @@ import java.util.*
 
 
 class AddActivity : AppCompatActivity() {
-    private var mBinding: ActivityAddBinding? = null
-    private val binding get()= mBinding!!
+    private lateinit var binding:ActivityAddBinding
     private val piece = Piece() //for edit
 
     //fireStore
@@ -67,7 +66,6 @@ class AddActivity : AppCompatActivity() {
             back.putExtra("rate",piece.getRate())
             startActivity(back)
         }
-
         finish()
     }
 
@@ -96,7 +94,7 @@ class AddActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityAddBinding.inflate(layoutInflater)
+        binding = ActivityAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val isEdit = intent.getBooleanExtra("isEdit", false)

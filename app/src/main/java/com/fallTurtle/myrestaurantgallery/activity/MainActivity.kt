@@ -26,8 +26,7 @@ import com.gun0912.tedpermission.TedPermission
 
 class MainActivity : AppCompatActivity() {
     //binding
-    private var mBinding:ActivityMainBinding? = null
-    private val binding get()= mBinding!!
+    private lateinit var binding:ActivityMainBinding
 
     //recyclerview & Firebase
     private val listAdapter = ListAdapter()
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         //recyclerView setting
