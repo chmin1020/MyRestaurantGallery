@@ -81,7 +81,9 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:maxLines="1"
-        android:hint="@string/example_name"/>
+        android:hint="@string/example_name"
+        android:autofillHints="@string/example_name"
+        android:inputType="text" />
 
     <Spinner
         android:id="@+id/sp_genre"
@@ -105,7 +107,9 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:maxLines="1"
-        android:hint="@string/example_location"/>
+        android:hint="@string/example_location"
+        android:autofillHints="@string/example_location"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/et_memo"
@@ -119,6 +123,8 @@
         android:background="@drawable/edit_text_border"
         android:gravity="start"
         android:hint="@string/example_memo"
-        android:padding ="5dp"/>
+        android:padding ="5dp"
+        android:autofillHints="@string/example_memo"
+        android:inputType="text" />
 
 </LinearLayout>

@@ -38,5 +38,6 @@
 
     <!--기타-->
     <string name="satisfy_warning">맛집 이름과 위치 기입은 필수입니다!</string>
+    <string name="add_new_item">새로운 아이템 추가</string>
 
 </resources>
