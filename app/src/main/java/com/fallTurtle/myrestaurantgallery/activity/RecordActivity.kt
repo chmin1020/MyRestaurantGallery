@@ -16,8 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
 class RecordActivity : AppCompatActivity() {
-    private var mBinding : ActivityRecordBinding? = null
-    private val binding get() = mBinding!!
+    private lateinit var binding : ActivityRecordBinding
 
     private var piece = Piece()
 
@@ -28,7 +27,7 @@ class RecordActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityRecordBinding.inflate(layoutInflater)
+        binding = ActivityRecordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         //adapter 데이터 받기

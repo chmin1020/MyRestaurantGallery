@@ -10,8 +10,7 @@ import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.*
 
 class ProgressActivity: AppCompatActivity() {
-    var mBinding : ActivityProgressBinding? = null
-    val binding get() = mBinding!!
+    private lateinit var binding : ActivityProgressBinding
 
     private fun toastMake(message: Int){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
@@ -19,7 +18,7 @@ class ProgressActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityProgressBinding.inflate(layoutInflater)
+        binding = ActivityProgressBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val pd = ProgressDialog(this)
