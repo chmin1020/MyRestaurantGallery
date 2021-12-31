@@ -66,11 +66,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = listAdapter
         updateDB()
 
-        //add new things
-        binding.ivAddPic.setOnClickListener{
-            showPermissionDialog()
-        }
-
+        //setSupportActionBar(binding.toolbar)
         //logout and withdrawal with toolbar_menu
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
@@ -115,6 +111,11 @@ class MainActivity : AppCompatActivity() {
                         .setNegativeButton(R.string.no){dialog, which ->}
                         .show()
                    true
+                }
+                R.id.add_item ->{
+                    //add new things
+                    showPermissionDialog()
+                    true
                 }
                 else -> false
             }
