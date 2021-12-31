@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -66,8 +67,10 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = listAdapter
         updateDB()
 
-        //setSupportActionBar(binding.toolbar)
+
         //logout and withdrawal with toolbar_menu
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.menu_logout -> {
@@ -139,6 +142,12 @@ class MainActivity : AppCompatActivity() {
     override fun onResume(){
         super.onResume()
         updateDB()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        //val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.account_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     //database를 갱신하는 메소드

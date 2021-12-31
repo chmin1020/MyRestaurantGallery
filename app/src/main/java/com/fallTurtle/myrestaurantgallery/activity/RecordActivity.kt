@@ -3,6 +3,8 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +32,46 @@ class RecordActivity : AppCompatActivity() {
         binding = ActivityRecordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.delete_item -> {
+                    AlertDialog.Builder(this)
+                        .setMessage(R.string.delete_message)
+                        .setPositiveButton(R.string.yes) {dialog, which ->
+                            if(piece.getImgUsed()){
+                                strRef.child(piece.getImage().toString()).delete()
+                            }
+                            docRef.collection("restaurants").document(piece.getDBID().toString()).delete()
+                            Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                        .setNegativeButton(R.string.no) {dialog, which -> }
+                        .show()
+                    true
+                }
+                R.id.edit_item -> {
+                    val edit = Intent(this, AddActivity::class.java)
+                    edit.putExtra("isEdit", true)
+                    edit.putExtra("dbID",piece.getDBID())
+                    edit.putExtra("name",piece.getName())
+                    edit.putExtra("genreNum",piece.getGenreNum())
+                    edit.putExtra("genre",piece.getGenre())
+                    edit.putExtra("location",piece.getLocation())
+                    edit.putExtra("image",piece.getImage())
+                    edit.putExtra("imgUsed",piece.getImgUsed())
+                    edit.putExtra("memo",piece.getMemo())
+                    edit.putExtra("rate",piece.getRate())
+                    finish()
+                    startActivity(edit)
+                    true
+                }
+                else -> false
+            }
+        }
+
         //adapter 데이터 받기
         piece.setDBID(intent.getStringExtra("dbID").toString())
         piece.setName(intent.getStringExtra("name"))
@@ -51,8 +93,8 @@ class RecordActivity : AppCompatActivity() {
             GlideApp.with(this)
                 .load(strRef.child(piece.getImage().toString())).into(binding.ivImage)
         }
-        else{
-            when(piece.getGenreNum()!!){
+        else {
+            when (piece.getGenreNum()!!) {
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
                 2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
@@ -62,42 +104,19 @@ class RecordActivity : AppCompatActivity() {
                 6 -> binding.ivImage.setImageResource(R.drawable.etc)
             }
         }
+    }
 
-        //edit 데이터 보내기
-        binding.tvEdit.setOnClickListener{
-            val edit = Intent(this, AddActivity::class.java)
-            edit.putExtra("isEdit", true)
-            edit.putExtra("dbID",piece.getDBID())
-            edit.putExtra("name",piece.getName())
-            edit.putExtra("genreNum",piece.getGenreNum())
-            edit.putExtra("genre",piece.getGenre())
-            edit.putExtra("location",piece.getLocation())
-            edit.putExtra("image",piece.getImage())
-            edit.putExtra("imgUsed",piece.getImgUsed())
-            edit.putExtra("memo",piece.getMemo())
-            edit.putExtra("rate",piece.getRate())
-            finish()
-            startActivity(edit)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            android.R.id.home -> finish()
         }
+        return super.onOptionsItemSelected(item)
+    }
 
-        //아이템 삭제하기
-        binding.tvDelete.setOnClickListener{
-            AlertDialog.Builder(this)
-                .setMessage(R.string.delete_message)
-                .setPositiveButton(R.string.yes) {dialog, which ->
-                    if(piece.getImgUsed()){
-                        strRef.child(piece.getImage().toString()).delete()
-                    }
-                    docRef.collection("restaurants").document(piece.getDBID().toString()).delete()
-                    Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                .setNegativeButton(R.string.no) {dialog, which -> }
-                .show()
-        }
-
-        //액티비티 탈출
-        binding.ivClear.setOnClickListener{ finish() }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        //val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.record_activity_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
 }
