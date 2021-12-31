@@ -107,9 +107,8 @@ class AddActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.save_item -> {
                     //이름과 장소는 필수!
-                    if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty()) {
+                    if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
                         Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
-                    }
                     //저장 과정
                     else {
                         val id:String = if(isEdit) piece.getDBID().toString()
@@ -159,14 +158,11 @@ class AddActivity : AppCompatActivity() {
                         startActivity(progress)
                         finish()
                     }
-
                     true
                 }
                 else -> false
             }
         }
-
-
 
         //spinner
         binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
