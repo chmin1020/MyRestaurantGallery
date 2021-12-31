@@ -35,42 +35,6 @@ class RecordActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.delete_item -> {
-                    AlertDialog.Builder(this)
-                        .setMessage(R.string.delete_message)
-                        .setPositiveButton(R.string.yes) {dialog, which ->
-                            if(piece.getImgUsed()){
-                                strRef.child(piece.getImage().toString()).delete()
-                            }
-                            docRef.collection("restaurants").document(piece.getDBID().toString()).delete()
-                            Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
-                            finish()
-                        }
-                        .setNegativeButton(R.string.no) {dialog, which -> }
-                        .show()
-                    true
-                }
-                R.id.edit_item -> {
-                    val edit = Intent(this, AddActivity::class.java)
-                    edit.putExtra("isEdit", true)
-                    edit.putExtra("dbID",piece.getDBID())
-                    edit.putExtra("name",piece.getName())
-                    edit.putExtra("genreNum",piece.getGenreNum())
-                    edit.putExtra("genre",piece.getGenre())
-                    edit.putExtra("location",piece.getLocation())
-                    edit.putExtra("image",piece.getImage())
-                    edit.putExtra("imgUsed",piece.getImgUsed())
-                    edit.putExtra("memo",piece.getMemo())
-                    edit.putExtra("rate",piece.getRate())
-                    finish()
-                    startActivity(edit)
-                    true
-                }
-                else -> false
-            }
-        }
 
         //adapter 데이터 받기
         piece.setDBID(intent.getStringExtra("dbID").toString())
@@ -109,6 +73,35 @@ class RecordActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             android.R.id.home -> finish()
+            R.id.delete_item -> {
+                AlertDialog.Builder(this)
+                    .setMessage(R.string.delete_message)
+                    .setPositiveButton(R.string.yes) {dialog, which ->
+                        if(piece.getImgUsed()){
+                            strRef.child(piece.getImage().toString()).delete()
+                        }
+                        docRef.collection("restaurants").document(piece.getDBID().toString()).delete()
+                        Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .setNegativeButton(R.string.no) {dialog, which -> }
+                    .show()
+             }
+            R.id.edit_item -> {
+                val edit = Intent(this, AddActivity::class.java)
+                edit.putExtra("isEdit", true)
+                edit.putExtra("dbID",piece.getDBID())
+                edit.putExtra("name",piece.getName())
+                edit.putExtra("genreNum",piece.getGenreNum())
+                edit.putExtra("genre",piece.getGenre())
+                edit.putExtra("location",piece.getLocation())
+                edit.putExtra("image",piece.getImage())
+                edit.putExtra("imgUsed",piece.getImgUsed())
+                edit.putExtra("memo",piece.getMemo())
+                edit.putExtra("rate",piece.getRate())
+                finish()
+                startActivity(edit)
+             }
         }
         return super.onOptionsItemSelected(item)
     }

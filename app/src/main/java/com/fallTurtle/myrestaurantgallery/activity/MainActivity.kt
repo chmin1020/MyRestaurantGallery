@@ -67,62 +67,9 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = listAdapter
         updateDB()
 
-
         //logout and withdrawal with toolbar_menu
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.menu_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    val progress = Intent(this, ProgressActivity::class.java)
-                    progress.putExtra("endCode",2)
-                    startActivity(progress)
-                    finish()
-                    true
-                }
-                R.id.menu_withdrawal -> {
-                    AlertDialog.Builder(this)
-                        .setMessage(R.string.withdrawal_ask)
-                        .setPositiveButton(R.string.yes) {dialog, which ->
-                            for(item in list){
-                                //storage 내부 이미지 삭제부터
-                                if(item.getImgUsed()){
-                                    strRef.child(item.getImage()!!).delete()
-                                }
-                                db.collection("users")
-                                    .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
-                                    .collection("restaurants")
-                                    .document(item.getDBID()!!).delete()
-                            }
-                            db.collection("users")
-                                .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
-
-                            FirebaseAuth.getInstance().currentUser!!.delete().addOnCompleteListener{ task->
-                                if(task.isSuccessful){
-                                    FirebaseAuth.getInstance().signOut()
-                                }
-                                else{
-                                    Toast.makeText(this,"error",Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            val progress = Intent(this, ProgressActivity::class.java)
-                            progress.putExtra("endCode",3)
-                            startActivity(progress)
-                            finish()
-                        }
-                        .setNegativeButton(R.string.no){dialog, which ->}
-                        .show()
-                   true
-                }
-                R.id.add_item ->{
-                    //add new things
-                    showPermissionDialog()
-                    true
-                }
-                else -> false
-            }
-        }
 
         //검색 기능 textWatcher를 통해 구현
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -142,6 +89,56 @@ class MainActivity : AppCompatActivity() {
     override fun onResume(){
         super.onResume()
         updateDB()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                val progress = Intent(this, ProgressActivity::class.java)
+                progress.putExtra("endCode",2)
+                startActivity(progress)
+                finish()
+            }
+            R.id.menu_withdrawal -> {
+                AlertDialog.Builder(this)
+                    .setMessage(R.string.withdrawal_ask)
+                    .setPositiveButton(R.string.yes) {dialog, which ->
+                        for(item in list){
+                            //storage 내부 이미지 삭제부터
+                            if(item.getImgUsed()){
+                                strRef.child(item.getImage()!!).delete()
+                            }
+                            db.collection("users")
+                                .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                                .collection("restaurants")
+                                .document(item.getDBID()!!).delete()
+                        }
+                        db.collection("users")
+                            .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
+
+                        FirebaseAuth.getInstance().currentUser!!.delete().addOnCompleteListener{ task->
+                            if(task.isSuccessful){
+                                FirebaseAuth.getInstance().signOut()
+                            }
+                            else{
+                                Toast.makeText(this,"error",Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        val progress = Intent(this, ProgressActivity::class.java)
+                        progress.putExtra("endCode",3)
+                        startActivity(progress)
+                        finish()
+                    }
+                    .setNegativeButton(R.string.no){dialog, which ->}
+                    .show()
+            }
+            R.id.add_item ->{
+                //add new things
+                showPermissionDialog()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
