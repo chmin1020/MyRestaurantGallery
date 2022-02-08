@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -25,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.google.type.Date
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -65,6 +67,7 @@ class AddActivity : AppCompatActivity() {
             back.putExtra("imgUsed",piece.getImgUsed())
             back.putExtra("memo",piece.getMemo())
             back.putExtra("rate",piece.getRate())
+            back.putExtra("date",piece.getDate())
             startActivity(back)
         }
         finish()
@@ -140,6 +143,7 @@ class AddActivity : AppCompatActivity() {
 
                         val newRes = mapOf(
                             "image" to image,
+                            "date" to binding.tvDate.text.toString(),
                             "name" to binding.etName.text.toString(),
                             "genreNum" to binding.spGenre.selectedItemPosition,
                             "genre" to binding.spGenre.selectedItem.toString(),
@@ -165,6 +169,17 @@ class AddActivity : AppCompatActivity() {
             }
         }
 
+        //datePicker
+        binding.ivDate.setOnClickListener {
+            var dText = ""
+            val cal = Calendar.getInstance()
+            val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+                dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+                binding.tvDate.text = dText
+            }
+            DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
         //spinner
         binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
         binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -186,12 +201,14 @@ class AddActivity : AppCompatActivity() {
             imgUsed = piece.getImgUsed()
             piece.setLocation(intent.getStringExtra("location"))
             piece.setMemo(intent.getStringExtra("memo"))
+            piece.setDate(intent.getStringExtra("date"))
 
             binding.etName.setText(piece.getName())
             binding.spGenre.setSelection(piece.getGenreNum()!!)
             binding.etLocation.setText(piece.getLocation())
             binding.etMemo.setText(piece.getMemo())
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
+            binding.tvDate.setText(piece.getDate())
 
             if(piece.getImgUsed()){
                 val realRef = strRef.child(piece.getImage().toString())
@@ -200,6 +217,12 @@ class AddActivity : AppCompatActivity() {
             }
             else selectImg(piece.getGenreNum()!!)
 
+        }
+        else{
+            //date picker default
+            val sdf = SimpleDateFormat ( "yyyy년 M월 d일")
+            val today = sdf.format(Date(Calendar.getInstance().timeInMillis))
+            binding.tvDate.text = today
         }
 
         binding.ivImage.setOnClickListener{

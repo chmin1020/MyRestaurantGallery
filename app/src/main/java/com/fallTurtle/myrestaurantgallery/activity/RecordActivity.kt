@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
+
 class RecordActivity : AppCompatActivity() {
     private lateinit var binding : ActivityRecordBinding
 
@@ -46,12 +47,14 @@ class RecordActivity : AppCompatActivity() {
         piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
         piece.setLocation(intent.getStringExtra("location"))
         piece.setMemo(intent.getStringExtra("memo"))
+        piece.setDate(intent.getStringExtra("date"))
 
         binding.tvName.text = piece.getName()
         binding.tvGenre.text = piece.getGenre()
         binding.tvLocation.text = piece.getLocation()
         binding.tvMemo.text = piece.getMemo()
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
+        binding.tvDate.text = piece.getDate()
 
         if(piece.getImgUsed()) {
             GlideApp.with(this)
@@ -99,6 +102,7 @@ class RecordActivity : AppCompatActivity() {
                 edit.putExtra("imgUsed",piece.getImgUsed())
                 edit.putExtra("memo",piece.getMemo())
                 edit.putExtra("rate",piece.getRate())
+                edit.putExtra("date",piece.getDate())
                 finish()
                 startActivity(edit)
              }
