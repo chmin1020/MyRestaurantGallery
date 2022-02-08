@@ -75,6 +75,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
             record.putExtra("imgUsed", FList?.get(position)?.getImgUsed())
             record.putExtra("location", FList?.get(position)?.getLocation())
             record.putExtra("memo", FList?.get(position)?.getMemo())
+            record.putExtra("date", FList?.get(position)?.getDate())
             v.context.startActivity(record)
         }
         //길게 누를 시 삭제 질의

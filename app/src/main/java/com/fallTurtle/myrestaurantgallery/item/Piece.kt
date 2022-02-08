@@ -10,6 +10,7 @@ class Piece{
     private var genre:String? = null
     private var rate:Int? = null
     private var memo:String? = null
+    private var date:String? = null
 
     fun setDBID(id: String){
         dbID = id
@@ -81,5 +82,13 @@ class Piece{
 
     fun getMemo() :String?{
         return memo
+    }
+
+    fun setDate(dt : String?){
+        date = dt
+    }
+
+    fun getDate() :String?{
+        return date
     }
 }
