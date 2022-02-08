@@ -13,12 +13,26 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:menu = "@menu/record_activity_menu"/>
+        app:menu="@menu/record_activity_menu"/>
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:text="@string/example_date"
+        android:textSize="22sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:background="@drawable/date_sign"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="4.5"
         android:layout_margin="20dp"
         android:background="@drawable/grid_border">
 
@@ -96,7 +110,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="5dp"
-        android:layout_weight="5"
+        android:layout_weight="4.5"
         android:background="@drawable/edit_text_border"
         android:gravity="start"
         android:textSize="18sp"

@@ -23,6 +23,7 @@
     <string name="example_genre">구분</string>
     <string name="example_location">위치</string>
     <string name="example_memo">메모할 내용이 있다면 작성하세요 :)</string>
+    <string name="example_date">날짜 지정 안됨</string>
 
     <!--다이얼로그들-->
     <string name="title_message">사진 설정</string>
