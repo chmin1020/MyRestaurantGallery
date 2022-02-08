@@ -5,7 +5,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
@@ -26,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.google.type.Date
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -177,7 +175,8 @@ class AddActivity : AppCompatActivity() {
                 dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.tvDate.text = dText
             }
-            DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+            val dpDialog = DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dpDialog.datePicker
         }
 
         //spinner
