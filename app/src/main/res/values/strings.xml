@@ -23,6 +23,7 @@
     <string name="example_genre">genre</string>
     <string name="example_location">location</string>
     <string name="example_memo">Write the memo if you want :)</string>
+    <string name="example_date">Date non-selected</string>
 
     <!--dialogs-->
     <string name="title_message">image setting</string>
