@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:menu = "@menu/add_activity_menu" />
+        app:menu = "@menu/add_activity_menu"
+        app:titleTextAppearance="@style/toolbarText"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
@@ -238,6 +239,4 @@ class AddActivity : AppCompatActivity() {
         super.onBackPressed()
         backToRecord(intent.getBooleanExtra("isEdit", false))
     }
-
-
 }
