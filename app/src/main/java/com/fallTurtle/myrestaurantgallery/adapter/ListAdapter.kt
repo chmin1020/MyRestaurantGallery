@@ -1,11 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.content.Intent
+import android.os.Build
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -34,6 +36,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
         return CustomViewHolder(v)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         //그리드 뷰 크기 조정
         val displayMetrics = DisplayMetrics()
