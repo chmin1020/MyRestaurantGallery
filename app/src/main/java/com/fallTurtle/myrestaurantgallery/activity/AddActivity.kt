@@ -168,7 +168,7 @@ class AddActivity : AppCompatActivity() {
         }
 
         //datePicker
-        binding.ivDate.setOnClickListener {
+        binding.llDate.setOnClickListener {
             var dText = ""
             val cal = Calendar.getInstance()
             val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -176,7 +176,7 @@ class AddActivity : AppCompatActivity() {
                 binding.tvDate.text = dText
             }
             val dpDialog = DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
-            dpDialog.datePicker
+            dpDialog.show()
         }
 
         //spinner
