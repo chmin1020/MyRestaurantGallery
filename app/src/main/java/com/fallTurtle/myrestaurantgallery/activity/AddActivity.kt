@@ -3,6 +3,8 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.database.Cursor
+import android.location.Criteria
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -100,6 +102,16 @@ class AddActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
+        val manager = getSystemService(LOCATION_SERVICE) as LocationManager
+
+        val criteria = Criteria()
+        criteria.accuracy = Criteria.ACCURACY_FINE
+        criteria.isAltitudeRequired = false
+        criteria.isBearingRequired = false
+        criteria.isSpeedRequired = false
+        criteria.isCostAllowed = true
+        criteria.powerRequirement = Criteria.POWER_LOW
+        val provider:String = manager.getBestProvider(criteria, true)
 
         //toolbar
         setSupportActionBar(binding.toolbar)
