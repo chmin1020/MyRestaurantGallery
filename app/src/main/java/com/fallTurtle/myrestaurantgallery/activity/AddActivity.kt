@@ -23,6 +23,8 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,7 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddActivity : AppCompatActivity() {
+class AddActivity : AppCompatActivity(){
     private lateinit var binding:ActivityAddBinding
     private val piece = Piece() //for edit
 
@@ -286,4 +288,6 @@ class AddActivity : AppCompatActivity() {
         super.onBackPressed()
         backToRecord(intent.getBooleanExtra("isEdit", false))
     }
+
+
 }
