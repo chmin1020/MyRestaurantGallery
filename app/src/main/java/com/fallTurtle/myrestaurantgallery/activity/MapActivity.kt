@@ -21,8 +21,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //get map object here
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        //searchbar
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onMapReady(p0: GoogleMap) {
