@@ -102,19 +102,34 @@
         android:entries="@array/genre_spinner"
         android:spinnerMode="dialog"/>
 
-    <EditText
-        android:id="@+id/et_location"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:maxLines="1"
-        android:hint="@string/example_location"
-        android:autofillHints="@string/example_location"
-        android:inputType="text" />
+        android:weightSum="5"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/et_location"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"
+            android:hint="@string/example_location"
+            android:autofillHints="@string/example_location"
+            android:inputType="text" />
+
+        <ImageView
+            android:id="@+id/iv_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="2dp"
+            android:src="@drawable/location"/>
+    </LinearLayout>
 
     <EditText
         android:id="@+id/et_memo"
