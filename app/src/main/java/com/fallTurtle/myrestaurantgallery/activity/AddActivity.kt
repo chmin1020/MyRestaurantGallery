@@ -188,8 +188,20 @@ class AddActivity : AppCompatActivity() {
                 dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.tvDate.text = dText
             }
-            val dpDialog = DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            val dpDialog = DatePickerDialog(
+                this,
+                dp,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            )
             dpDialog.show()
+        }
+
+        //map
+        binding.ivMap.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
         }
 
         //spinner
