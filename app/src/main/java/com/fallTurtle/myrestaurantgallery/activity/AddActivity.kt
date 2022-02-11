@@ -102,8 +102,9 @@ class AddActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
-        val manager = getSystemService(LOCATION_SERVICE) as LocationManager
 
+        //lbs (상황에 따라 필요없으면 삭제)
+        val manager = getSystemService(LOCATION_SERVICE) as LocationManager
         val criteria = Criteria()
         criteria.accuracy = Criteria.ACCURACY_FINE
         criteria.isAltitudeRequired = false
@@ -111,7 +112,7 @@ class AddActivity : AppCompatActivity() {
         criteria.isSpeedRequired = false
         criteria.isCostAllowed = true
         criteria.powerRequirement = Criteria.POWER_LOW
-        val provider:String = manager.getBestProvider(criteria, true)
+        val provider:String? = manager.getBestProvider(criteria, true)
 
         //toolbar
         setSupportActionBar(binding.toolbar)
