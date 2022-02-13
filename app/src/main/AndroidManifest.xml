@@ -23,7 +23,8 @@
         android:roundIcon="@mipmap/app_logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.LocationListActivity"></activity>
+        <activity android:name=".activity.LocationListActivity"
+            android:theme="@style/Transparent"/>
         <activity android:name=".activity.MapActivity" />
 
         <meta-data

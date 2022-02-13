@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.fallTurtle.myrestaurantgallery.R
@@ -26,6 +27,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         //searchbar
+        binding.ivSearch.setOnClickListener {
+            val intent = Intent(this, LocationListActivity::class.java)
+            startActivity(intent)
+        }
         binding.ivBack.setOnClickListener {
             finish()
         }
