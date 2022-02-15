@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     //binding
     private lateinit var binding:ActivityMainBinding
 
+    //time
+    private var bpTime:Long = 0
+
     //recyclerview & Firebase
     private val listAdapter = ListAdapter()
     private var list  = ArrayList<Piece>()
@@ -145,6 +148,19 @@ class MainActivity : AppCompatActivity() {
         //val menuInflater = menuInflater
         menuInflater.inflate(R.menu.account_menu, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onBackPressed() {
+        val curTime = System.currentTimeMillis()
+        val timeGap = curTime - bpTime
+
+        if(timeGap in 0..2000)
+            finish()
+        else{
+            bpTime = curTime
+            Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     //database를 갱신하는 메소드
