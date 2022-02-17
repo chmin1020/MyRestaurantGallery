@@ -45,25 +45,25 @@ class MainActivity : AppCompatActivity() {
     //앱 실행 전 권한을 받기 위한 다이얼로그
     private fun showPermissionDialog() {
         val permissionListener: PermissionListener = object : PermissionListener {
-            override fun onPermissionGranted() {
-                val addIntent = Intent(this@MainActivity, AddActivity::class.java)
-                addIntent.putExtra("isEdit", false)
-                startActivity(addIntent)
-            }
+            override fun onPermissionGranted() { }
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
                 Toast.makeText(this@MainActivity, "권한이 없으면 레시피 저장 기능 사용이 불가능합니다.", Toast.LENGTH_SHORT)
                     .show()
+                finishAffinity()
             }
         }
         TedPermission.with(this)
             .setPermissionListener(permissionListener)
-            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE).check()
+            .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE).check()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //permission
+        showPermissionDialog()
 
         //recyclerView setting
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -137,8 +137,9 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
             R.id.add_item ->{
-                //add new things
-                showPermissionDialog()
+                val addIntent = Intent(this@MainActivity, AddActivity::class.java)
+                addIntent.putExtra("isEdit", false)
+                startActivity(addIntent)
             }
         }
         return super.onOptionsItemSelected(item)
