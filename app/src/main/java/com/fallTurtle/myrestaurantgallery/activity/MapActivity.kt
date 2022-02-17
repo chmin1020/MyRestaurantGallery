@@ -1,6 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
+import android.location.Criteria
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.fallTurtle.myrestaurantgallery.R
@@ -21,6 +23,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //lbs (상황에 따라 필요없으면 삭제)
+        val manager = getSystemService(LOCATION_SERVICE) as LocationManager
+        val criteria = Criteria()
+        criteria.accuracy = Criteria.ACCURACY_FINE
+        criteria.isAltitudeRequired = false
+        criteria.isBearingRequired = false
+        criteria.isSpeedRequired = false
+        criteria.isCostAllowed = true
+        criteria.powerRequirement = Criteria.POWER_LOW
+        val provider:String? = manager.getBestProvider(criteria, true)
+
 
         //get map object here
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment

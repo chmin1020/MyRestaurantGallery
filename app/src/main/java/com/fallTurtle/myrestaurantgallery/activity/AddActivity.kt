@@ -105,17 +105,6 @@ class AddActivity : AppCompatActivity(){
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
 
-        //lbs (상황에 따라 필요없으면 삭제)
-        val manager = getSystemService(LOCATION_SERVICE) as LocationManager
-        val criteria = Criteria()
-        criteria.accuracy = Criteria.ACCURACY_FINE
-        criteria.isAltitudeRequired = false
-        criteria.isBearingRequired = false
-        criteria.isSpeedRequired = false
-        criteria.isCostAllowed = true
-        criteria.powerRequirement = Criteria.POWER_LOW
-        val provider:String? = manager.getBestProvider(criteria, true)
-
         //toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
