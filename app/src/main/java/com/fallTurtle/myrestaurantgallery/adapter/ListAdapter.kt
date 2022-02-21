@@ -41,7 +41,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
         //그리드 뷰 크기 조정
         val displayMetrics = DisplayMetrics()
         holder.itemView.context.display!!.getRealMetrics(displayMetrics)
-
         holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
         holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
         holder.itemView.requestLayout()
