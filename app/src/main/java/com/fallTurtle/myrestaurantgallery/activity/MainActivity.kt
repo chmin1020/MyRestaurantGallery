@@ -54,7 +54,9 @@ class MainActivity : AppCompatActivity() {
         }
         TedPermission.with(this)
             .setPermissionListener(permissionListener)
-            .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE).check()
+            .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE).check()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,7 +148,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        //val menuInflater = menuInflater
         menuInflater.inflate(R.menu.account_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
