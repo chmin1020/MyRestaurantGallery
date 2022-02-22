@@ -1,7 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.utility
 
 object Url {
-    const val TMAP_URL = "https://apis.openapi.sk.com"
-    const val GET_TMAP_LOCATION = "/tmap/pois"
-    const val GET_TMAP_REVERSE_GEO_CODE = "/tmap/geo/reversegeocoding"
+    const val KAKAOMAP_URL = "https://dapi.kakao.com"
+    const val GET_KAKAOMAP_LOCATION = "v2/local/search/keyword.json"
 }

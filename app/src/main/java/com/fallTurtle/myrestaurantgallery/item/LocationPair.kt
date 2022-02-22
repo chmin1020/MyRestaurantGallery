@@ -1,6 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.item
 
 data class LocationPair (
-    val latitude: Double,
-    val longitude: Double
+    val latitude: Float,
+    val longitude: Float
 )

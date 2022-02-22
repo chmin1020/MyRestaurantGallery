@@ -1,10 +1,9 @@
 package com.fallTurtle.myrestaurantgallery.item
 
-class LocationResult {
-    private var fullAddr:String? = null
-    private var name:String? = null
-    private var lp:LocationPair? = null
-
+class LocationResult(
+    private var fullAddr:String? = null,
+    private var name:String? = null,
+    private var lp:LocationPair? = null){
 
     fun setFullAddr(addr: String){
         fullAddr = addr
@@ -22,7 +21,7 @@ class LocationResult {
         return name
     }
 
-    fun setLp(x: Double, y:Double){
+    fun setLp(x: Float, y: Float){
         lp = LocationPair(x,y)
     }
 

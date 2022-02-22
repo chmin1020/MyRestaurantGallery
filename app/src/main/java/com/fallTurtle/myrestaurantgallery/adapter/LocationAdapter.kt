@@ -15,18 +15,19 @@ import com.fallTurtle.myrestaurantgallery.item.LocationResult
 
 class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     private var resultList: List<LocationResult> = listOf()
-
+    var currentPage = 1
+    var currentSearchString = ""
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): LocationAdapter.CustomViewHolder {
-        val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
-        return LocationAdapter.CustomViewHolder(v)
+    ): CustomViewHolder {
+        val v : View = LayoutInflater.from(parent.context).inflate(R.layout.map_list, parent, false)
+        return CustomViewHolder(v)
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun onBindViewHolder(holder: LocationAdapter.CustomViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         //그리드 뷰 크기 조정
         val displayMetrics = DisplayMetrics()
         holder.itemView.context.display!!.getRealMetrics(displayMetrics)

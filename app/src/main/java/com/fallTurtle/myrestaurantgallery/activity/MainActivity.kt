@@ -2,9 +2,12 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -23,6 +26,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import java.security.MessageDigest
 
 
 class MainActivity : AppCompatActivity() {
