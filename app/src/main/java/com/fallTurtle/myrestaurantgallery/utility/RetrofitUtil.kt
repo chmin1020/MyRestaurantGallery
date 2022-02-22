@@ -8,13 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitUtil {
-
     val apiService: APIService by lazy { getRetrofit().create(APIService::class.java) }
-
     private fun getRetrofit(): Retrofit {
-
         return Retrofit.Builder()
-            .baseUrl(Url.TMAP_URL)
+            .baseUrl(Url.KAKAOMAP_URL)
             .addConverterFactory(GsonConverterFactory.create()) // gson으로 파싱
             .client(buildOkHttpClient()) // OkHttp 사용
             .build()
