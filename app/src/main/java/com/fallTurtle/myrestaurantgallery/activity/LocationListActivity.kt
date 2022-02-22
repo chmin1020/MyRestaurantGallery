@@ -80,7 +80,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 KeyEvent.KEYCODE_ENTER ->{
                     searchKeyword(binding.etSearch.text.toString())
                     imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
-                    Toast.makeText(this,"확인확인",Toast.LENGTH_SHORT).show()
                     return@setOnKeyListener true
                 }
             }
@@ -89,7 +88,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         binding.ivSearch.setOnClickListener {
             searchKeyword(binding.etSearch.text.toString())
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
-            Toast.makeText(this,"확인확인",Toast.LENGTH_SHORT).show()
         }
 
         initData()
@@ -126,6 +124,9 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         adapter.setList(dataList)
         //adapter.currentPage = searchInfo.meta.pag.toInt()
         adapter.currentSearchString = keywordString
+
+        if(adapter.itemCount == 0)
+            Toast.makeText(this, "검색 결과가 없습니다...", Toast.LENGTH_SHORT).show()
     }
 
     private fun searchKeyword(keywordString: String) {
@@ -144,18 +145,17 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 withContext(Dispatchers.IO) {
                     val response = RetrofitUtil.apiService.getSearchLocation(Key.KAKAO_API,keywordString)
                     if (response.isSuccessful) {
-                        Log.e("response22 success", "anyway in")
                         val body = response.body()
                         // Main (UI) 스레드 사용
                         withContext(Dispatchers.Main) {
-                            Log.e("response22 LSS", body.toString())
                             body?.let { searchResponse ->
                                 setData(searchResponse, keywordString)
                             }
                         }
                     }
-                    else
-                        Log.e("response22 fail", "ah nono~")
+                    else {
+                        Log.e("response fail", "error happened")
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
