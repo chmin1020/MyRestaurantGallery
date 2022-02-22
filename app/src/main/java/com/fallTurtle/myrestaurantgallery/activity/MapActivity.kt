@@ -1,6 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -42,11 +43,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        //searchbar
-        binding.ivSearch.setOnClickListener {
+        //search
+        binding.tvSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
             startActivity(intent)
         }
+
         binding.ivBack.setOnClickListener {
             finish()
         }
