@@ -44,7 +44,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         //search
-        binding.tvSearch.setOnClickListener {
+        binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
             startActivity(intent)
         }
