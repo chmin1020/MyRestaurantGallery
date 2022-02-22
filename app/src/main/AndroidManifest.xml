@@ -25,7 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.LocationListActivity"
-            android:theme="@style/Transparent"/>
+            android:theme="@style/Transparent"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".activity.MapActivity" />
 
         <meta-data
