@@ -8,7 +8,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
@@ -49,22 +48,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         adapter = LocationAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
-        // 무한 스크롤 기능 구현
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                recyclerView.adapter ?: return
-
-                val lastVisibleItemPosition =
-                    (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                val totalItemCount = recyclerView.adapter!!.itemCount - 1
-
-                // 페이지 끝에 도달한 경우
-                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == totalItemCount) {
-                    loadNext()
-                }
-            }
-        })
 
         //키보드 배치를 위한 사전작업
         etSearch = binding.etSearch
@@ -100,12 +83,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
-    private fun loadNext() {
-        if (binding.recyclerView.adapter?.itemCount == 0)
-            return
-        searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     private fun initData() {
         adapter.notifyDataSetChanged()
@@ -118,6 +95,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             LocationResult(
                 it.address_name,
                 it.place_name,
+                it.category_name,
                 LocationPair(it.x.toFloat(), it.y.toFloat())
             )
         }
@@ -159,9 +137,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // error 해결 방법
-                // Permission denied (missing INTERNET permission?) 인터넷 권한 필요
-                // 또는 앱 삭제 후 재설치
+
             } finally {
                // binding.progressCircular.isVisible = false // 로딩 표시 완료
             }

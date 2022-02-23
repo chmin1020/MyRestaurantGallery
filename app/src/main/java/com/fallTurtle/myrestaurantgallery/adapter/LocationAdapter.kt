@@ -28,15 +28,9 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        //그리드 뷰 크기 조정
-        val displayMetrics = DisplayMetrics()
-        holder.itemView.context.display!!.getRealMetrics(displayMetrics)
-        holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
-        holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
-        holder.itemView.requestLayout()
-
         holder.tvTitle.text = resultList[position].getName()
         holder.tvSubTitle.text = resultList[position].getFullAddr()
+        holder.tvCategory.text = resultList[position].getCategory()
     }
 
     override fun getItemCount(): Int {
@@ -46,6 +40,7 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         var tvTitle: TextView = itemView.findViewById(R.id.tv_title)
         var tvSubTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+        var tvCategory: TextView = itemView.findViewById(R.id.tv_category)
     }
 
     @SuppressLint("NotifyDataSetChanged")
