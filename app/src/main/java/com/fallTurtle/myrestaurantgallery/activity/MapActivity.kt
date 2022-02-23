@@ -58,9 +58,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         binding.btnCur.setOnClickListener {
             var list: List<Address>? = null
+            var addr = ""
             try {
-                //미리 구해놓은 위도값 mLatitude;
-                //미리 구해놓은 경도값 mLongitude;
                 list = geocoder.getFromLocation(
                     curLocation.latitude,  // 위도
                     curLocation.longitude,  // 경도
@@ -71,13 +70,24 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.e("test", "입출력 오류")
             }
             if (list != null) {
-                if (list.isEmpty()) {
-                    Toast.makeText(this, "없습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, list[0].getAddressLine(0), Toast.LENGTH_SHORT).show()
+                if (list.isEmpty())
+                    addr = "주소 찾을 수 없음"
+                else {
+                    addr = list[0].getAddressLine(0)
+                    val str = addr.split(" ")
+                    addr = str[1]
+                    for(num in 2 until str.size) {
+                        addr = "$addr "
+                        addr += str[num]
+                    }
                 }
             }
 
+            val backTo = Intent(this, AddActivity::class.java).apply {
+                putExtra("address", addr)
+            }
+            setResult(RESULT_OK, backTo)
+            finish()
         }
 
         binding.ivBack.setOnClickListener {
