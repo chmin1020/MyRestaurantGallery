@@ -59,12 +59,10 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         }
 
         binding.etSearch.setOnKeyListener{ v, keyCode, event ->
-            when(keyCode){
-                KeyEvent.KEYCODE_ENTER ->{
-                    searchKeyword(binding.etSearch.text.toString())
-                    imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
-                    return@setOnKeyListener true
-                }
+            if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN){
+                searchKeyword(binding.etSearch.text.toString())
+                imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+                return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
@@ -100,6 +98,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             )
         }
         adapter.setList(dataList)
+        Log.d("dataCount", adapter.itemCount.toString())
         //adapter.currentPage = searchInfo.meta.pag.toInt()
         adapter.currentSearchString = keywordString
 
