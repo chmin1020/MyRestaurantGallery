@@ -77,6 +77,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.btnCur.setOnClickListener {
             val backTo = Intent(this, AddActivity::class.java).apply {
                 putExtra("isChanged", true)
+                putExtra("latitude", curLocation.latitude)
+                putExtra("longitude", curLocation.longitude)
                 putExtra("address", getAddress())
             }
             setResult(RESULT_OK, backTo)
@@ -87,6 +89,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.fabMyLocation.setOnClickListener{
             if(checkMapPermission()) {
                 flpc!!.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
+                moveCamera()
                 Toast.makeText(this,"현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
             }
             else
@@ -117,12 +120,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         override fun onLocationResult(locationResult: LocationResult) {
             // 시스템에서 받은 location 정보를 맵에 적용
             curLocation = locationResult.lastLocation
-            val now = LatLng(curLocation.latitude, curLocation.longitude)
-            val position = CameraPosition.Builder().target(now).zoom(16f).build()
-            markerOps.position(now)
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
-            marker?.remove()
-            marker = mMap.addMarker(markerOps)
+            moveCamera()
         }
     }
 
@@ -134,14 +132,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //현재 위치 받아오기 준비
     private fun getLocation(){
-        curLocation = Location("now")
         flpc = LocationServices.getFusedLocationProviderClient(this)
 
-        if(checkMapPermission())
-            flpc!!.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
-        else {
-            Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()
-            finishAffinity()
+        curLocation = Location("now")
+        curLocation.latitude = intent.getDoubleExtra("latitude", -1.0)
+        curLocation.longitude = intent.getDoubleExtra("longitude", -1.0)
+
+        if(curLocation.latitude == -1.0 || curLocation.longitude == -1.0) {
+            Toast.makeText(this, "지정 위치가 없어 현재 위치가 표시됩니다.", Toast.LENGTH_SHORT).show()
+            if (checkMapPermission())
+                flpc!!.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
+            else {
+                Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()
+                finishAffinity()
+            }
+        }
+        else{
+            moveCamera()
         }
     }
 
@@ -173,5 +180,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         return addr
+    }
+
+    private fun moveCamera(){
+        val now = LatLng(curLocation.latitude, curLocation.longitude)
+        val position = CameraPosition.Builder().target(now).zoom(16f).build()
+        markerOps.position(now)
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+        marker?.remove()
+        marker = mMap.addMarker(markerOps)
     }
 }

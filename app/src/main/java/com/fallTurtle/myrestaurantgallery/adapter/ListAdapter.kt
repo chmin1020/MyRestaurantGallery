@@ -80,6 +80,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
             record.putExtra("location", FList?.get(position)?.getLocation())
             record.putExtra("memo", FList?.get(position)?.getMemo())
             record.putExtra("date", FList?.get(position)?.getDate())
+            record.putExtra("latitude", FList?.get(position)?.getLatitude())
+            record.putExtra("longitude", FList?.get(position)?.getLongitude())
             v.context.startActivity(record)
         }
         //길게 누를 시 삭제 질의
