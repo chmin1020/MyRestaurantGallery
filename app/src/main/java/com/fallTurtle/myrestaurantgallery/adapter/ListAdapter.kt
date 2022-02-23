@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
@@ -14,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
+import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
