@@ -59,8 +59,10 @@ class AddActivity : AppCompatActivity(){
     //맵에서 주소를 받아오기 위한 요소들
     private var address: String? = null
     private val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        address = it.data?.getStringExtra("address")
-        binding.etLocation.setText(address)
+        if(it.data?.getBooleanExtra("isChanged", false) == true) {
+            address = it.data?.getStringExtra("address")
+            binding.etLocation.setText(address)
+        }
     }
 
     //수정 취소 시 실행될 함수

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,12 +51,28 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:layout_weight="9">
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="20dp"
+            android:elevation="16dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:scaleType="center"
+            app:srcCompat="@drawable/my_location"
+            app:fabCustomSize="75dp"
+            app:maxImageSize="42dp"/>
+    </FrameLayout>
 </LinearLayout>

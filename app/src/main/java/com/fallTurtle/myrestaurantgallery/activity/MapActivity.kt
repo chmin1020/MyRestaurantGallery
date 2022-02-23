@@ -76,10 +76,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         binding.btnCur.setOnClickListener {
             val backTo = Intent(this, AddActivity::class.java).apply {
+                putExtra("isChanged", true)
                 putExtra("address", getAddress())
             }
             setResult(RESULT_OK, backTo)
             finish()
+        }
+
+        //gps on
+        binding.fabMyLocation.setOnClickListener{
+            if(checkMapPermission()) {
+                flpc!!.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
+                Toast.makeText(this,"현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
+            }
+            else
+                Toast.makeText(this,"오류 발생...", Toast.LENGTH_SHORT).show()
         }
 
         binding.ivBack.setOnClickListener {
@@ -91,6 +102,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = p0
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         getLocation()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val backTo = Intent(this, AddActivity::class.java).apply {
+            putExtra("isChanged", false)
+        }
+        setResult(RESULT_OK, backTo)
     }
 
     //시스템에서 위치 정보를 받음

@@ -35,7 +35,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //리사이클러뷰
     private lateinit var adapter: LocationAdapter
 
-
     private lateinit var binding:ActivityLocationListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
