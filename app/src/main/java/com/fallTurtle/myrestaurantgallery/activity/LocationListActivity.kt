@@ -45,13 +45,14 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         job = Job()
 
         //리사이클러뷰 설정
-        adapter = LocationAdapter()
+        adapter = LocationAdapter(this)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
         //키보드 배치를 위한 사전작업
         etSearch = binding.etSearch
         imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
         //뒤로 가기
         binding.ivBack.setOnClickListener {
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
@@ -70,7 +71,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             searchKeyword(binding.etSearch.text.toString())
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
         }
-
         initData()
     }
 

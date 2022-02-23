@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.fallTurtle.myrestaurantgallery.R
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 
@@ -28,12 +30,28 @@ import java.io.IOException
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //map object
     private lateinit var mMap: GoogleMap
-    private lateinit var marker: MarkerOptions
+    private lateinit var markerOps: MarkerOptions
+    private var marker: Marker? = null
+
     //location info
     private var flpc: FusedLocationProviderClient? = null
     private lateinit var lr: LocationRequest
     private lateinit var curLocation: Location
     private lateinit var geocoder:Geocoder
+
+    //getResult
+    val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        flpc!!.removeLocationUpdates(locationCallback)
+        curLocation.longitude = it.data?.getFloatExtra("x", 0F)!!.toDouble()
+        curLocation.latitude = it.data?.getFloatExtra("y", 0F)!!.toDouble()
+
+        val now = LatLng(curLocation.latitude, curLocation.longitude)
+        val position = CameraPosition.Builder().target(now).zoom(16f).build()
+        markerOps.position(now)
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+        marker?.remove()
+        mMap.addMarker(markerOps)
+    }
 
     private lateinit var binding:ActivityMapBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,42 +67,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         //map marking
-        marker = MarkerOptions()
+        markerOps = MarkerOptions()
         geocoder = Geocoder(this)
         //search
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
-            startActivity(intent)
+            getAddr.launch(intent)
         }
         binding.btnCur.setOnClickListener {
-            var list: List<Address>? = null
-            var addr = ""
-            try {
-                list = geocoder.getFromLocation(
-                    curLocation.latitude,  // 위도
-                    curLocation.longitude,  // 경도
-                    10
-                ) // 얻어올 값의 개수
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Log.e("test", "입출력 오류")
-            }
-            if (list != null) {
-                if (list.isEmpty())
-                    addr = "주소 찾을 수 없음"
-                else {
-                    addr = list[0].getAddressLine(0)
-                    val str = addr.split(" ")
-                    addr = str[1]
-                    for(num in 2 until str.size) {
-                        addr = "$addr "
-                        addr += str[num]
-                    }
-                }
-            }
-
             val backTo = Intent(this, AddActivity::class.java).apply {
-                putExtra("address", addr)
+                putExtra("address", getAddress())
             }
             setResult(RESULT_OK, backTo)
             finish()
@@ -108,10 +100,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             curLocation = locationResult.lastLocation
             val now = LatLng(curLocation.latitude, curLocation.longitude)
             val position = CameraPosition.Builder().target(now).zoom(16f).build()
-            marker.position(now)
+            markerOps.position(now)
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
-            mMap.addMarker(marker)
-
+            marker?.remove()
+            marker = mMap.addMarker(markerOps)
         }
     }
 
@@ -132,5 +124,35 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()
             finishAffinity()
         }
+    }
+
+    //좌표를 주소로 변환
+    private fun getAddress() : String{
+        var list: List<Address>? = null
+        var addr = ""
+        try {
+            list = geocoder.getFromLocation(
+                curLocation.latitude,  // 위도
+                curLocation.longitude,  // 경도
+                10
+            ) // 얻어올 값의 개수
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("test", "입출력 오류")
+        }
+        if (list != null) {
+            if (list.isEmpty())
+                addr = "주소 찾을 수 없음"
+            else {
+                addr = list[0].getAddressLine(0)
+                val str = addr.split(" ")
+                addr = str[1]
+                for(num in 2 until str.size) {
+                    addr = "$addr "
+                    addr += str[num]
+                }
+            }
+        }
+        return addr
     }
 }

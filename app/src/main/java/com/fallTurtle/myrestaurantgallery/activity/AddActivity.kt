@@ -48,8 +48,8 @@ class AddActivity : AppCompatActivity(){
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
     private var imgUsed = false
-    private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result: ActivityResult ->
-        imgUri = result.data?.data
+    private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        imgUri = it.data?.data
         if(imgUri != null) {
             binding.ivImage.setImageURI(imgUri)
             imgUsed = true
