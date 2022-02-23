@@ -98,7 +98,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             )
         }
         adapter.setList(dataList)
-        Log.d("dataCount", adapter.itemCount.toString())
         //adapter.currentPage = searchInfo.meta.pag.toInt()
         adapter.currentSearchString = keywordString
 

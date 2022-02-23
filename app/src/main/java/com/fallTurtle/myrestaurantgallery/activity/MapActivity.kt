@@ -1,15 +1,16 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
@@ -20,14 +21,19 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
+
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //map object
     private lateinit var mMap: GoogleMap
+    private lateinit var marker: MarkerOptions
     //location info
     private var flpc: FusedLocationProviderClient? = null
     private lateinit var lr: LocationRequest
     private lateinit var curLocation: Location
+    private lateinit var geocoder:Geocoder
 
     private lateinit var binding:ActivityMapBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,15 +44,40 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //get map object here
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
         lr =  LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
+        //map marking
+        marker = MarkerOptions()
+        geocoder = Geocoder(this)
         //search
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
             startActivity(intent)
+        }
+        binding.btnCur.setOnClickListener {
+            var list: List<Address>? = null
+            try {
+                //미리 구해놓은 위도값 mLatitude;
+                //미리 구해놓은 경도값 mLongitude;
+                list = geocoder.getFromLocation(
+                    curLocation.latitude,  // 위도
+                    curLocation.longitude,  // 경도
+                    10
+                ) // 얻어올 값의 개수
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e("test", "입출력 오류")
+            }
+            if (list != null) {
+                if (list.isEmpty()) {
+                    Toast.makeText(this, "없습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, list[0].getAddressLine(0), Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
 
         binding.ivBack.setOnClickListener {
@@ -67,7 +98,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             curLocation = locationResult.lastLocation
             val now = LatLng(curLocation.latitude, curLocation.longitude)
             val position = CameraPosition.Builder().target(now).zoom(16f).build()
+            marker.position(now)
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+            mMap.addMarker(marker)
+
         }
     }
 
