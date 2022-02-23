@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/example_genre"
-        android:textColor="#00FF00"
+        android:textColor="#0FB60F"
         />
 
 </LinearLayout>
