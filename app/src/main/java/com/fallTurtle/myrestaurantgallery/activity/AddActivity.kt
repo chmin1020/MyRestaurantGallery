@@ -59,7 +59,8 @@ class AddActivity : AppCompatActivity(){
     //맵에서 주소를 받아오기 위한 요소들
     private var address: String? = null
     private val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        address = it.data?.data.toString()
+        address = it.data?.getStringExtra("address")
+        binding.etLocation.setText(address)
     }
 
     //수정 취소 시 실행될 함수
@@ -195,7 +196,7 @@ class AddActivity : AppCompatActivity(){
             dpDialog.show()
         }
 
-        //map
+        //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
             getAddr.launch(intent)
