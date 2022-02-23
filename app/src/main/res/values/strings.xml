@@ -8,6 +8,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="loading">Loading…</string>
+    <string name="find">Find</string>
+    <string name="location_myself">Write location by yourself</string>
 
     <!--for login-->
     <string name="login_welcome">Welcome to My Restaurant Gallery!</string>

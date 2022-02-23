@@ -118,17 +118,20 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:maxLines="1"
-            android:hint="@string/example_location"
-            android:autofillHints="@string/example_location"
+            android:hint="@string/location_myself"
+            android:autofillHints="text"
             android:inputType="text" />
 
-        <ImageView
-            android:id="@+id/iv_map"
+        <Button
+            android:id="@+id/btn_map"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"
             android:padding="2dp"
-            android:src="@drawable/location"/>
+            android:text="@string/find"
+            android:textColor="#000000"/>
     </LinearLayout>
 
     <EditText
@@ -140,11 +143,11 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="5dp"
         android:layout_weight="4.5"
+        android:autofillHints="@string/example_memo"
         android:background="@drawable/edit_text_border"
         android:gravity="start"
         android:hint="@string/example_memo"
-        android:padding ="5dp"
-        android:autofillHints="@string/example_memo"
-        android:inputType="text" />
+        android:inputType="text"
+        android:padding="5dp" />
 
 </LinearLayout>

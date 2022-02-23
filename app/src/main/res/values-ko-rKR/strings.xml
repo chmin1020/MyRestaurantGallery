@@ -8,6 +8,9 @@
     <string name="yes">네</string>
     <string name="no">아니오</string>
     <string name="loading">로딩중…</string>
+    <string name="find">찾기</string>
+    <string name="location_myself">위치 직접 입력</string>
+
 
     <!--로그인 문구-->
     <string name="login_welcome">나의 맛집 갤러리에 오신 것을 환영합니다!</string>
