@@ -11,6 +11,8 @@ class Piece{
     private var rate:Int? = null
     private var memo:String? = null
     private var date:String? = null
+    private var latitude:Double = -1.0
+    private var longitude:Double = -1.0
 
     fun setDBID(id: String){
         dbID = id
@@ -90,5 +92,21 @@ class Piece{
 
     fun getDate() :String?{
         return date
+    }
+
+    fun setLatitude(lt : Double){
+        latitude = lt
+    }
+
+    fun getLatitude() : Double{
+        return latitude
+    }
+
+    fun setLongitude(lt : Double){
+        longitude = lt
+    }
+
+    fun getLongitude() : Double{
+        return longitude
     }
 }

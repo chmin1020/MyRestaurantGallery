@@ -48,6 +48,8 @@ class RecordActivity : AppCompatActivity() {
         piece.setLocation(intent.getStringExtra("location"))
         piece.setMemo(intent.getStringExtra("memo"))
         piece.setDate(intent.getStringExtra("date"))
+        piece.setLatitude(intent.getDoubleExtra("latitude", -1.0))
+        piece.setLongitude(intent.getDoubleExtra("longitude", -1.0))
 
         binding.tvName.text = piece.getName()
         binding.tvGenre.text = piece.getGenre()
@@ -103,6 +105,8 @@ class RecordActivity : AppCompatActivity() {
                 edit.putExtra("memo",piece.getMemo())
                 edit.putExtra("rate",piece.getRate())
                 edit.putExtra("date",piece.getDate())
+                edit.putExtra("latitude",piece.getLatitude())
+                edit.putExtra("longitude",piece.getLongitude())
                 finish()
                 startActivity(edit)
              }

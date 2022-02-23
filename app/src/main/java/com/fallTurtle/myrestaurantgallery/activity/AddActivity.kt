@@ -8,13 +8,13 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.loader.content.CursorLoader
@@ -61,6 +61,8 @@ class AddActivity : AppCompatActivity(){
     private val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
+            piece.setLatitude(it.data?.getDoubleExtra("latitude", -1.0)!!)
+            piece.setLongitude(it.data?.getDoubleExtra("longitude", -1.0)!!)
             binding.etLocation.setText(address)
         }
     }
@@ -162,6 +164,8 @@ class AddActivity : AppCompatActivity(){
                             "imgUsed" to imgUsed,
                             "memo" to binding.etMemo.text.toString(),
                             "rate" to binding.rbRatingBar.rating,
+                            "latitude" to piece.getLatitude(),
+                            "longitude" to piece.getLongitude(),
                             "dbID" to id
                         )
                         docRef.collection("restaurants").document(id).set(newRes)
@@ -201,6 +205,8 @@ class AddActivity : AppCompatActivity(){
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("latitude", piece.getLatitude())
+            intent.putExtra("longitude", piece.getLongitude())
             getAddr.launch(intent)
         }
 
@@ -226,6 +232,8 @@ class AddActivity : AppCompatActivity(){
             piece.setLocation(intent.getStringExtra("location"))
             piece.setMemo(intent.getStringExtra("memo"))
             piece.setDate(intent.getStringExtra("date"))
+            piece.setLatitude(intent.getDoubleExtra("latitude", -1.0))
+            piece.setLongitude(intent.getDoubleExtra("longitude", -1.0))
 
             binding.etName.setText(piece.getName())
             binding.spGenre.setSelection(piece.getGenreNum()!!)
@@ -240,7 +248,6 @@ class AddActivity : AppCompatActivity(){
                     .load(realRef).into(binding.ivImage)
             }
             else selectImg(piece.getGenreNum()!!)
-
         }
         else{
             //date picker default
