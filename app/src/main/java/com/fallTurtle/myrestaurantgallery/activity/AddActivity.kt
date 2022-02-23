@@ -56,6 +56,12 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
+    //맵에서 주소를 받아오기 위한 요소들
+    private var address: String? = null
+    private val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        address = it.data?.data.toString()
+    }
+
     //수정 취소 시 실행될 함수
     private fun backToRecord(isEdit: Boolean){
         if(isEdit) {
@@ -190,9 +196,9 @@ class AddActivity : AppCompatActivity(){
         }
 
         //map
-        binding.ivMap.setOnClickListener {
+        binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
+            getAddr.launch(intent)
         }
 
         //spinner
