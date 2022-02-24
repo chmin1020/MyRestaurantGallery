@@ -1,6 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -27,6 +28,10 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var etSearch: EditText
     private lateinit var imm: InputMethodManager
 
+    //기존 좌표 (backPressed 대비)
+    private var oriLati: Double = 0.0
+    private var oriLongi: Double = 0.0
+
     //코루틴
     private lateinit var job: Job
     override val coroutineContext: CoroutineContext
@@ -43,6 +48,10 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
 
         job = Job()
 
+        //기존 좌표받기
+        oriLati = intent.getDoubleExtra("latitude", 0.0)
+        oriLongi = intent.getDoubleExtra("longitude", 0.0)
+
         //리사이클러뷰 설정
         adapter = LocationAdapter(this)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -55,6 +64,11 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         //뒤로 가기
         binding.ivBack.setOnClickListener {
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+            val backTo = Intent(this, MapActivity::class.java).apply {
+                putExtra("x", oriLati)
+                putExtra("y", oriLongi)
+            }
+            setResult(RESULT_OK, backTo)
             finish()
         }
 
@@ -93,7 +107,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 it.address_name,
                 it.place_name,
                 it.category_name,
-                LocationPair(it.x.toFloat(), it.y.toFloat())
+                LocationPair(it.y.toFloat(), it.x.toFloat())
             )
         }
         adapter.setList(dataList)
@@ -139,5 +153,14 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                // binding.progressCircular.isVisible = false // 로딩 표시 완료
             }
         }
+    }
+
+    override fun onBackPressed() {
+        val backTo = Intent(this, MapActivity::class.java).apply {
+            putExtra("x", oriLati)
+            putExtra("y", oriLongi)
+        }
+        setResult(RESULT_OK, backTo)
+        finish()
     }
 }
