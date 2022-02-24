@@ -42,15 +42,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //getResult
     val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         flpc!!.removeLocationUpdates(locationCallback)
-        curLocation.longitude = it.data?.getFloatExtra("x", 0F)!!.toDouble()
-        curLocation.latitude = it.data?.getFloatExtra("y", 0F)!!.toDouble()
-
-        val now = LatLng(curLocation.latitude, curLocation.longitude)
-        val position = CameraPosition.Builder().target(now).zoom(16f).build()
-        markerOps.position(now)
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
-        marker?.remove()
-        mMap.addMarker(markerOps)
+        curLocation.latitude = it.data?.getDoubleExtra("x", 0.0)!!
+        curLocation.longitude = it.data?.getDoubleExtra("y", 0.0)!!
+        moveCamera()
     }
 
     private lateinit var binding:ActivityMapBinding
@@ -72,6 +66,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //search
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
+            intent.putExtra("latitude", curLocation.latitude)
+            intent.putExtra("longitude", curLocation.longitude)
             getAddr.launch(intent)
         }
         binding.btnCur.setOnClickListener {
