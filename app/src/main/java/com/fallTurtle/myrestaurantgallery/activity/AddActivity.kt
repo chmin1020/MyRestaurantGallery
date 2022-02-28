@@ -3,8 +3,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.database.Cursor
-import android.location.Criteria
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,15 +15,12 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.loader.content.CursorLoader
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.item.Piece
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -69,48 +64,6 @@ class AddActivity : AppCompatActivity(){
             piece.setLongitude(it.data?.getDoubleExtra("longitude", -1.0)!!)
             binding.etLocation.setText(address)
         }
-    }
-
-    //수정 취소 시 실행될 함수
-    private fun backToRecord(isEdit: Boolean){
-        if(isEdit) {
-            val back = Intent(this, RecordActivity::class.java)
-            back.putExtra("dbID",piece.getDBID())
-            back.putExtra("name",piece.getName())
-            back.putExtra("genreNum",piece.getGenreNum())
-            back.putExtra("genre",piece.getGenre())
-            back.putExtra("location",piece.getLocation())
-            back.putExtra("image",piece.getImage())
-            back.putExtra("imgUsed",piece.getImgUsed())
-            back.putExtra("memo",piece.getMemo())
-            back.putExtra("rate",piece.getRate())
-            back.putExtra("date",piece.getDate())
-            startActivity(back)
-        }
-        finish()
-    }
-
-    //spinner 이미지 고르기
-    private fun selectImg(position : Int){
-        when(position){
-            0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
-            1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
-            2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
-            3 -> binding.ivImage.setImageResource(R.drawable.western_food)
-            4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
-            5 -> binding.ivImage.setImageResource(R.drawable.drink)
-            6 -> binding.ivImage.setImageResource(R.drawable.etc)
-        }
-    }
-
-    //제대로 된 uri 가져오기
-    private fun getPath(uri: Uri?): String {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursorLoader = CursorLoader(this, uri!!, proj, null, null, null)
-        val cursor: Cursor? = cursorLoader.loadInBackground()
-        val index: Int = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(index)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,10 +156,9 @@ class AddActivity : AppCompatActivity(){
 
         //datePicker
         binding.llDate.setOnClickListener {
-            var dText = ""
             val cal = Calendar.getInstance()
             val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+                val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.tvDate.text = dText
             }
             val dpDialog = DatePickerDialog(
@@ -257,10 +209,11 @@ class AddActivity : AppCompatActivity(){
             binding.etLocation.setText(piece.getLocation())
             binding.etMemo.setText(piece.getMemo())
             binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
-            binding.tvDate.setText(piece.getDate())
+            binding.tvDate.text = piece.getDate()
 
             if(piece.getImgUsed()){
                 val realRef = strRef.child(piece.getImage().toString())
+                Log.d("realRef", piece.getImage().toString())
                 GlideApp.with(this)
                     .load(realRef).into(binding.ivImage)
             }
@@ -301,7 +254,6 @@ class AddActivity : AppCompatActivity(){
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        //val menuInflater = menuInflater
         menuInflater.inflate(R.menu.add_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
@@ -311,5 +263,44 @@ class AddActivity : AppCompatActivity(){
         backToRecord(intent.getBooleanExtra("isEdit", false))
     }
 
+    //수정 취소 시 실행될 함수
+    private fun backToRecord(isEdit: Boolean){
+        if(isEdit) {
+            val back = Intent(this, RecordActivity::class.java)
+            back.putExtra("dbID",piece.getDBID())
+            back.putExtra("name",piece.getName())
+            back.putExtra("genreNum",piece.getGenreNum())
+            back.putExtra("genre",piece.getGenre())
+            back.putExtra("location",piece.getLocation())
+            back.putExtra("image",piece.getImage())
+            back.putExtra("imgUsed",piece.getImgUsed())
+            back.putExtra("memo",piece.getMemo())
+            back.putExtra("rate",piece.getRate())
+            back.putExtra("date",piece.getDate())
+            startActivity(back)
+        }
+        finish()
+    }
 
+    //spinner 이미지 고르기
+    private fun selectImg(position : Int){
+        when(position){
+            0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
+            1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
+            2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
+            3 -> binding.ivImage.setImageResource(R.drawable.western_food)
+            4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
+            5 -> binding.ivImage.setImageResource(R.drawable.drink)
+            6 -> binding.ivImage.setImageResource(R.drawable.etc)
+        }
+    }
+
+    //제대로 된 uri 가져오기
+    private fun getPath(uri: Uri?): String {
+        val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
+        cursor!!.moveToNext()
+        val path = cursor.getString(cursor.getColumnIndex("_data"))
+        cursor.close()
+        return path
+    }
 }
