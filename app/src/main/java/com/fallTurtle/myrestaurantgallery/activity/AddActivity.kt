@@ -21,6 +21,7 @@ import androidx.loader.content.CursorLoader
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
+import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.item.Piece
 import com.google.android.gms.maps.GoogleMap
@@ -38,6 +39,9 @@ import java.util.*
 class AddActivity : AppCompatActivity(){
     private lateinit var binding:ActivityAddBinding
     private val piece = Piece() //for edit
+
+    //network connection check
+    private lateinit var nm: NetworkManager
 
     //fireStore
     private val db = Firebase.firestore
@@ -116,6 +120,9 @@ class AddActivity : AppCompatActivity(){
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
 
+        //network status
+        nm = NetworkManager(this)
+
         //toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -123,61 +130,71 @@ class AddActivity : AppCompatActivity(){
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.save_item -> {
-                    //이름과 장소는 필수!
-                    if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
-                        Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
-                    //저장 과정
-                    else {
-                        val id:String = if(isEdit) piece.getDBID().toString()
-                        else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis())).toString()
-                        var image: String? = null
+                    if(nm.checkNetworkState()) {
+                        //이름과 장소는 필수!
+                        if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
+                            Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
+                                .show()
+                        //저장 과정
+                        else {
+                            val id: String = if (isEdit) piece.getDBID().toString()
+                            else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis()))
+                                .toString()
+                            var image: String? = null
 
-                        //이미지 설정
-                        if(imgUsed) {
-                            image = if(isEdit){
-                                if(imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString())) {
-                                    strRef.child(piece.getImage().toString()).delete()
+                            //이미지 설정
+                            if (imgUsed) {
+                                image = if (isEdit) {
+                                    if (imgUri != null && !piece.getImage()
+                                            .equals(imgUri!!.lastPathSegment.toString())
+                                    ) {
+                                        strRef.child(piece.getImage().toString()).delete()
+                                        imgUri!!.lastPathSegment.toString()
+                                    } else
+                                        piece.getImage().toString()
+                                } else {
                                     imgUri!!.lastPathSegment.toString()
-                                } else
-                                    piece.getImage().toString()
+                                }
+
+                                if (!isEdit || (imgUri != null && !piece.getImage()
+                                        .equals(imgUri!!.lastPathSegment.toString()))
+                                ) {
+                                    val stream = FileInputStream(File(getPath(imgUri)))
+                                    strRef.child(imgUri!!.lastPathSegment.toString())
+                                        .putStream(stream)
+                                }
                             } else {
-                                imgUri!!.lastPathSegment.toString()
+                                if (isEdit && piece.getImgUsed())
+                                    strRef.child(piece.getImage().toString()).delete()
                             }
 
-                            if(!isEdit || (imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString()))) {
-                                val stream = FileInputStream(File(getPath(imgUri)))
-                                strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
-                            }
+                            val newRes = mapOf(
+                                "image" to image,
+                                "date" to binding.tvDate.text.toString(),
+                                "name" to binding.etName.text.toString(),
+                                "genreNum" to binding.spGenre.selectedItemPosition,
+                                "genre" to binding.spGenre.selectedItem.toString(),
+                                "location" to binding.etLocation.text.toString(),
+                                "imgUsed" to imgUsed,
+                                "memo" to binding.etMemo.text.toString(),
+                                "rate" to binding.rbRatingBar.rating,
+                                "latitude" to piece.getLatitude(),
+                                "longitude" to piece.getLongitude(),
+                                "dbID" to id
+                            )
+                            docRef.collection("restaurants").document(id).set(newRes)
+
+                            //로딩 화면 실행
+                            val progress = Intent(this, ProgressActivity::class.java)
+                            if (isEdit) progress.putExtra("endCode", 0)
+                            else progress.putExtra("endCode", 1)
+
+                            startActivity(progress)
+                            finish()
                         }
-                        else{
-                            if(isEdit && piece.getImgUsed())
-                                strRef.child(piece.getImage().toString()).delete()
-                        }
-
-                        val newRes = mapOf(
-                            "image" to image,
-                            "date" to binding.tvDate.text.toString(),
-                            "name" to binding.etName.text.toString(),
-                            "genreNum" to binding.spGenre.selectedItemPosition,
-                            "genre" to binding.spGenre.selectedItem.toString(),
-                            "location" to binding.etLocation.text.toString(),
-                            "imgUsed" to imgUsed,
-                            "memo" to binding.etMemo.text.toString(),
-                            "rate" to binding.rbRatingBar.rating,
-                            "latitude" to piece.getLatitude(),
-                            "longitude" to piece.getLongitude(),
-                            "dbID" to id
-                        )
-                        docRef.collection("restaurants").document(id).set(newRes)
-
-                        //로딩 화면 실행
-                        val progress = Intent(this, ProgressActivity::class.java)
-                        if(isEdit) progress.putExtra("endCode", 0)
-                        else progress.putExtra("endCode", 1)
-
-                        startActivity(progress)
-                        finish()
                     }
+                    else
+                        Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false
