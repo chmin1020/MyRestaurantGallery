@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
@@ -152,7 +153,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         // 비동기 처리
         launch(coroutineContext) {
             try {
-                //binding.progressCircular.isVisible = true // 로딩 표시
+                binding.progressCircular.isVisible = true // 로딩 표시
                 if (page == 1) {
                     adapter.clearList()
                 }
@@ -176,7 +177,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 e.printStackTrace()
 
             } finally {
-               // binding.progressCircular.isVisible = false // 로딩 표시 완료
+               binding.progressCircular.isVisible = false // 로딩 표시 완료
             }
         }
     }
