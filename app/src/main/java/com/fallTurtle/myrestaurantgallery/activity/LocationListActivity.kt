@@ -57,6 +57,24 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
+        // 무한 스크롤 기능 구현
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                recyclerView.adapter ?: return
+
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                val totalItemCount = recyclerView.adapter!!.itemCount - 1
+
+                // 페이지 끝에 도달한 경우
+                if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == totalItemCount
+                    && !adapter.isEnd) {
+                    loadNext()
+                }
+            }
+        })
+
         //키보드 배치를 위한 사전작업
         etSearch = binding.etSearch
         imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -94,6 +112,12 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
+    private fun loadNext() {
+        if (binding.recyclerView.adapter?.itemCount == 0)
+            return
+        searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun initData() {
         adapter.notifyDataSetChanged()
@@ -111,7 +135,9 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             )
         }
         adapter.setList(dataList)
-        //adapter.currentPage = searchInfo.meta.pag.toInt()
+        adapter.isEnd = searchInfo.meta.is_end
+        if(!adapter.isEnd)
+            adapter.currentPage = adapter.currentPage + 1
         adapter.currentSearchString = keywordString
 
         if(adapter.itemCount == 0)
@@ -132,7 +158,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 }
                 // IO 스레드 사용
                 withContext(Dispatchers.IO) {
-                    val response = RetrofitUtil.apiService.getSearchLocation(Key.KAKAO_API,keywordString)
+                    val response = RetrofitUtil.apiService.getSearchLocation(Key.KAKAO_API,keywordString, page)
                     if (response.isSuccessful) {
                         val body = response.body()
                         // Main (UI) 스레드 사용

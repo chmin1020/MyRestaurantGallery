@@ -22,6 +22,7 @@ import com.fallTurtle.myrestaurantgallery.item.LocationResult
 class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     private var resultList: List<LocationResult> = listOf()
     var currentPage = 1
+    var isEnd = false
     var currentSearchString = ""
 
     override fun onCreateViewHolder(
@@ -60,8 +61,7 @@ class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapte
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(
-        searchResultList: List<LocationResult>) {
+    fun setList(searchResultList: List<LocationResult>) {
         this.resultList = this.resultList + searchResultList
         notifyDataSetChanged()
     }

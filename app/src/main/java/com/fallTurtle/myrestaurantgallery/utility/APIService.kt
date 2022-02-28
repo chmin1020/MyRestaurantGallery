@@ -15,6 +15,7 @@ interface APIService {
     @GET(Url.GET_KAKAOMAP_LOCATION)
     suspend fun getSearchLocation(
         @Header("Authorization") Authorization: String = Key.KAKAO_API,
-        @Query("query") query: String
+        @Query("query") query: String,
+        @Query("page") page: Int
         ): Response<LocationResponse>
 }
