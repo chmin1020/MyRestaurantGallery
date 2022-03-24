@@ -7,11 +7,6 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 
 interface APIService {
-    companion object{
-        const val MAX_PAGE_CONTENT = 30
-        const val START_PAGE = 1
-    }
-
     @GET(Url.GET_KAKAOMAP_LOCATION)
     suspend fun getSearchLocation(
         @Header("Authorization") Authorization: String = Key.KAKAO_API,
