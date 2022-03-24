@@ -115,7 +115,6 @@ class RecordActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        //val menuInflater = menuInflater
         menuInflater.inflate(R.menu.record_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }

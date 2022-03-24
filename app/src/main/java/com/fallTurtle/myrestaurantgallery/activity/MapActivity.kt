@@ -80,7 +80,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             setResult(RESULT_OK, backTo)
             finish()
         }
-
         //gps on
         binding.fabMyLocation.setOnClickListener{
             if(checkMapPermission()) {

@@ -28,15 +28,14 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //editText 자동 키보드
     private lateinit var etSearch: EditText
     private lateinit var imm: InputMethodManager
-
+    
     //기존 좌표 (backPressed 대비)
     private var oriLati: Double = 0.0
     private var oriLongi: Double = 0.0
 
     //코루틴
-    private lateinit var job: Job
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.Main
 
     //리사이클러뷰
     private lateinit var adapter: LocationAdapter
@@ -46,8 +45,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
         binding = ActivityLocationListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        job = Job()
 
         //기존 좌표받기
         oriLati = intent.getDoubleExtra("latitude", 0.0)
