@@ -281,7 +281,7 @@ class AddActivity : AppCompatActivity(){
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
         else
-            overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out)
+            overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
         finish()
     }
 
