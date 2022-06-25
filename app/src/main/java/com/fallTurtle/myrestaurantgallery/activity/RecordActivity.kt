@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -109,7 +108,7 @@ class RecordActivity : AppCompatActivity() {
                 edit.putExtra("longitude",piece.getLongitude())
                 finish()
                 startActivity(edit)
-                overridePendingTransition(R.anim.fadein, R.anim.fadeout)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
              }
         }
         return super.onOptionsItemSelected(item)

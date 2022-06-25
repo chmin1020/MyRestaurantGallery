@@ -278,8 +278,10 @@ class AddActivity : AppCompatActivity(){
             back.putExtra("rate",piece.getRate())
             back.putExtra("date",piece.getDate())
             startActivity(back)
-            overridePendingTransition(R.anim.fadein, R.anim.fadeout)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
+        else
+            overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out)
         finish()
     }
 
