@@ -109,6 +109,7 @@ class RecordActivity : AppCompatActivity() {
                 edit.putExtra("longitude",piece.getLongitude())
                 finish()
                 startActivity(edit)
+                overridePendingTransition(R.anim.fadein, R.anim.fadeout)
              }
         }
         return super.onOptionsItemSelected(item)
