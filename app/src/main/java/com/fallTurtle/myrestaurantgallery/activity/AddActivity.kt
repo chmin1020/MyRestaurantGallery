@@ -283,7 +283,7 @@ class AddActivity : AppCompatActivity(){
         }
         else {
             finish()
-            overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
+            overridePendingTransition(R.anim.slide_down_in, R.anim.slide_down_out)
         }
     }
 
