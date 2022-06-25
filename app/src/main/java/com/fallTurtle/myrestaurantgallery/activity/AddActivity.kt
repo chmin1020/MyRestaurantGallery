@@ -278,11 +278,13 @@ class AddActivity : AppCompatActivity(){
             back.putExtra("rate",piece.getRate())
             back.putExtra("date",piece.getDate())
             startActivity(back)
+            finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
-        else
+        else {
+            finish()
             overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
-        finish()
+        }
     }
 
     //spinner 이미지 고르기
