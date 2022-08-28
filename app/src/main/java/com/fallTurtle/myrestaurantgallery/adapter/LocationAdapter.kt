@@ -5,17 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.activity.AddActivity
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
 import com.fallTurtle.myrestaurantgallery.item.LocationResult
 
