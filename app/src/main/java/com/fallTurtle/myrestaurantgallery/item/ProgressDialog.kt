@@ -7,15 +7,12 @@ import com.fallTurtle.myrestaurantgallery.databinding.ProgressDialogBinding
 
 class ProgressDialog(context: Context) {
     //binding
-    private var mBinding: ProgressDialogBinding? = null
-    private val binding get()= mBinding!!
-
     private val dialog = Dialog(context)
+    private val binding by lazy { ProgressDialogBinding.inflate(dialog.layoutInflater) }
 
     fun create() {
         dialog.setCancelable(false)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        mBinding = ProgressDialogBinding.inflate(dialog.layoutInflater)
         dialog.setContentView(binding.root)
         dialog.show()
     }

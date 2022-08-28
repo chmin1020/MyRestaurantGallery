@@ -30,7 +30,6 @@ import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class AddActivity : AppCompatActivity(){
     private lateinit var binding:ActivityAddBinding
     private val piece = Piece() //for edit
@@ -83,110 +82,17 @@ class AddActivity : AppCompatActivity(){
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.save_item -> {
-                    if(nm.checkNetworkState()) {
-                        //이름과 장소는 필수!
-                        if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
-                            Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
-                                .show()
-                        //저장 과정
-                        else {
-                            val id: String = if (isEdit) piece.getDBID().toString()
-                            else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(Date(System.currentTimeMillis()))
-                                .toString()
-                            var image: String? = null
-
-                            //이미지 설정
-                            if (imgUsed) {
-                                image = if (isEdit) {
-                                    if (imgUri != null && !piece.getImage()
-                                            .equals(imgUri!!.lastPathSegment.toString())
-                                    ) {
-                                        strRef.child(piece.getImage().toString()).delete()
-                                        imgUri!!.lastPathSegment.toString()
-                                    } else
-                                        piece.getImage().toString()
-                                } else {
-                                    imgUri!!.lastPathSegment.toString()
-                                }
-
-                                if (!isEdit || (imgUri != null && !piece.getImage()
-                                        .equals(imgUri!!.lastPathSegment.toString()))
-                                ) {
-                                    val stream = FileInputStream(File(getPath(imgUri)))
-                                    strRef.child(imgUri!!.lastPathSegment.toString())
-                                        .putStream(stream)
-                                }
-                            } else {
-                                if (isEdit && piece.getImgUsed())
-                                    strRef.child(piece.getImage().toString()).delete()
-                            }
-
-                            val newRes = mapOf(
-                                "image" to image,
-                                "date" to binding.tvDate.text.toString(),
-                                "name" to binding.etName.text.toString(),
-                                "genreNum" to binding.spGenre.selectedItemPosition,
-                                "genre" to binding.spGenre.selectedItem.toString(),
-                                "location" to binding.etLocation.text.toString(),
-                                "imgUsed" to imgUsed,
-                                "memo" to binding.etMemo.text.toString(),
-                                "rate" to binding.rbRatingBar.rating,
-                                "latitude" to piece.getLatitude(),
-                                "longitude" to piece.getLongitude(),
-                                "dbID" to id
-                            )
-                            docRef.collection("restaurants").document(id).set(newRes)
-
-                            //로딩 화면 실행
-                            val progress = Intent(this, ProgressActivity::class.java)
-                            if (isEdit) progress.putExtra("endCode", 0)
-                            else progress.putExtra("endCode", 1)
-
-                            startActivity(progress)
-                            finish()
-                        }
-                    }
-                    else
-                        Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+                    saveCurrentItemProcess(isEdit)
                     true
                 }
                 else -> false
             }
         }
 
-        //datePicker
-        binding.llDate.setOnClickListener {
-            val cal = Calendar.getInstance()
-            val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
-                binding.tvDate.text = dText
-            }
-            val dpDialog = DatePickerDialog(
-                this,
-                dp,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            )
-            dpDialog.show()
-        }
-
-        //map (주소 가져오기)
-        binding.btnMap.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", piece.getLatitude())
-            intent.putExtra("longitude", piece.getLongitude())
-            getAddr.launch(intent)
-        }
-
         //spinner
         binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
-        binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(!imgUsed) selectImg(position)
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
+
+        initListeners()
 
         if(isEdit){
             //adapter 데이터 받기
@@ -221,27 +127,11 @@ class AddActivity : AppCompatActivity(){
         }
         else{
             //date picker default
-            val sdf = SimpleDateFormat ( "yyyy년 M월 d일")
+            val sdf = SimpleDateFormat ( "yyyy년 M월 d일", Locale.KOREA)
             val today = sdf.format(Date(Calendar.getInstance().timeInMillis))
             binding.tvDate.text = today
         }
 
-        binding.ivImage.setOnClickListener{
-            val imgDlg = ImgDialog(this)
-            imgDlg.setOnGalleryClickListener {
-                val gallery =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                getImg.launch(gallery)
-                imgDlg.closeDialog()
-            }
-
-            imgDlg.setOnDefaultClickListener {
-                imgUsed = false
-                selectImg(binding.spGenre.selectedItemPosition)
-                imgDlg.closeDialog()
-            }
-            imgDlg.create()
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -262,6 +152,130 @@ class AddActivity : AppCompatActivity(){
         super.onBackPressed()
         backToRecord(intent.getBooleanExtra("isEdit", false))
     }
+
+
+    private fun initListeners(){
+        binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(!imgUsed) selectImg(position)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        //datePicker
+        binding.llDate.setOnClickListener {
+            val cal = Calendar.getInstance()
+            val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+                val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+                binding.tvDate.text = dText
+            }
+            val dpDialog = DatePickerDialog(
+                this,
+                dp,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            )
+            dpDialog.show()
+        }
+
+        //map (주소 가져오기)
+        binding.btnMap.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("latitude", piece.getLatitude())
+            intent.putExtra("longitude", piece.getLongitude())
+            getAddr.launch(intent)
+        }
+
+        //이미지 가져오기
+        binding.ivImage.setOnClickListener{
+            val imgDlg = ImgDialog(this)
+            imgDlg.setOnGalleryClickListener {
+                val gallery =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                getImg.launch(gallery)
+                imgDlg.closeDialog()
+            }
+
+            imgDlg.setOnDefaultClickListener {
+                imgUsed = false
+                selectImg(binding.spGenre.selectedItemPosition)
+                imgDlg.closeDialog()
+            }
+            imgDlg.create()
+        }
+    }
+
+
+    private fun saveCurrentItemProcess(isEdit:Boolean){
+        if(nm.checkNetworkState()) {
+            //이름과 장소는 필수!
+            if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
+                Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
+                    .show()
+            //저장 과정
+            else {
+                val id: String = if (isEdit) piece.getDBID().toString()
+                else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
+                    .format(Date(System.currentTimeMillis()))
+                    .toString()
+                var image: String? = null
+
+                //이미지 설정
+                if (imgUsed) {
+                    image = if (isEdit) {
+                        if (imgUri != null && !piece.getImage()
+                                .equals(imgUri!!.lastPathSegment.toString())
+                        ) {
+                            strRef.child(piece.getImage().toString()).delete()
+                            imgUri!!.lastPathSegment.toString()
+                        } else
+                            piece.getImage().toString()
+                    } else {
+                        imgUri!!.lastPathSegment.toString()
+                    }
+
+                    if (!isEdit || (imgUri != null && !piece.getImage()
+                            .equals(imgUri!!.lastPathSegment.toString()))
+                    ) {
+                        val stream = FileInputStream(File(getPath(imgUri)))
+                        strRef.child(imgUri!!.lastPathSegment.toString())
+                            .putStream(stream)
+                    }
+                } else {
+                    if (isEdit && piece.getImgUsed())
+                        strRef.child(piece.getImage().toString()).delete()
+                }
+
+                val newRes = mapOf(
+                    "image" to image,
+                    "date" to binding.tvDate.text.toString(),
+                    "name" to binding.etName.text.toString(),
+                    "genreNum" to binding.spGenre.selectedItemPosition,
+                    "genre" to binding.spGenre.selectedItem.toString(),
+                    "location" to binding.etLocation.text.toString(),
+                    "imgUsed" to imgUsed,
+                    "memo" to binding.etMemo.text.toString(),
+                    "rate" to binding.rbRatingBar.rating,
+                    "latitude" to piece.getLatitude(),
+                    "longitude" to piece.getLongitude(),
+                    "dbID" to id
+                )
+                docRef.collection("restaurants").document(id).set(newRes)
+
+                //로딩 화면 실행
+                val progress = Intent(this, ProgressActivity::class.java)
+                if (isEdit) progress.putExtra("endCode", 0)
+                else progress.putExtra("endCode", 1)
+
+                startActivity(progress)
+                finish()
+            }
+        }
+        else
+            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+    }
+
 
     //수정 취소 시 실행될 함수
     private fun backToRecord(isEdit: Boolean){
