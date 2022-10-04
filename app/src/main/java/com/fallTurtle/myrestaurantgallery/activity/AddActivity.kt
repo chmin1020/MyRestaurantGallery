@@ -30,8 +30,19 @@ import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * 항목 추가 화면을 담당하는 액티비티.
+ * 이 액티비티에서는 새로운 맛집 정보를 저장할 수 있는 기능을 제공한다.
+ * 새 항목 추가와 수정 모두 이 액티비티를 사용하므로, isEdit를 인텐트로 받아서 이 여부를 체크한다.
+ * 더하여 여기서 지역 주소 입력을 위해 MapActivity로도 이동할 수 있다.
+ **/
 class AddActivity : AppCompatActivity(){
-    private val piece = Piece() //for edit
+    //--------------------------------------------
+    // 인스턴스 영역
+    //
+
+    //for saving edit information
+    private val piece = Piece()
 
     //view binding
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
@@ -67,14 +78,32 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
+
+    //--------------------------------------------
+    // 액티비티 생명주기 및 오버라이딩 영역
+    //
+
+    /* onCreate()에서는 뷰와 퍼미션 체크, 리사이클러뷰, 툴바, 이벤트 등의 기본적인 것들을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val isEdit = intent.getBooleanExtra("isEdit", false)
-
         //network status
         nm = NetworkManager(this)
+
+        //각 뷰의 리스너들 설정
+        initListeners()
+
+        //edit 여부 체크
+        val isEdit = intent.getBooleanExtra("isEdit", false)
+        if(isEdit)
+            getEditInfo()
+        else{
+            //date picker default(수정 작업이 아니므로 날짜만 기본 세팅)
+            val sdf = SimpleDateFormat ( "yyyy년 M월 d일", Locale.KOREA)
+            val today = sdf.format(Date(Calendar.getInstance().timeInMillis))
+            binding.tvDate.text = today
+        }
 
         //toolbar
         setSupportActionBar(binding.toolbar)
@@ -91,79 +120,46 @@ class AddActivity : AppCompatActivity(){
         }
 
         //spinner
-        binding.spGenre.adapter = ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
-
-        initListeners()
-
-        if(isEdit){
-            //adapter 데이터 받기
-            piece.setDBID(intent.getStringExtra("dbID").toString())
-            piece.setName(intent.getStringExtra("name"))
-            piece.setGenreNum(intent.getIntExtra("genreNum", 0))
-            piece.setGenre(intent.getStringExtra("genre"))
-            piece.setImage(intent.getStringExtra("image"))
-            piece.setRate(intent.getIntExtra("rate",0))
-            piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
-            imgUsed = piece.getImgUsed()
-            piece.setLocation(intent.getStringExtra("location"))
-            piece.setMemo(intent.getStringExtra("memo"))
-            piece.setDate(intent.getStringExtra("date"))
-            piece.setLatitude(intent.getDoubleExtra("latitude", -1.0))
-            piece.setLongitude(intent.getDoubleExtra("longitude", -1.0))
-
-            binding.etName.setText(piece.getName())
-            binding.spGenre.setSelection(piece.getGenreNum()!!)
-            binding.etLocation.setText(piece.getLocation())
-            binding.etMemo.setText(piece.getMemo())
-            binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
-            binding.tvDate.text = piece.getDate()
-
-            if(piece.getImgUsed()){
-                val realRef = strRef.child(piece.getImage().toString())
-                Log.d("realRef", piece.getImage().toString())
-                GlideApp.with(this)
-                    .load(realRef).into(binding.ivImage)
-            }
-            else selectImg(piece.getGenreNum()!!)
-        }
-        else{
-            //date picker default
-            val sdf = SimpleDateFormat ( "yyyy년 M월 d일", Locale.KOREA)
-            val today = sdf.format(Date(Calendar.getInstance().timeInMillis))
-            binding.tvDate.text = today
-        }
-
+        binding.spGenre.adapter =
+            ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            android.R.id.home -> {
-                backToRecord(intent.getBooleanExtra("isEdit", false))
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
+    /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.add_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
+    /* onOptionsItemSelected()에서는 툴바에서 선택한 옵션에 따라 나타날 이벤트를 정의한다. */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            android.R.id.home -> backToRecord(intent.getBooleanExtra("isEdit", false))
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    /* onBackPressed()에서는 뒤로 가기 버튼을 눌렸을 때 수행할 일을 정의한다. */
     override fun onBackPressed() {
         super.onBackPressed()
         backToRecord(intent.getBooleanExtra("isEdit", false))
     }
 
 
+    //--------------------------------------------
+    // 내부 함수 영역
+    //
+
+    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
+        //스피너에 표시할 아이템 목록 설정
         binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(!imgUsed) selectImg(position)
+                if(!imgUsed) selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        //datePicker
+        //datePicker 다이얼로그 설정
         binding.llDate.setOnClickListener {
             val cal = Calendar.getInstance()
             val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -191,6 +187,8 @@ class AddActivity : AppCompatActivity(){
         //이미지 가져오기
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
+
+            //갤러리에서 사진 가져오는 것을 선택했다면
             imgDlg.setOnGalleryClickListener {
                 val gallery =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -198,31 +196,73 @@ class AddActivity : AppCompatActivity(){
                 imgDlg.closeDialog()
             }
 
+            //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
                 imgUsed = false
-                selectImg(binding.spGenre.selectedItemPosition)
+                selectFoodDefaultImage(binding.spGenre.selectedItemPosition)
                 imgDlg.closeDialog()
             }
+
+            //설정한 다이얼로그 생성
             imgDlg.create()
         }
     }
 
+    /* 수정 관련 정보들을 받아서 저장하고 또 적용하는 함수 */
+    private fun getEditInfo(){
+        //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
+        piece.setDBID(intent.getStringExtra("dbID").toString())
+        piece.setName(intent.getStringExtra("name"))
+        piece.setGenreNum(intent.getIntExtra("genreNum", 0))
+        piece.setGenre(intent.getStringExtra("genre"))
+        piece.setImage(intent.getStringExtra("image"))
+        piece.setRate(intent.getIntExtra("rate",0))
+        piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
+        piece.setLocation(intent.getStringExtra("location"))
+        piece.setMemo(intent.getStringExtra("memo"))
+        piece.setDate(intent.getStringExtra("date"))
+        piece.setLatitude(intent.getDoubleExtra("latitude", -1.0))
+        piece.setLongitude(intent.getDoubleExtra("longitude", -1.0))
 
+        //받은 데이터를 변수 혹은 뷰에 적용
+        imgUsed = piece.getImgUsed()
+        binding.etName.setText(piece.getName())
+        binding.spGenre.setSelection(piece.getGenreNum()!!)
+        binding.etLocation.setText(piece.getLocation())
+        binding.etMemo.setText(piece.getMemo())
+        binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
+        binding.tvDate.text = piece.getDate()
+
+        //이미지를 사용하는 정보라면 storage에서 이미지도 가져온다. (아니면 default)
+        if(piece.getImgUsed()){
+            val realRef = strRef.child(piece.getImage().toString())
+            Log.d("realRef", piece.getImage().toString())
+            GlideApp.with(this)
+                .load(realRef).into(binding.ivImage)
+        }
+        else selectFoodDefaultImage(piece.getGenreNum()!!)
+    }
+
+    /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(isEdit:Boolean){
         if(nm.checkNetworkState()) {
-            //이름과 장소는 필수!
+            //저장 과정 (이름과 장소는 필수!)
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
                     .show()
-            //저장 과정
             else {
-                val id: String = if (isEdit) piece.getDBID().toString()
-                else SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
-                    .format(Date(System.currentTimeMillis()))
-                    .toString()
-                var image: String? = null
+                //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성
+                val id: String =
+                    if (isEdit)
+                        piece.getDBID().toString()
+                    else
+                        SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
+                            .format(Date(System.currentTimeMillis()))
+                            .toString()
+
 
                 //이미지 설정
+                var image: String? = null
                 if (imgUsed) {
                     image = if (isEdit) {
                         if (imgUri != null && !piece.getImage()
@@ -248,6 +288,7 @@ class AddActivity : AppCompatActivity(){
                         strRef.child(piece.getImage().toString()).delete()
                 }
 
+                //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
                 val newRes = mapOf(
                     "image" to image,
                     "date" to binding.tvDate.text.toString(),
@@ -264,12 +305,13 @@ class AddActivity : AppCompatActivity(){
                 )
                 docRef.collection("restaurants").document(id).set(newRes)
 
-                //로딩 화면 실행
+                //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
                 if (isEdit) progress.putExtra("endCode", 0)
                 else progress.putExtra("endCode", 1)
-
                 startActivity(progress)
+
+                //이 화면은 종료
                 finish()
             }
         }
@@ -281,6 +323,7 @@ class AddActivity : AppCompatActivity(){
     //수정 취소 시 실행될 함수
     private fun backToRecord(isEdit: Boolean){
         if(isEdit) {
+            //기존에 백업했던 기존 정보들을 다시 record로 보냄
             val back = Intent(this, RecordActivity::class.java)
             back.putExtra("dbID",piece.getDBID())
             back.putExtra("name",piece.getName())
@@ -302,8 +345,8 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
-    //spinner 이미지 고르기
-    private fun selectImg(position : Int){
+    //spinner 기본 이미지 고르기
+    private fun selectFoodDefaultImage(position : Int){
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
             1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
