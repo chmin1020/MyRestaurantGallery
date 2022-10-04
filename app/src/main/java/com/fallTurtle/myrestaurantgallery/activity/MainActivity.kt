@@ -36,10 +36,11 @@ class MainActivity : AppCompatActivity() {
 
     //Firebase
     private val mAuth = FirebaseAuth.getInstance()
+    private val curID = mAuth.currentUser!!.email.toString()
     private var docRef: DocumentReference? = null
     private val db = Firebase.firestore
     private val str = Firebase.storage
-    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+    private val strRef = str.reference.child(curID)
 
     //view binding
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     /* onOptionsItemSelected()에서는 툴바에서 선택한 옵션에 따라 나타날 이벤트를 정의한다. */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            //로그아웃 선택 시
             R.id.menu_logout -> {
                 FirebaseAuth.getInstance().signOut()
                 val progress = Intent(this, ProgressActivity::class.java)
@@ -104,15 +106,19 @@ class MainActivity : AppCompatActivity() {
                 startActivity(progress)
                 finish()
             }
+
+            //탈퇴 선택 시
             R.id.menu_withdrawal -> {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.withdrawal_ask)
                     .setPositiveButton(R.string.yes) {dialog, which ->
-                        withDrawCurrentUser()
+                        withdrawCurrentUser()
                     }
                     .setNegativeButton(R.string.no){dialog, which ->}
                     .show()
             }
+
+            //아이템 추가 선택 시
             R.id.add_item ->{
                 val addIntent = Intent(this@MainActivity, AddActivity::class.java)
                 addIntent.putExtra("isEdit", false)
@@ -182,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* 사용자의 탈퇴 처리를 위한 함수 */
-    private fun withDrawCurrentUser(){
+    private fun withdrawCurrentUser(){
         //파이어스토어에 담겨 있는 유저 관련 DB 파일 전부 삭제
         for(item in list){
             //저장 정보에 이미지도 있다면 storage 내부 해당 이미지 제거
@@ -191,21 +197,21 @@ class MainActivity : AppCompatActivity() {
             }
             //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
             db.collection("users")
-                .document(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                .document(curID)
                 .collection("restaurants")
                 .document(item.getDBID()!!).delete()
         }
 
         //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
         db.collection("users")
-            .document(FirebaseAuth.getInstance().currentUser!!.email.toString()).delete()
+            .document(curID).delete()
 
         //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
-        FirebaseAuth.getInstance().currentUser!!.delete().addOnCompleteListener{ task->
+        mAuth.currentUser!!.delete().addOnCompleteListener{ task->
             if(task.isSuccessful)
                 FirebaseAuth.getInstance().signOut()
             else
-                Toast.makeText(this,"error",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
         }
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
@@ -220,11 +226,10 @@ class MainActivity : AppCompatActivity() {
     /* 파이어베이스에서 현재 유저를 위한 DB 데이터를 가져와서 화면에 갱신하는 함수 */
     private fun updateDB() {
         //현재 유저를 위한 저장 document 찾아서 레퍼런스 저장
-        if (mAuth.currentUser != null)
-            docRef = db.collection("users").document(mAuth.currentUser!!.email.toString())
+        if (mAuth.currentUser != null){
+            docRef = db.collection("users").document(curID)
 
-        // document 레퍼런스에서 저장 내용들 가져와서 리스트에 업데이트
-        if (mAuth.currentUser != null) {
+            // document 레퍼런스에서 저장 내용들 가져와서 리스트에 업데이트
             docRef!!.collection("restaurants").addSnapshotListener { value, e ->
                 //리스트를 초기화하고 새로 등록
                 list.clear()

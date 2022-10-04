@@ -31,8 +31,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AddActivity : AppCompatActivity(){
-    private lateinit var binding:ActivityAddBinding
     private val piece = Piece() //for edit
+
+    //view binding
+    private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
 
     //network connection check
     private lateinit var nm: NetworkManager
@@ -67,7 +69,6 @@ class AddActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val isEdit = intent.getBooleanExtra("isEdit", false)
