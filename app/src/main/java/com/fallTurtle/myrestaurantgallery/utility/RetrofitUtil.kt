@@ -7,8 +7,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
+/**
+ * 사용할 Retrofit2 객체를 가져오는 object.
+ * 기본적으로 apiService를 사용하고, 이 인터페이스를 위해 retrofit, okHttpClient 객체를 만든다.
+ */
 object RetrofitUtil {
     val apiService: APIService by lazy { getRetrofit().create(APIService::class.java) }
+
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Url.KAKAOMAP_URL)
