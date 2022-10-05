@@ -80,8 +80,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             setResult(RESULT_OK, backTo)
             finish()
         }
+
         //gps on
         binding.fabMyLocation.setOnClickListener{
+            //맵 관련 권한을 사용할 수 있다면 gps를 통해 위치 이동
             if(checkMapPermission()) {
                 flpc!!.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
                 moveCamera()
@@ -177,11 +179,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         return addr
     }
 
+    /* 맵 카메라를 현재 위치로 이동시키고 맵 마커도 옮기는 함수 */
     private fun moveCamera(){
+        //현재 위치를 받아와서 거기로 이동
         val now = LatLng(curLocation.latitude, curLocation.longitude)
         val position = CameraPosition.Builder().target(now).zoom(16f).build()
         markerOps.position(now)
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+
+        //기존 마커가 있다면 지우고, 새 위치에 마커를 추가한다.
         marker?.remove()
         marker = mMap.addMarker(markerOps)
     }

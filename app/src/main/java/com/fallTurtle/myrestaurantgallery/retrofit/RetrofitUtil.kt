@@ -1,6 +1,7 @@
-package com.fallTurtle.myrestaurantgallery.utility
+package com.fallTurtle.myrestaurantgallery.retrofit
 
 import com.fallTurtle.myrestaurantgallery.BuildConfig
+import com.fallTurtle.myrestaurantgallery.retrofit.values.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
