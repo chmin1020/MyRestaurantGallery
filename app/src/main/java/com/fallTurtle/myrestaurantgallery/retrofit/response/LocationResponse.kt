@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.response
+package com.fallTurtle.myrestaurantgallery.retrofit.response
 
 /**
  * Retrofit2 API를 통해서 받아올 정보를 담는 클래스.

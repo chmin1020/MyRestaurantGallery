@@ -16,10 +16,10 @@ import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.item.LocationPair
 import com.fallTurtle.myrestaurantgallery.item.LocationResult
-import com.fallTurtle.myrestaurantgallery.response.LocationResponse
-import com.fallTurtle.myrestaurantgallery.response.Place
-import com.fallTurtle.myrestaurantgallery.utility.Key
-import com.fallTurtle.myrestaurantgallery.utility.RetrofitUtil
+import com.fallTurtle.myrestaurantgallery.retrofit.response.LocationResponse
+import com.fallTurtle.myrestaurantgallery.retrofit.response.Place
+import com.fallTurtle.myrestaurantgallery.retrofit.values.Key
+import com.fallTurtle.myrestaurantgallery.retrofit.RetrofitUtil
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
