@@ -23,15 +23,20 @@ import com.fallTurtle.myrestaurantgallery.retrofit.RetrofitUtil
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-
+/**
+ * 맛집을 검색하는 창을 제공하는 액티비티.
+ * 이 액티비티에서는 직접 식당 이름을 검색하고, 그에 맞는 결과를 확인하여 선택할 수 있다.
+ * 이 때, 검색 결과를 위해서 카카오 맵 API를 Retrofit2 객체를 활용해서 사용했다.
+ * 검색 결과는 recyclerView 내부에 적절하게 배치한다.
+ **/
 class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //editText 자동 키보드
-    private lateinit var etSearch: EditText
-    private lateinit var imm: InputMethodManager
+    private val etSearch: EditText by lazy { binding.etSearch }
+    private val imm: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
     
     //기존 좌표 (backPressed 대비)
-    private var oriLati: Double = 0.0
-    private var oriLongi: Double = 0.0
+    private val oriLati: Double by lazy { intent.getDoubleExtra("latitude", 0.0) }
+    private val oriLongi: Double by lazy { intent.getDoubleExtra("longitude", 0.0) }
 
     //코루틴
     override val coroutineContext: CoroutineContext
@@ -40,16 +45,48 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //리사이클러뷰
     private lateinit var adapter: LocationAdapter
 
-    private lateinit var binding:ActivityLocationListBinding
+    //view binding
+    private val binding:ActivityLocationListBinding by lazy{ ActivityLocationListBinding.inflate(layoutInflater)}
+
+
+    //--------------------------------------------
+    // 액티비티 생명주기 및 오버라이딩 영역
+    //
+
+    /* onCreate()에서는 리스너와 리사이클러뷰를 설정하고 이외 사전 작업을 수행한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLocationListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //기존 좌표받기
-        oriLati = intent.getDoubleExtra("latitude", 0.0)
-        oriLongi = intent.getDoubleExtra("longitude", 0.0)
+        initRecyclerView()
+        initListeners()
+    }
 
+    /* onResume()에서는 검색을 위해 키보드를 바로 올리는 작업을 수행해준다. */
+    override fun onResume() {
+        super.onResume()
+
+        //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
+        etSearch.requestFocus()
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
+
+    /* onBackPressed()에서는 기존 좌표를 그대로 다시 Map 화면에 보내서 오류가 없도록 한다. */
+    override fun onBackPressed() {
+        val backTo = Intent(this, MapActivity::class.java).apply {
+            putExtra("x", oriLati)
+            putExtra("y", oriLongi)
+        }
+        setResult(RESULT_OK, backTo)
+        finish()
+    }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (초기화)
+    //
+
+    private fun initRecyclerView(){
         //리사이클러뷰 설정
         adapter = LocationAdapter(this)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -72,11 +109,9 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
         })
+    }
 
-        //키보드 배치를 위한 사전작업
-        etSearch = binding.etSearch
-        imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-
+    private fun initListeners(){
         //뒤로 가기
         binding.ivBack.setOnClickListener {
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
@@ -100,25 +135,17 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
             searchKeyword(binding.etSearch.text.toString())
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
         }
-        initData()
     }
 
-    override fun onResume() {
-        super.onResume()
-        //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
-        etSearch.requestFocus()
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-    }
+
+    //--------------------------------------------
+    // 내부 함수 영역 (검색)
+    //
 
     private fun loadNext() {
         if (binding.recyclerView.adapter?.itemCount == 0)
             return
         searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun initData() {
-        adapter.notifyDataSetChanged()
     }
 
     private fun setData(searchInfo: LocationResponse, keywordString: String) {
@@ -156,7 +183,10 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 }
                 // IO 스레드 사용
                 withContext(Dispatchers.IO) {
-                    val response = RetrofitUtil.apiService.getSearchLocation(Key.KAKAO_API,keywordString, page)
+                    //key, 검색어(query), 페이지를 retrofit 객체로 보내 http 응답을 받음
+                    val response = RetrofitUtil.apiService.getSearchLocation(Key.KAKAO_API, keywordString, page)
+
+                    //response 상태가 success
                     if (response.isSuccessful) {
                         val body = response.body()
                         // Main (UI) 스레드 사용
@@ -166,9 +196,8 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                             }
                         }
                     }
-                    else {
+                    else
                         Log.e("response fail", "error happened")
-                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -177,14 +206,5 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                binding.progressCircular.isVisible = false // 로딩 표시 완료
             }
         }
-    }
-
-    override fun onBackPressed() {
-        val backTo = Intent(this, MapActivity::class.java).apply {
-            putExtra("x", oriLati)
-            putExtra("y", oriLongi)
-        }
-        setResult(RESULT_OK, backTo)
-        finish()
     }
 }
