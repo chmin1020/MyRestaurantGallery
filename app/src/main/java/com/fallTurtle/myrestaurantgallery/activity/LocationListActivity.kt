@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
+import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.LocationPair
 import com.fallTurtle.myrestaurantgallery.item.LocationResult
 import com.fallTurtle.myrestaurantgallery.retrofit.response.LocationResponse
@@ -44,6 +45,9 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //editText 자동 키보드
     private val etSearch: EditText by lazy { binding.etSearch }
     private val imm: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
+
+    //네트워크 연결 체크 매니저
+    private val nm: NetworkManager by lazy { NetworkManager(this) }
 
     //코루틴
     override val coroutineContext: CoroutineContext
@@ -134,8 +138,12 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
 
     /* 키워드를 가지고 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String){
-        searchKeyword(keyword) //검색
-        imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
+        if(nm.checkNetworkState()) {
+            searchKeyword(keyword) //검색
+            imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
+        }
+        else
+            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
     }
 
     /* 선택을 하지 않고 Map 화면으로 돌아갈 때, 기존 좌표 값을 그대로 유지하도록 하는 함수 */
