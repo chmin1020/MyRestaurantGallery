@@ -68,7 +68,7 @@ class AddActivity : AppCompatActivity(){
 
     //맵에서 주소를 받아오기 위한 요소들
     private var address: String? = null
-    private val getAddr = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
             piece.setLatitude(it.data?.getDoubleExtra("latitude", -1.0)!!)
@@ -177,7 +177,7 @@ class AddActivity : AppCompatActivity(){
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("latitude", piece.getLatitude())
             intent.putExtra("longitude", piece.getLongitude())
-            getAddr.launch(intent)
+            getAddress.launch(intent)
         }
 
         //이미지 가져오기

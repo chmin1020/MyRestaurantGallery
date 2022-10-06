@@ -16,7 +16,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
-
+/**
+ * 저장된 데이터를 확인할 때 사용하는 액티비티.
+ * 인텐트를 통해서 시작이 되며, 여기서 extra 데이터로 받은 것들을 각 뷰에 적용해서 보여준다.
+ * 메뉴를 통해 아이템을 삭제하거나 수정을 위한 AddActivity 제공 화면으로 이동할 수 있다.
+ **/
 class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 인스턴스 영역
