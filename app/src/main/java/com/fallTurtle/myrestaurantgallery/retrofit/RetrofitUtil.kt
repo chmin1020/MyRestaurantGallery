@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 사용할 Retrofit2 객체를 가져오는 object.
- * 기본적으로 apiService를 사용하고, 이 인터페이스를 위해 retrofit, okHttpClient 객체를 만든다.
+ * 기본적으로 apiService 를 사용하고, 이 인터페이스를 위해 retrofit, okHttpClient 객체를 만든다.
  * 여기서 okHttpClient 객체는 타임아웃과 로그 모니터링을 위해 사용하고,
- * retrofit 객체는 편리하게 REST API를 활용하기 위해 사용한다.
+ * retrofit 객체는 편리하게 REST API 를 활용하기 위해 사용한다.
  */
 object RetrofitUtil {
     // 후에 http GET 요청을 보내기 위해 사용할 서비스 인터페이스 실현 객체
@@ -22,7 +22,7 @@ object RetrofitUtil {
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Url.KAKAOMAP_URL) //
-            .addConverterFactory(GsonConverterFactory.create()) // json을 받아서 gson으로 파싱
+            .addConverterFactory(GsonConverterFactory.create()) // json 을 받아서 gson 으로 파싱
             .client(buildOkHttpClient()) // OkHttp 사용
             .build()
     }

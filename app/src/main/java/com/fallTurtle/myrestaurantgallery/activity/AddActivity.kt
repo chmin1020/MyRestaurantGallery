@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -33,8 +32,8 @@ import java.util.*
 /**
  * 항목 추가 화면을 담당하는 액티비티.
  * 이 액티비티에서는 새로운 맛집 정보를 저장할 수 있는 기능을 제공한다.
- * 새 항목 추가와 수정 모두 이 액티비티를 사용하므로, isEdit를 인텐트로 받아서 이 여부를 체크한다.
- * 더하여 여기서 지역 주소 입력을 위해 MapActivity로도 이동할 수 있다.
+ * 새 항목 추가와 수정 모두 이 액티비티를 사용하므로, isEdit 값을 인텐트로 받아서 이 여부를 체크한다.
+ * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
 class AddActivity : AppCompatActivity(){
     //--------------------------------------------
@@ -48,7 +47,7 @@ class AddActivity : AppCompatActivity(){
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
 
     //network connection check
-    private lateinit var nm: NetworkManager
+    private val nm: NetworkManager by lazy { NetworkManager(this) }
 
     //fireStore
     private val db = Firebase.firestore
@@ -87,9 +86,6 @@ class AddActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        //network status
-        nm = NetworkManager(this)
 
         //각 뷰의 리스너들 설정
         initListeners()
@@ -233,14 +229,13 @@ class AddActivity : AppCompatActivity(){
         binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
         binding.tvDate.text = piece.getDate()
 
-        //이미지를 사용하는 정보라면 storage에서 이미지도 가져온다. (아니면 default)
+        //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
         if(piece.getImgUsed()){
             val realRef = strRef.child(piece.getImage().toString())
-            Log.d("realRef", piece.getImage().toString())
-            GlideApp.with(this)
-                .load(realRef).into(binding.ivImage)
+            GlideApp.with(this).load(realRef).into(binding.ivImage)
         }
-        else selectFoodDefaultImage(piece.getGenreNum()!!)
+        else
+            selectFoodDefaultImage(piece.getGenreNum()!!)
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
