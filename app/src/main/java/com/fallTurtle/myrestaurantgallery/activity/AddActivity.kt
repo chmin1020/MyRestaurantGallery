@@ -46,7 +46,7 @@ class AddActivity : AppCompatActivity(){
     //view binding
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
 
-    //network connection check
+    //네트워크 연결 체크 매니저
     private val nm: NetworkManager by lazy { NetworkManager(this) }
 
     //fireStore
@@ -240,6 +240,7 @@ class AddActivity : AppCompatActivity(){
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(isEdit:Boolean){
+        //네트워크 연결 상태라면
         if(nm.checkNetworkState()) {
             //저장 과정 (이름과 장소는 필수!)
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
