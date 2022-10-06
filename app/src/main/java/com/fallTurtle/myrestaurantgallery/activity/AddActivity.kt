@@ -49,7 +49,7 @@ class AddActivity : AppCompatActivity(){
     //네트워크 연결 체크 매니저
     private val nm: NetworkManager by lazy { NetworkManager(this) }
 
-    //fireStore
+    //firebase
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
     private val str = Firebase.storage
@@ -247,7 +247,7 @@ class AddActivity : AppCompatActivity(){
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
                     .show()
             else {
-                //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성
+                //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
                 val id: String =
                     if (isEdit)
                         piece.getDBID().toString()
@@ -260,26 +260,30 @@ class AddActivity : AppCompatActivity(){
                 //이미지 설정
                 var image: String? = null
                 if (imgUsed) {
-                    image = if (isEdit) {
-                        if (imgUri != null && !piece.getImage()
-                                .equals(imgUri!!.lastPathSegment.toString())
-                        ) {
-                            strRef.child(piece.getImage().toString()).delete()
-                            imgUri!!.lastPathSegment.toString()
-                        } else
-                            piece.getImage().toString()
-                    } else {
-                        imgUri!!.lastPathSegment.toString()
-                    }
+                    //이미지 값 설정
+                    image =
+                        if (isEdit) { //수정 중인 상태이다.
+                            //사진을 변경했다.
+                            if (imgUri != null && !piece.getImage()
+                                    .equals(imgUri!!.lastPathSegment.toString())) {
+                                strRef.child(piece.getImage().toString()).delete() //기존 데이터는 지운다.
+                                imgUri!!.lastPathSegment.toString() //새로운 uri 값을 가져온다.
+                            }
+                            else //변경 안 했으면 그냥 가져온다.
+                                piece.getImage().toString()
+                        }
+                        else //수정 중이 아니다.
+                        imgUri!!.lastPathSegment.toString() //그냥 가져온다.
 
-                    if (!isEdit || (imgUri != null && !piece.getImage()
-                            .equals(imgUri!!.lastPathSegment.toString()))
-                    ) {
+
+                    //수정 중이 아니었고 현재 이미지가 저장된 이미지와 다르면, 실제로 이미지 저장
+                    if (!isEdit || (imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString()))) {
                         val stream = FileInputStream(File(getPath(imgUri)))
-                        strRef.child(imgUri!!.lastPathSegment.toString())
-                            .putStream(stream)
+                        strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
                     }
-                } else {
+                }
+                else {
+                    //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
                     if (isEdit && piece.getImgUsed())
                         strRef.child(piece.getImage().toString()).delete()
                 }
@@ -356,6 +360,7 @@ class AddActivity : AppCompatActivity(){
 
     //제대로 된 uri 가져오기
     private fun getPath(uri: Uri?): String {
+        //콘텐트 리졸버로 해당 uri 값을 받기 위한 접근 시도
         val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
         cursor!!.moveToNext()
         val path = cursor.getString(cursor.getColumnIndex("_data"))
