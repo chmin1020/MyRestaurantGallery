@@ -32,15 +32,15 @@ class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapte
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.tvTitle.text = resultList[position].getName()
-        holder.tvSubTitle.text = resultList[position].getFullAddr()
-        holder.tvCategory.text = resultList[position].getCategory()
+        holder.tvTitle.text = resultList[position].name
+        holder.tvSubTitle.text = resultList[position].fullAddress
+        holder.tvCategory.text = resultList[position].category
 
         holder.itemView.setOnClickListener {
             val activity:Activity = context as Activity
             val backTo = Intent(context, MapActivity::class.java).apply {
-                putExtra("x", resultList[position].getLp()!!.latitude.toDouble())
-                putExtra("y", resultList[position].getLp()!!.longitude.toDouble())
+                putExtra("x", resultList[position].lp.latitude.toDouble())
+                putExtra("y", resultList[position].lp.longitude.toDouble())
             }
             activity.setResult(AppCompatActivity.RESULT_OK, backTo)
             activity.finish()
