@@ -41,10 +41,11 @@ class LoginActivity: AppCompatActivity() {
 
         try {
             //받은 결과의 아이디 토큰을 통해 파이어베이스 인증 시도
-            val account = task.getResult(ApiException::class.java)!!
-            firebaseAuthWithGoogle(account.idToken!!)
+            val account = task.getResult(ApiException::class.java) ?: throw NullPointerException()
+            val idToken = account.idToken ?: throw NullPointerException()
+            firebaseAuthWithGoogle(idToken)
         }
-        catch (e: ApiException) {
+        catch (e: Exception) {
             Log.w(TAG, "Google sign in failed", e)
         }
     }
@@ -87,27 +88,22 @@ class LoginActivity: AppCompatActivity() {
     /* 받은 아이디 토큰을 통해서 파이어베이스 인증을 시도하는 함수 */
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        var user: FirebaseUser? = null
 
         //받은 idToken 으로 credential 만들고 인증 시도
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 //인증이 되었다면 유저 데이터 받을 수 있음
-                if (task.isSuccessful)
-                    user = mAuth.currentUser
-
-                //결과에 따라 화면 전환 시도
-                updateUI(user)
+                if (task.isSuccessful){
+                    //user 인증이 확인됐으면 화면 변경
+                    mAuth.currentUser?.let { showMain() }
+                }
             }
     }
 
     /* 파이어베이스 인증에도 성공했다면, 메인 화면으로 이동할 수 있게 하는 함수 */
-    private fun updateUI(user: FirebaseUser?) {
-        //유저가 null -> 계정 인증에 실패함.
-        if (user != null) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+    private fun showMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

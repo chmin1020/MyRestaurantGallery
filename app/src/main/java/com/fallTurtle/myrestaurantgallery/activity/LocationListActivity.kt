@@ -191,9 +191,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                 withContext(Dispatchers.IO) {
                     //key, 검색어(query), 페이지를 retrofit 객체로 보내 http 응답을 받음
                     val response = RetrofitUtil.apiService.getSearchLocation(
-                        Key.KAKAO_API,
-                        keywordString,
-                        page
+                        Key.KAKAO_API, keywordString, page
                     )
 
                     //response 상태가 success
