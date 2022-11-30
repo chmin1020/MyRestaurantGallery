@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.retrofit.response
+package com.fallTurtle.myrestaurantgallery.model.retrofit.response
 
 data class Place(
     var id: String,                     // 장소 ID

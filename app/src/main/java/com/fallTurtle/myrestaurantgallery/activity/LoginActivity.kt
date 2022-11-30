@@ -1,9 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
@@ -12,7 +11,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 
 /**
@@ -29,7 +27,6 @@ class LoginActivity: AppCompatActivity() {
     private val mClient by lazy { GoogleSignIn.getClient(this, googleSignInOptions) }
     private lateinit var googleSignInOptions: GoogleSignInOptions
 
-
     //--------------------------------------------
     // 활동 결과를 받기 위한 launcher
     //
@@ -45,8 +42,9 @@ class LoginActivity: AppCompatActivity() {
             val idToken = account.idToken ?: throw NullPointerException()
             firebaseAuthWithGoogle(idToken)
         }
-        catch (e: Exception) {
-            Log.w(TAG, "Google sign in failed", e)
+        catch (e: NullPointerException) {
+            // null -> 정상적인 데이터를 받아오지 못함
+            Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -67,11 +65,7 @@ class LoginActivity: AppCompatActivity() {
         binding.signInButton.setOnClickListener{ signIn() }
 
         //if already login -> skip this activity
-        if(mAuth.currentUser != null){
-            val start = Intent(application,MainActivity::class.java)
-            startActivity(start)
-            finish()
-        }
+        mAuth.currentUser?.let { showMain() }
     }
 
 
@@ -81,22 +75,21 @@ class LoginActivity: AppCompatActivity() {
 
     /* 정보를 받아와서 (구글)로그인을 시도하는 함수 */
     private fun signIn(){
-        val sign = mClient.signInIntent
-        getSignLauncher.launch(sign)
+        val signInIntent = mClient.signInIntent
+        getSignLauncher.launch(signInIntent)
     }
 
     /* 받은 아이디 토큰을 통해서 파이어베이스 인증을 시도하는 함수 */
     private fun firebaseAuthWithGoogle(idToken: String) {
+        //Token 보내서 credential 받아오기
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
-        //받은 idToken 으로 credential 만들고 인증 시도
+        //받은 credential 통해 인증 시도
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
-                //인증이 되었다면 유저 데이터 받을 수 있음
-                if (task.isSuccessful){
-                    //user 인증이 확인됐으면 화면 변경
+                //인증이 되었다면 유저 데이터 받을 수 있음 -> 유저 데이터를 가지고 메인 화면으로 이동
+                if (task.isSuccessful)
                     mAuth.currentUser?.let { showMain() }
-                }
             }
     }
 

@@ -19,7 +19,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
-import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -41,7 +41,7 @@ class AddActivity : AppCompatActivity(){
     //
 
     //for saving edit information
-    private val piece = Piece()
+    private val piece = Info()
 
     //view binding
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
