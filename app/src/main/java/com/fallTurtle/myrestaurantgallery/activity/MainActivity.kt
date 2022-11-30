@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
-import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     //related to recyclerView
     private val listAdapter = ListAdapter()
-    private var list  = ArrayList<Piece>()
+    private var list  = ArrayList<Info>()
 
 
     //--------------------------------------------
@@ -233,7 +233,7 @@ class MainActivity : AppCompatActivity() {
             docRef!!.collection("restaurants").addSnapshotListener { value, e ->
                 //리스트를 초기화하고 새로 등록
                 list.clear()
-                value?.forEach{ list.add(it.toObject(Piece::class.java)) }
+                value?.forEach{ list.add(it.toObject(Info::class.java)) }
 
                 //갱신한 리스트대로 어댑터 갱신
                 listAdapter.update(list)

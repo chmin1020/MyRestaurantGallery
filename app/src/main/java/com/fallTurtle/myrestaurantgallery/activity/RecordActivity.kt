@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
-import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -30,7 +30,7 @@ class RecordActivity : AppCompatActivity() {
     private val binding : ActivityRecordBinding by lazy { ActivityRecordBinding.inflate(layoutInflater) }
 
     //for saving edit information
-    private var piece = Piece()
+    private var piece = Info()
 
     //firebase
     private val db = Firebase.firestore
@@ -99,7 +99,7 @@ class RecordActivity : AppCompatActivity() {
         binding.tvGenre.text = piece.getGenre()
         binding.tvLocation.text = piece.getLocation()
         binding.tvMemo.text = piece.getMemo()
-        binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
+        binding.rbRatingBar.rating = piece.getRate()?.toFloat() ?: 0F
         binding.tvDate.text = piece.getDate()
 
         //이미지 적용
@@ -108,7 +108,7 @@ class RecordActivity : AppCompatActivity() {
                 .load(strRef.child(piece.getImage().toString())).into(binding.ivImage)
         }
         else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
-            when (piece.getGenreNum()!!) {
+            when (piece.getGenreNum() ?: 6) {
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
                 2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)

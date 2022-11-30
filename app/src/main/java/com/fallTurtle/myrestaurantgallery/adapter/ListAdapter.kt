@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
-import com.fallTurtle.myrestaurantgallery.item.Piece
+import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -22,8 +22,8 @@ import java.util.ArrayList
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filterable {
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
-    private var ufList: List<Piece> = ArrayList()
-    private var fList: List<Piece> = ArrayList()
+    private var ufList: List<Info> = ArrayList()
+    private var fList: List<Info> = ArrayList()
 
     private val db = Firebase.firestore
     private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
@@ -103,7 +103,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
         return fList.size
     }
 
-    fun update(item : List<Piece>){
+    fun update(item : List<Info>){
         this.fList = item
         this.ufList = item
         notifyDataSetChanged()
@@ -123,7 +123,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
                     if (constraint == null || constraint.isEmpty())  //검색 창에 입력된 내용이 없을 시 전체 리스트 출력
                         ufList
                     else{
-                        val filteringList: MutableList<Piece> = ArrayList<Piece>()
+                        val filteringList: MutableList<Info> = ArrayList<Info>()
                         val chk = constraint.toString().trim { it <= ' ' }
                         for (i in ufList.indices) {  //필터되지 않은 전체 리스트에서 조건에 맞는 것만 filteringList 내에 추가
                             if (ufList[i].getName()?.contains(chk)!!) {
@@ -147,7 +147,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
             }
             //완성된 filterResults 출력
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                fList = results.values as ArrayList<Piece>
+                fList = results.values as ArrayList<Info>
                 notifyDataSetChanged()
             }
         }

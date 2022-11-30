@@ -1,6 +1,6 @@
-package com.fallTurtle.myrestaurantgallery.item
+package com.fallTurtle.myrestaurantgallery.model.firebase
 
-class Piece{
+class Info{
     private var dbID:String? = null
     private var imgUsed:Boolean = false
     private var image:String? = null

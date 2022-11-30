@@ -1,8 +1,8 @@
-package com.fallTurtle.myrestaurantgallery.retrofit
+package com.fallTurtle.myrestaurantgallery.model.retrofit
 
-import com.fallTurtle.myrestaurantgallery.retrofit.response.LocationResponse
-import com.fallTurtle.myrestaurantgallery.retrofit.values.Key
-import com.fallTurtle.myrestaurantgallery.retrofit.values.Url
+import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
+import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
+import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

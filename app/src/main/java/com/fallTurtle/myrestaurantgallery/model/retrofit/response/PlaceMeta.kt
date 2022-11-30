@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.retrofit.response
+package com.fallTurtle.myrestaurantgallery.model.retrofit.response
 
 data class PlaceMeta(
     var total_count: Int,               // 검색어에 검색된 문서 수

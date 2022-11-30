@@ -56,11 +56,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //getResult
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         locClient.removeLocationUpdates(locationCallback)
-        curLocation.latitude = it.data?.getDoubleExtra("x", 0.0)!!
-        curLocation.longitude = it.data?.getDoubleExtra("y", 0.0)!!
+        curLocation.latitude = it.data?.getDoubleExtra("x", 0.0) ?: 0.0
+        curLocation.longitude = it.data?.getDoubleExtra("y", 0.0) ?: 0.0
         moveCamera()
     }
 
+    private val looperForUse = Looper.myLooper() ?: Looper.getMainLooper()
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -124,8 +125,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //gps fab 버튼을 눌렀을 때
         binding.fabMyLocation.setOnClickListener{
             //맵 관련 권한을 사용할 수 있다면 gps 기능을 통해 위치 이동
+            Looper.getMainLooper()
             if(checkMapPermission()) {
-                locClient.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
+                locClient.requestLocationUpdates(lr, locationCallback, looperForUse)
                 moveCamera()
                 Toast.makeText(this,"현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
             }
@@ -166,7 +168,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if(curLocation.latitude == -1.0 || curLocation.longitude == -1.0) {
             if (checkMapPermission()) {
                 Toast.makeText(this, "지정 위치가 없어 현재 위치가 표시됩니다.", Toast.LENGTH_SHORT).show()
-                locClient.requestLocationUpdates(lr, locationCallback, Looper.myLooper()!!)
+                locClient.requestLocationUpdates(lr, locationCallback, looperForUse)
             }
             else {
                 Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()

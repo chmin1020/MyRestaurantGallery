@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.retrofit.values
+package com.fallTurtle.myrestaurantgallery.model.retrofit.values
 
 /**
  * 카카오맵 API를 사용하기 위한 url 저장 object
