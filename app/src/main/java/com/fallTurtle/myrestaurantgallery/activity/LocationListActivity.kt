@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -21,7 +20,6 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.response.Place
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
 import com.fallTurtle.myrestaurantgallery.model.retrofit.RetrofitUtil
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
@@ -29,7 +27,7 @@ import kotlin.coroutines.CoroutineContext
  * 이 때, 검색 결과를 위해서 카카오 맵 API 를 Retrofit2 객체를 활용해서 사용했다.
  * 검색 결과는 recyclerView 내부에 적절하게 배치한다.
  **/
-class LocationListActivity : AppCompatActivity(), CoroutineScope {
+class LocationListActivity : AppCompatActivity(){
     //--------------------------------------------
     // 상수 영역
     //
@@ -37,6 +35,7 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
     //기존 좌표 (backPressed 대비)
     private val oriLati: Double by lazy { intent.getDoubleExtra("latitude", 0.0) }
     private val oriLongi: Double by lazy { intent.getDoubleExtra("longitude", 0.0) }
+
 
     //--------------------------------------------
     // 인스턴스 영역
@@ -48,10 +47,6 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
 
     //네트워크 연결 체크 매니저
     private val nm: NetworkManager by lazy { NetworkManager(this) }
-
-    //코루틴
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     //리사이클러뷰
     private val adapter: LocationAdapter by lazy { LocationAdapter(this) }
@@ -179,15 +174,15 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
 
     /* 키워드에 따라 검색을 하되, 페이지를 고려하는 함수 */
     private fun searchWithPage(keywordString: String, page: Int) {
-        // 비동기 처리
-        launch(coroutineContext) {
+        // 코루틴을 통한 비동기 처리
+        runBlocking {
             try {
                 binding.progressCircular.isVisible = true // 로딩 표시
 
                 if (page == 1)
                     adapter.clearList()
 
-                // IO 스레드 사용
+                // IO 스레드 사용 (비동기)
                 withContext(Dispatchers.IO) {
                     //key, 검색어(query), 페이지를 retrofit 객체로 보내 http 응답을 받음
                     val response = RetrofitUtil.apiService.getSearchLocation(
@@ -204,8 +199,14 @@ class LocationListActivity : AppCompatActivity(), CoroutineScope {
                                 setData(searchResponse, keywordString)
                             }
                         }
-                    } else
-                        Log.e("response fail", "error happened")
+                    }
+                    else { //response 실패 시 토스트 메시지 생성
+                        Toast.makeText(
+                            this@LocationListActivity,
+                            "결과를 불러오지 못했습니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
             catch (e: Exception) {

@@ -16,11 +16,34 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
 import com.fallTurtle.myrestaurantgallery.item.LocationResult
 
+/**
+ * 위치 정보 검색 결과에 대한 리스트를 위한 recylcerView 전용 어댑터
+ **/
 class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
+    //--------------------------------------------
+    // 해당 어댑터에서 사용할 뷰홀더
+    //
+
+    class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
+        var tvTitle: TextView = itemView.findViewById(R.id.tv_title)
+        var tvSubTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+        var tvCategory: TextView = itemView.findViewById(R.id.tv_category)
+    }
+
+
+    //--------------------------------------------
+    // 프로퍼티 영역
+    //
+
     private var resultList: List<LocationResult> = listOf()
     var currentPage = 1
     var isEnd = false
     var currentSearchString = ""
+
+
+    //--------------------------------------------
+    // 리사이클러뷰 필수 오버라이딩 함수 영역
+    //
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -51,11 +74,10 @@ class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapte
         return resultList.size
     }
 
-    class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
-        var tvTitle: TextView = itemView.findViewById(R.id.tv_title)
-        var tvSubTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
-        var tvCategory: TextView = itemView.findViewById(R.id.tv_category)
-    }
+
+    //--------------------------------------------
+    // 내부 함수 영역
+    //
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(searchResultList: List<LocationResult>) {

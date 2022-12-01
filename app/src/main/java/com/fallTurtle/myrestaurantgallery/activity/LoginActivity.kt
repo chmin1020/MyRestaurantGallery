@@ -27,6 +27,7 @@ class LoginActivity: AppCompatActivity() {
     private val mClient by lazy { GoogleSignIn.getClient(this, googleSignInOptions) }
     private lateinit var googleSignInOptions: GoogleSignInOptions
 
+
     //--------------------------------------------
     // 활동 결과를 받기 위한 launcher
     //

@@ -51,17 +51,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //permission asking setting
+        //권한 허락을 위한 다이얼로그
         showPermissionDialog()
 
-        //set Firebase references
+        //파이어베이스 레퍼런스 세팅
         FirebaseHandler.updateUserId()
 
-        //recyclerView setting
+        //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
         binding.recyclerView.adapter = listAdapter
 
-        //toolbar its menus setting
+        //툴바와 메뉴 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
@@ -83,7 +83,8 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             //로그아웃 선택 시
             R.id.menu_logout -> {
-                FirebaseAuth.getInstance().signOut()
+                FirebaseHandler.logout()
+
                 val progress = Intent(this, ProgressActivity::class.java)
                 progress.putExtra("endCode",2)
                 startActivity(progress)
@@ -106,7 +107,8 @@ class MainActivity : AppCompatActivity() {
                 val addIntent = Intent(this@MainActivity, AddActivity::class.java)
                 addIntent.putExtra("isEdit", false)
                 startActivity(addIntent)
-                overridePendingTransition(R.anim.slide_up_in, R.anim.slide_up_out)
+
+                overridePendingTransition(R.anim.slide_up_in, R.anim.slide_up_out) //전환 효과 (슬라이딩)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -119,9 +121,10 @@ class MainActivity : AppCompatActivity() {
 
     /* 앱 실행 전 권한을 받기 위한 다이얼로그 (TedPermission 사용) */
     private fun showPermissionDialog() {
-        //퍼미션 질문에 대한 응답 리스너
+        //권한 허가 질문에 대한 응답 리스너
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() { }
+            //권한 획득 거부 시 --> 앱 사용 불가능
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
                 val deniedToast = Toast.makeText(this@MainActivity, "권한이 없으면 레시피 저장 기능 사용이 불가능합니다.", Toast.LENGTH_SHORT)
                 deniedToast.show()
@@ -143,15 +146,16 @@ class MainActivity : AppCompatActivity() {
         //파이어스토어에 담겨 있는 유저 관련 DB 파일 전부 삭제
         for(item in list){
             //저장 정보에 이미지도 있다면 storage 내부 해당 이미지 제거
-            if(item.imgUsed){
+            if(item.imgUsed)
                 strRef.child(item.image).delete()
-            }
+
             //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
             docRef.collection("restaurants").document(item.dbID).delete()
         }
 
         //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
         docRef.delete()
+        strRef.delete()
 
         //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
         fireUser?.delete()?.addOnCompleteListener{ task->
@@ -172,8 +176,7 @@ class MainActivity : AppCompatActivity() {
 
     /* 파이어베이스에서 현재 유저를 위한 DB 데이터를 가져와서 화면에 갱신하는 함수 */
     private fun updateDB() {
-        //현재 유저를 위한 저장 document 찾아서 레퍼런스 저장
-        // document 레퍼런스에서 저장 내용들 가져와서 리스트에 업데이트
+        // document 레퍼런스 내부를 리스트로 업데이트
         docRef.collection("restaurants").addSnapshotListener { value, e ->
             //리스트를 초기화하고 새로 등록
             list.clear()
