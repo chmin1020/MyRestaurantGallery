@@ -192,14 +192,14 @@ class MainActivity : AppCompatActivity() {
         //파이어스토어에 담겨 있는 유저 관련 DB 파일 전부 삭제
         for(item in list){
             //저장 정보에 이미지도 있다면 storage 내부 해당 이미지 제거
-            if(item.getImgUsed()){
-                strRef.child(item.getImage()!!).delete()
+            if(item.imgUsed){
+                strRef.child(item.image).delete()
             }
             //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
             db.collection("users")
                 .document(curID)
                 .collection("restaurants")
-                .document(item.getDBID()!!).delete()
+                .document(item.dbID).delete()
         }
 
         //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거

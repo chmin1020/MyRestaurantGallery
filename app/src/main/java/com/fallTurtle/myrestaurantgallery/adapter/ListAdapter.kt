@@ -39,18 +39,18 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         //그리드 뷰 크기 조정
         val displayMetrics = DisplayMetrics()
-        holder.itemView.context.display!!.getRealMetrics(displayMetrics)
+        holder.itemView.context.display?.getRealMetrics(displayMetrics)
         holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
         holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기
-        if(fList[position].getImgUsed()) {
+        if(fList[position].imgUsed) {
                 GlideApp.with(holder.itemView)
-                .load(strRef.child(fList[position].getImage().toString())).into(holder.ivImage)
+                .load(strRef.child(fList[position].image.toString())).into(holder.ivImage)
         }
         else{
-            when(fList[position].getGenreNum()) {
+            when(fList[position].genreNum) {
                 0 -> holder.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> holder.ivImage.setImageResource(R.drawable.chinese_food)
                 2 -> holder.ivImage.setImageResource(R.drawable.japanese_food)
@@ -60,25 +60,15 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
                 6 -> holder.ivImage.setImageResource(R.drawable.etc)
             }
         }
-        holder.tvName.text = fList[position].getName()
-        holder.tvGenre.text = fList[position].getGenre()
-        holder.tvRate.text = fList[position].getRate().toString()
+        holder.tvName.text = fList[position].name
+        holder.tvGenre.text = fList[position].genre
+        holder.tvRate.text = fList[position].rate.toString()
 
         //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->
             val record = Intent(v.context, RecordActivity::class.java)
-            record.putExtra("dbID", fList[position].getDBID())
-            record.putExtra("name", fList[position].getName())
-            record.putExtra("genreNum", fList[position].getGenreNum())
-            record.putExtra("genre", fList[position].getGenre())
-            record.putExtra("rate", fList[position].getRate())
-            record.putExtra("image",fList[position].getImage())
-            record.putExtra("imgUsed", fList[position].getImgUsed())
-            record.putExtra("location", fList[position].getLocation())
-            record.putExtra("memo", fList[position].getMemo())
-            record.putExtra("date", fList[position].getDate())
-            record.putExtra("latitude", fList[position].getLatitude())
-            record.putExtra("longitude", fList[position].getLongitude())
+            record.putExtra("info", fList[position])
+
             v.context.startActivity(record)
         }
         //길게 누를 시 삭제 질의
@@ -86,10 +76,10 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
             AlertDialog.Builder(v.context)
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
-                    if(fList[position].getImgUsed()){
-                        strRef.child(fList[position].getImage().toString()).delete()
+                    if(fList[position].imgUsed){
+                        strRef.child(fList[position].image.toString()).delete()
                     }
-                    docRef.collection("restaurants").document(fList[position].getDBID().toString()).delete()
+                    docRef.collection("restaurants").document(fList[position].dbID.toString()).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                     update(fList)
                 }
@@ -126,16 +116,16 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>(), Filter
                         val filteringList: MutableList<Info> = ArrayList<Info>()
                         val chk = constraint.toString().trim { it <= ' ' }
                         for (i in ufList.indices) {  //필터되지 않은 전체 리스트에서 조건에 맞는 것만 filteringList 내에 추가
-                            if (ufList[i].getName()?.contains(chk)!!) {
+                            if (ufList[i].name.contains(chk)) {
                                 ufList[i].let { filteringList.add(it) }
                             }
-                            else if(ufList[i].getLocation()?.contains(chk)!!){
+                            else if(ufList[i].location.contains(chk)){
                                 ufList[i].let { filteringList.add(it) }
                             }
-                            else if(ufList[i].getGenre()?.contains(chk)!!) {
+                            else if(ufList[i].genre.contains(chk)) {
                                 ufList[i].let { filteringList.add(it) }
                             }
-                            else if(ufList[i].getMemo()?.contains(chk)!!){
+                            else if(ufList[i].memo.contains(chk)){
                                 ufList[i].let { filteringList.add(it) }
                             }
                         }
