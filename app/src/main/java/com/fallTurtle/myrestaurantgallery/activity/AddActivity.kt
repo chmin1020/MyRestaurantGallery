@@ -41,7 +41,7 @@ class AddActivity : AppCompatActivity(){
     //
 
     //for saving edit information
-    private val piece = Info()
+    private lateinit var info:Info
 
     //view binding
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
@@ -71,8 +71,8 @@ class AddActivity : AppCompatActivity(){
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
-            piece.setLatitude(it.data?.getDoubleExtra("latitude", -1.0)!!)
-            piece.setLongitude(it.data?.getDoubleExtra("longitude", -1.0)!!)
+            info.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: 0.0
+            info.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: 0.0
             binding.etLocation.setText(address)
         }
     }
@@ -175,8 +175,8 @@ class AddActivity : AppCompatActivity(){
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", piece.getLatitude())
-            intent.putExtra("longitude", piece.getLongitude())
+            intent.putExtra("latitude", info.latitude)
+            intent.putExtra("longitude", info.longitude)
             getAddress.launch(intent)
         }
 
@@ -207,35 +207,24 @@ class AddActivity : AppCompatActivity(){
     /* 수정 관련 정보들을 받아서 저장하고 또 적용하는 함수 */
     private fun getEditInfo(){
         //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
-        piece.setDBID(intent.getStringExtra("dbID").toString())
-        piece.setName(intent.getStringExtra("name"))
-        piece.setGenreNum(intent.getIntExtra("genreNum", 0))
-        piece.setGenre(intent.getStringExtra("genre"))
-        piece.setImage(intent.getStringExtra("image"))
-        piece.setRate(intent.getIntExtra("rate",0))
-        piece.setImgUsed(intent.getBooleanExtra("imgUsed", false))
-        piece.setLocation(intent.getStringExtra("location"))
-        piece.setMemo(intent.getStringExtra("memo"))
-        piece.setDate(intent.getStringExtra("date"))
-        piece.setLatitude(intent.getDoubleExtra("latitude", -1.0))
-        piece.setLongitude(intent.getDoubleExtra("longitude", -1.0))
+        info = intent.getSerializableExtra("info") as Info
 
         //받은 데이터를 변수 혹은 뷰에 적용
-        imgUsed = piece.getImgUsed()
-        binding.etName.setText(piece.getName())
-        binding.spGenre.setSelection(piece.getGenreNum()!!)
-        binding.etLocation.setText(piece.getLocation())
-        binding.etMemo.setText(piece.getMemo())
-        binding.rbRatingBar.rating = piece.getRate()!!.toFloat()
-        binding.tvDate.text = piece.getDate()
+        imgUsed = info.imgUsed
+        binding.etName.setText(info.name)
+        binding.spGenre.setSelection(info.genreNum)
+        binding.etLocation.setText(info.location)
+        binding.etMemo.setText(info.memo)
+        binding.rbRatingBar.rating = info.rate.toFloat()
+        binding.tvDate.text = info.date
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
-        if(piece.getImgUsed()){
-            val realRef = strRef.child(piece.getImage().toString())
+        if(info.imgUsed){
+            val realRef = strRef.child(info.image)
             GlideApp.with(this).load(realRef).into(binding.ivImage)
         }
         else
-            selectFoodDefaultImage(piece.getGenreNum()!!)
+            selectFoodDefaultImage(info.genreNum)
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -250,7 +239,7 @@ class AddActivity : AppCompatActivity(){
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
                 val id: String =
                     if (isEdit)
-                        piece.getDBID().toString()
+                        info.dbID.toString()
                     else
                         SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
                             .format(Date(System.currentTimeMillis()))
@@ -264,28 +253,29 @@ class AddActivity : AppCompatActivity(){
                     image =
                         if (isEdit) { //수정 중인 상태이다.
                             //사진을 변경했다.
-                            if (imgUri != null && !piece.getImage()
-                                    .equals(imgUri!!.lastPathSegment.toString())) {
-                                strRef.child(piece.getImage().toString()).delete() //기존 데이터는 지운다.
-                                imgUri!!.lastPathSegment.toString() //새로운 uri 값을 가져온다.
+                            imgUri?.let {
+                                if(info.image != it.lastPathSegment.toString()) {
+                                    strRef.child(info.image).delete() //기존 데이터는 지운다.
+                                    it.lastPathSegment.toString() //새로운 uri 값을 가져온다.
+                                }
                             }
-                            else //변경 안 했으면 그냥 가져온다.
-                                piece.getImage().toString()
+                            info.image
                         }
                         else //수정 중이 아니다.
-                        imgUri!!.lastPathSegment.toString() //그냥 가져온다.
+                            imgUri!!.lastPathSegment.toString() //그냥 가져온다.
+
 
 
                     //수정 중이 아니었고 현재 이미지가 저장된 이미지와 다르면, 실제로 이미지 저장
-                    if (!isEdit || (imgUri != null && !piece.getImage().equals(imgUri!!.lastPathSegment.toString()))) {
+                    if (!isEdit || (imgUri != null && info.image != imgUri!!.lastPathSegment.toString())) {
                         val stream = FileInputStream(File(getPath(imgUri)))
                         strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
                     }
                 }
                 else {
                     //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
-                    if (isEdit && piece.getImgUsed())
-                        strRef.child(piece.getImage().toString()).delete()
+                    if (isEdit && info.imgUsed)
+                        strRef.child(info.image).delete()
                 }
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
@@ -299,8 +289,8 @@ class AddActivity : AppCompatActivity(){
                     "imgUsed" to imgUsed,
                     "memo" to binding.etMemo.text.toString(),
                     "rate" to binding.rbRatingBar.rating,
-                    "latitude" to piece.getLatitude(),
-                    "longitude" to piece.getLongitude(),
+                    "latitude" to info.latitude,
+                    "longitude" to info.longitude,
                     "dbID" to id
                 )
                 docRef.collection("restaurants").document(id).set(newRes)
@@ -325,16 +315,7 @@ class AddActivity : AppCompatActivity(){
         if(isEdit) {
             //기존에 백업했던 기존 정보들을 다시 record로 보냄
             val back = Intent(this, RecordActivity::class.java)
-            back.putExtra("dbID",piece.getDBID())
-            back.putExtra("name",piece.getName())
-            back.putExtra("genreNum",piece.getGenreNum())
-            back.putExtra("genre",piece.getGenre())
-            back.putExtra("location",piece.getLocation())
-            back.putExtra("image",piece.getImage())
-            back.putExtra("imgUsed",piece.getImgUsed())
-            back.putExtra("memo",piece.getMemo())
-            back.putExtra("rate",piece.getRate())
-            back.putExtra("date",piece.getDate())
+            back.putExtra("info", info)
             startActivity(back)
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
