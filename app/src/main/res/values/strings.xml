@@ -43,6 +43,4 @@
     <string name="add_new_item">Add new item</string>
     <string name="search_location">location searching</string>
     <string name="current_location">set current location</string>
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

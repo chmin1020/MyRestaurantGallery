@@ -18,15 +18,35 @@ import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import java.util.ArrayList
 
 /**
- * 각 맛집 데이터를 보여줄 recyclerView를 위한 adapter
+ * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
 class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
+    //--------------------------------------------
+    // 해당 어댑터에서 사용할 뷰홀더
+    //
+
+    class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+        var ivImage:ImageView = itemView.findViewById(R.id.iv_image)
+        var tvName:TextView = itemView.findViewById(R.id.tv_name)
+        var tvGenre:TextView = itemView.findViewById(R.id.tv_genre)
+        var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
+    }
+
+    //--------------------------------------------
+    // 프로퍼티 영역
+    //
+
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
     private var infoList: List<Info> = ArrayList()
 
     //Firebase
     private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
     private val strRef by lazy{ FirebaseHandler.getStorageRef() }
+
+
+    //--------------------------------------------
+    // 리사이클러뷰 필수 오버라이딩 함수 영역
+    //
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -91,15 +111,13 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         return infoList.size
     }
 
-    fun update(item : List<Info>){
-        this.infoList = item
-        notifyDataSetChanged()
-    }
 
-    class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        var ivImage:ImageView = itemView.findViewById(R.id.iv_image)
-        var tvName:TextView = itemView.findViewById(R.id.tv_name)
-        var tvGenre:TextView = itemView.findViewById(R.id.tv_genre)
-        var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
+    //--------------------------------------------
+    // 내부 함수 영역
+    //
+
+    fun update(items : List<Info>){
+        this.infoList = items
+        notifyDataSetChanged()
     }
 }

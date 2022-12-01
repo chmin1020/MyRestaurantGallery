@@ -39,5 +39,9 @@ abstract class FirebaseHandler {
         fun getStorageRef(): StorageReference{
             return storageRef
         }
+
+        fun logout() {
+            mAuth.signOut()
+        }
     }
  }
