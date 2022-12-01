@@ -77,15 +77,11 @@ class MainActivity : AppCompatActivity() {
         //toolbar its menus setting
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        //listeners setting
-        initListeners()
     }
 
-    /* onResume()에서는 검색창을 초기화하고 화면에 보여줄 내용을 데이터베이스에서 가져온다. */
+    /* onResume()에서는 화면에 보여줄 (변경된) 내용을 데이터베이스에서 가져온다. */
     override fun onResume(){
         super.onResume()
-        binding.etSearch.setText("")
         updateDB()
     }
 
@@ -148,23 +144,6 @@ class MainActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역
     //
-
-    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
-    private fun initListeners(){
-        //검색 기능 textWatcher를 통해 구현
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                listAdapter.filter.filter(binding.etSearch.text)
-            }
-        })
-
-        //검색 설정 초기화 버튼
-        binding.ivReset.setOnClickListener {
-            binding.etSearch.text.clear()
-        }
-    }
 
     /* 앱 실행 전 권한을 받기 위한 다이얼로그 (TedPermission 사용) */
     private fun showPermissionDialog() {

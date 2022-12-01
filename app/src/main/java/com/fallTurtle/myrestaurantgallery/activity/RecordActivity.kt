@@ -30,7 +30,7 @@ class RecordActivity : AppCompatActivity() {
     private val binding : ActivityRecordBinding by lazy { ActivityRecordBinding.inflate(layoutInflater) }
 
     //for saving edit information
-    private lateinit var info:Info
+    private var info = Info()
 
     //firebase
     private val db = Firebase.firestore
@@ -85,7 +85,7 @@ class RecordActivity : AppCompatActivity() {
 
         //받은 데이터를 적절한 뷰에 적용
         binding.tvName.text = info.name
-        binding.tvGenre.text = info.genre
+        binding.tvCategory.text = info.category
         binding.tvLocation.text = info.location
         binding.tvMemo.text = info.memo
         binding.rbRatingBar.rating = info.rate.toFloat()
@@ -97,7 +97,7 @@ class RecordActivity : AppCompatActivity() {
                 .load(strRef.child(info.image.toString())).into(binding.ivImage)
         }
         else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
-            when (info.genreNum) {
+            when (info.categoryNum) {
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
                 2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)

@@ -91,7 +91,7 @@
         android:inputType="text" />
 
     <Spinner
-        android:id="@+id/sp_genre"
+        android:id="@+id/sp_category"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -99,7 +99,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:entries="@array/genre_spinner"
+        android:entries="@array/category_spinner"
         android:spinnerMode="dialog"/>
 
     <LinearLayout

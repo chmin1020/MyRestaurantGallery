@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/jeong/AndroidStudioProjects/MyRestaurantGallery/app/src/main/res/layout/activity_add.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/jeong/AndroidStudioProjects/MyRestaurantGallery/app/src/main/res/layout/activity_main.xml" value="0.12335359675785208" />
+        <entry key="..\:/Users/jeong/AndroidStudioProjects/MyRestaurantGallery/app/src/main/res/layout/activity_record.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/jeong/AndroidStudioProjects/MyRestaurantGallery/app/src/main/res/menu/add_activity_menu.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/jeong/AndroidStudioProjects/MyRestaurantGallery/app/src/main/res/menu/record_activity_menu.xml" value="0.25364583333333335" />
       </map>
