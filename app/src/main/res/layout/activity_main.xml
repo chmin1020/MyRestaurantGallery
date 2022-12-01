@@ -28,47 +28,10 @@
             android:textStyle="bold|italic"/>
     </androidx.appcompat.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/ll_searchBar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:weightSum="5"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/iv_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:layout_margin="8dp"
-            android:src="@drawable/search"/>
-
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3.7"
-            android:paddingTop="5dp"
-            android:layout_margin="4dp"
-            android:textSize="18sp"
-            android:hint="@string/search"
-            android:inputType="text"
-            android:autofillHints="@string/search" />
-
-        <ImageView
-            android:id="@+id/iv_reset"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.8"
-            android:layout_margin="8dp"
-            android:src="@drawable/reset"/>
-    </LinearLayout>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="13"
+        android:layout_weight="14"
         android:layout_margin="10dp"/>
 </LinearLayout>

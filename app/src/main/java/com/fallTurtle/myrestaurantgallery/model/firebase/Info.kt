@@ -8,10 +8,10 @@ data class Info(
         var image:String = "",
         var name:String = "",
         var location:String = "",
-        var genreNum:Int = 0,
-        var genre:String = "",
+        var categoryNum:Int = 0,
+        var category:String = "",
         var rate:Int = 0,
         var memo:String = "",
-        var date:String = "" ,
+        var date:String = "",
         var latitude:Double = -1.0,
         var longitude:Double = -1.0): Serializable

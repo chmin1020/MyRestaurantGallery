@@ -56,8 +56,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //getResult
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         locClient.removeLocationUpdates(locationCallback)
-        curLocation.latitude = it.data?.getDoubleExtra("x", 0.0) ?: 0.0
-        curLocation.longitude = it.data?.getDoubleExtra("y", 0.0) ?: 0.0
+        it.data?.let{ intent->
+            curLocation.latitude = intent.getDoubleExtra("x", 0.0)
+            curLocation.longitude = intent.getDoubleExtra("y", 0.0)
+        }
         moveCamera()
     }
 

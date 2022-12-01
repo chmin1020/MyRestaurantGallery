@@ -41,7 +41,7 @@ class AddActivity : AppCompatActivity(){
     //
 
     //for saving edit information
-    private lateinit var info:Info
+    private var info = Info()
 
     //view binding
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
@@ -71,12 +71,13 @@ class AddActivity : AppCompatActivity(){
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
-            info.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: 0.0
-            info.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: 0.0
+            info.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
+            info.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
             binding.etLocation.setText(address)
         }
     }
 
+    private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -91,7 +92,6 @@ class AddActivity : AppCompatActivity(){
         initListeners()
 
         //edit 여부 체크
-        val isEdit = intent.getBooleanExtra("isEdit", false)
         if(isEdit)
             getEditInfo()
         else{
@@ -116,8 +116,8 @@ class AddActivity : AppCompatActivity(){
         }
 
         //spinner
-        binding.spGenre.adapter =
-            ArrayAdapter.createFromResource(this, R.array.genre_spinner, android.R.layout.simple_spinner_dropdown_item)
+        binding.spCategory.adapter =
+            ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
@@ -148,7 +148,7 @@ class AddActivity : AppCompatActivity(){
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
         //스피너에 표시할 아이템 목록 설정
-        binding.spGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if(!imgUsed) selectFoodDefaultImage(position)
             }
@@ -175,8 +175,17 @@ class AddActivity : AppCompatActivity(){
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", info.latitude)
-            intent.putExtra("longitude", info.longitude)
+
+            var lati:Double? = null
+            var longi:Double? = null
+
+            if(isEdit) {
+                lati = info.latitude
+                longi = info.longitude
+            }
+
+            intent.putExtra("latitude", lati)
+            intent.putExtra("longitude", longi)
             getAddress.launch(intent)
         }
 
@@ -195,7 +204,7 @@ class AddActivity : AppCompatActivity(){
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
                 imgUsed = false
-                selectFoodDefaultImage(binding.spGenre.selectedItemPosition)
+                selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                 imgDlg.closeDialog()
             }
 
@@ -212,7 +221,7 @@ class AddActivity : AppCompatActivity(){
         //받은 데이터를 변수 혹은 뷰에 적용
         imgUsed = info.imgUsed
         binding.etName.setText(info.name)
-        binding.spGenre.setSelection(info.genreNum)
+        binding.spCategory.setSelection(info.categoryNum)
         binding.etLocation.setText(info.location)
         binding.etMemo.setText(info.memo)
         binding.rbRatingBar.rating = info.rate.toFloat()
@@ -224,7 +233,7 @@ class AddActivity : AppCompatActivity(){
             GlideApp.with(this).load(realRef).into(binding.ivImage)
         }
         else
-            selectFoodDefaultImage(info.genreNum)
+            selectFoodDefaultImage(info.categoryNum)
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -283,8 +292,8 @@ class AddActivity : AppCompatActivity(){
                     "image" to image,
                     "date" to binding.tvDate.text.toString(),
                     "name" to binding.etName.text.toString(),
-                    "genreNum" to binding.spGenre.selectedItemPosition,
-                    "genre" to binding.spGenre.selectedItem.toString(),
+                    "genreNum" to binding.spCategory.selectedItemPosition,
+                    "genre" to binding.spCategory.selectedItem.toString(),
                     "location" to binding.etLocation.text.toString(),
                     "imgUsed" to imgUsed,
                     "memo" to binding.etMemo.text.toString(),
