@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="genre_spinner">
+    <string-array name="category_spinner">
         <item name="Korean">한식</item>
         <item name="Chinese">중식</item>
         <item name="Japanese">일식</item>

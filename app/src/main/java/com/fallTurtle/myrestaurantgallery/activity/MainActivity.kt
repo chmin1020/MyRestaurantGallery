@@ -3,8 +3,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,12 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
+import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 
@@ -35,12 +30,9 @@ class MainActivity : AppCompatActivity() {
     //
 
     //Firebase
-    private val mAuth = FirebaseAuth.getInstance()
-    private val curID = mAuth.currentUser!!.email.toString()
-    private var docRef: DocumentReference? = null
-    private val db = Firebase.firestore
-    private val str = Firebase.storage
-    private val strRef = str.reference.child(curID)
+    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
+    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
+    private val fireUser by lazy{ FirebaseHandler.getUser() }
 
     //view binding
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -48,14 +40,6 @@ class MainActivity : AppCompatActivity() {
     //related to recyclerView
     private val listAdapter = ListAdapter()
     private var list  = ArrayList<Info>()
-
-
-    //--------------------------------------------
-    // 변수 영역
-    //
-
-    //back press time
-    private var backPressTime:Long = 0
 
 
     //--------------------------------------------
@@ -69,6 +53,9 @@ class MainActivity : AppCompatActivity() {
 
         //permission asking setting
         showPermissionDialog()
+
+        //set Firebase references
+        FirebaseHandler.updateUserId()
 
         //recyclerView setting
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -125,21 +112,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    /* onBackPressed()에서는 앱에서 나가기 위해서는 두 번 연속으로 누르게 하기 위한 조치를 취한다. */
-    override fun onBackPressed() {
-        //현재 시간을 구해서 timeGap 값을 계산한다.
-        val curTime = System.currentTimeMillis()
-        val timeGap = curTime - backPressTime
-
-        if(timeGap in 0..2000) //2초 이내로 한 번 더 누르면 2번 연속 누른 것으로 판단 -> 앱 종료
-            finish()
-        else //2초 이내가 아니라면 두 번 연속으로 누르라는 메시지를 출력
-            Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르시면 종료됩니다.",Toast.LENGTH_SHORT).show()
-
-        //뒤로 가기 버튼을 누른 가장 최근 시간을 현재 시간으로 갱신한다.
-        backPressTime = curTime
-    }
-
 
     //--------------------------------------------
     // 내부 함수 영역
@@ -175,18 +147,14 @@ class MainActivity : AppCompatActivity() {
                 strRef.child(item.image).delete()
             }
             //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
-            db.collection("users")
-                .document(curID)
-                .collection("restaurants")
-                .document(item.dbID).delete()
+            docRef.collection("restaurants").document(item.dbID).delete()
         }
 
         //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
-        db.collection("users")
-            .document(curID).delete()
+        docRef.delete()
 
         //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
-        mAuth.currentUser!!.delete().addOnCompleteListener{ task->
+        fireUser?.delete()?.addOnCompleteListener{ task->
             if(task.isSuccessful)
                 FirebaseAuth.getInstance().signOut()
             else
@@ -205,18 +173,14 @@ class MainActivity : AppCompatActivity() {
     /* 파이어베이스에서 현재 유저를 위한 DB 데이터를 가져와서 화면에 갱신하는 함수 */
     private fun updateDB() {
         //현재 유저를 위한 저장 document 찾아서 레퍼런스 저장
-        if (mAuth.currentUser != null){
-            docRef = db.collection("users").document(curID)
+        // document 레퍼런스에서 저장 내용들 가져와서 리스트에 업데이트
+        docRef.collection("restaurants").addSnapshotListener { value, e ->
+            //리스트를 초기화하고 새로 등록
+            list.clear()
+            value?.forEach{ list.add(it.toObject(Info::class.java)) }
 
-            // document 레퍼런스에서 저장 내용들 가져와서 리스트에 업데이트
-            docRef!!.collection("restaurants").addSnapshotListener { value, e ->
-                //리스트를 초기화하고 새로 등록
-                list.clear()
-                value?.forEach{ list.add(it.toObject(Info::class.java)) }
-
-                //갱신한 리스트대로 어댑터 갱신
-                listAdapter.update(list)
-            }
+            //갱신한 리스트대로 어댑터 갱신
+            listAdapter.update(list)
         }
     }
 }

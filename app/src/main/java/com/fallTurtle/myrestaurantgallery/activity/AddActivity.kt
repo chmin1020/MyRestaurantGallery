@@ -19,11 +19,8 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
+import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -49,11 +46,9 @@ class AddActivity : AppCompatActivity(){
     //네트워크 연결 체크 매니저
     private val nm: NetworkManager by lazy { NetworkManager(this) }
 
-    //firebase
-    private val db = Firebase.firestore
-    private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
-    private val str = Firebase.storage
-    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+    //Firebase
+    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
+    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null

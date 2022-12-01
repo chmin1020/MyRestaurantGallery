@@ -13,11 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
+import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import java.util.ArrayList
 
 /**
@@ -27,10 +24,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
     private var infoList: List<Info> = ArrayList()
 
-    private val db = Firebase.firestore
-    private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
-    private val str = Firebase.storage
-    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+    //Firebase
+    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
+    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val v : View = LayoutInflater.from(parent.context).inflate(R.layout.list, parent, false)
@@ -49,7 +45,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         //뷰 항목 채우기
         if(infoList[position].imgUsed) {
                 GlideApp.with(holder.itemView)
-                .load(strRef.child(infoList[position].image.toString())).into(holder.ivImage)
+                .load(strRef.child(infoList[position].image)).into(holder.ivImage)
         }
         else{
             when(infoList[position].categoryNum) {
@@ -79,9 +75,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
                     if(infoList[position].imgUsed){
-                        strRef.child(infoList[position].image.toString()).delete()
+                        strRef.child(infoList[position].image).delete()
                     }
-                    docRef.collection("restaurants").document(infoList[position].dbID.toString()).delete()
+                    docRef.collection("restaurants").document(infoList[position].dbID).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                     update(infoList)
                 }
