@@ -251,7 +251,7 @@ class AddActivity : AppCompatActivity(){
 
 
                 //이미지 설정
-                var image: String? = null
+                var image = ""
                 if (imgUsed) {
                     //이미지 값 설정
                     image =
@@ -280,6 +280,7 @@ class AddActivity : AppCompatActivity(){
                     //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
                     if (isEdit && info.imgUsed)
                         strRef.child(info.image).delete()
+
                 }
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
