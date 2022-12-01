@@ -10,11 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
+import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -32,11 +29,9 @@ class RecordActivity : AppCompatActivity() {
     //for saving edit information
     private var info = Info()
 
-    //firebase
-    private val db = Firebase.firestore
-    private val docRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.email.toString())
-    private val str = Firebase.storage
-    private val strRef = str.reference.child(FirebaseAuth.getInstance().currentUser!!.email.toString())
+    //Firebase
+    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
+    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
 
 
     //--------------------------------------------
@@ -94,7 +89,7 @@ class RecordActivity : AppCompatActivity() {
         //이미지 적용
         if(info.imgUsed) { //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
             GlideApp.with(this)
-                .load(strRef.child(info.image.toString())).into(binding.ivImage)
+                .load(strRef.child(info.image)).into(binding.ivImage)
         }
         else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
             when (info.categoryNum) {
@@ -116,9 +111,9 @@ class RecordActivity : AppCompatActivity() {
             .setPositiveButton(R.string.yes) {dialog, which ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
                 if(info.imgUsed){
-                    strRef.child(info.image.toString()).delete()
+                    strRef.child(info.image).delete()
                 }
-                docRef.collection("restaurants").document(info.dbID.toString()).delete()
+                docRef.collection("restaurants").document(info.dbID).delete()
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()
             }
