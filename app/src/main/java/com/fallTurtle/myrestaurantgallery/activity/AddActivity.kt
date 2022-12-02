@@ -224,8 +224,10 @@ class AddActivity : AppCompatActivity(){
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
         if(info.imgUsed){
-            val realRef = strRef.child(info.image)
-            GlideApp.with(this).load(realRef).into(binding.ivImage)
+            info.image?.let {
+                val realRef = strRef.child(it)
+                GlideApp.with(this).load(realRef).into(binding.ivImage)
+            }
         }
         else
             selectFoodDefaultImage(info.categoryNum)
@@ -243,49 +245,15 @@ class AddActivity : AppCompatActivity(){
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
                 val id: String =
                     if (isEdit)
-                        info.dbID.toString()
+                        info.dbID
                     else
                         SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
                             .format(Date(System.currentTimeMillis()))
                             .toString()
 
-
-                //이미지 설정
-                var image = ""
-                if (imgUsed) {
-                    //이미지 값 설정
-                    image =
-                        if (isEdit) { //수정 중인 상태이다.
-                            //사진을 변경했다.
-                            imgUri?.let {
-                                if(info.image != it.lastPathSegment.toString()) {
-                                    strRef.child(info.image).delete() //기존 데이터는 지운다.
-                                    it.lastPathSegment.toString() //새로운 uri 값을 가져온다.
-                                }
-                            }
-                            info.image
-                        }
-                        else //수정 중이 아니다.
-                            imgUri!!.lastPathSegment.toString() //그냥 가져온다.
-
-
-
-                    //수정 중이 아니었고 현재 이미지가 저장된 이미지와 다르면, 실제로 이미지 저장
-                    if (!isEdit || (imgUri != null && info.image != imgUri!!.lastPathSegment.toString())) {
-                        val stream = FileInputStream(File(getPath(imgUri)))
-                        strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
-                    }
-                }
-                else {
-                    //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
-                    if (isEdit && info.imgUsed)
-                        strRef.child(info.image).delete()
-
-                }
-
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
                 val newRes = mapOf(
-                    "image" to image,
+                    "image" to setImage(),
                     "date" to binding.tvDate.text.toString(),
                     "name" to binding.etName.text.toString(),
                     "genreNum" to binding.spCategory.selectedItemPosition,
@@ -312,6 +280,36 @@ class AddActivity : AppCompatActivity(){
         }
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setImage() : String?{
+        //이미지 설정
+        var image:String? = null
+
+        if (imgUsed) {
+            // 혹시 이미지가 수정된 것이라면 값을 미리 변경
+            if(isEdit && info.image != imgUri?.lastPathSegment.toString()){
+                info.image?.let{ strRef.child(it).delete() } //기존 데이터는 지운다.
+                info.image = imgUri?.lastPathSegment.toString() //새로운 uri 값을 가져온다.
+            }
+
+            //이미지 값 설정
+            image = info.image
+
+
+            //수정 중이 아니었고 현재 이미지가 저장된 이미지와 다르면, 실제로 이미지 저장
+            if (!isEdit || (imgUri != null && info.image != imgUri?.lastPathSegment.toString())) {
+                val stream = FileInputStream(File(getPath(imgUri)))
+                strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
+            }
+        }
+        else {
+            //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
+            if (isEdit && info.imgUsed)
+                info.image?.let { strRef.child(it).delete() }
+        }
+
+        return image
     }
 
 
