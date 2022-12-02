@@ -1,5 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
@@ -64,8 +65,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
 
         //뷰 항목 채우기
         if(infoList[position].imgUsed) {
-                GlideApp.with(holder.itemView)
-                .load(strRef.child(infoList[position].image)).into(holder.ivImage)
+            infoList[position].image?.let {
+                GlideApp.with(holder.itemView).load(strRef.child(it)).into(holder.ivImage)
+            }
         }
         else{
             when(infoList[position].categoryNum) {
@@ -94,9 +96,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             AlertDialog.Builder(v.context)
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
-                    if(infoList[position].imgUsed){
-                        strRef.child(infoList[position].image).delete()
-                    }
+                    if(infoList[position].imgUsed)
+                        infoList[position].image?.let { strRef.child(it).delete() }
+
                     docRef.collection("restaurants").document(infoList[position].dbID).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                     update(infoList)
@@ -116,6 +118,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     // 내부 함수 영역
     //
 
+    @SuppressLint("NotifyDataSetChanged")
     fun update(items : List<Info>){
         this.infoList = items
         notifyDataSetChanged()

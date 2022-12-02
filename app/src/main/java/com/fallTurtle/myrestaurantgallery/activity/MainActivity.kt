@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         for(item in list){
             //저장 정보에 이미지도 있다면 storage 내부 해당 이미지 제거
             if(item.imgUsed)
-                strRef.child(item.image).delete()
+                item.image?.let{ strRef.child(it).delete() }
 
             //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
             docRef.collection("restaurants").document(item.dbID).delete()

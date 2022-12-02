@@ -20,6 +20,7 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.response.Place
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
 import com.fallTurtle.myrestaurantgallery.model.retrofit.RetrofitUtil
 import kotlinx.coroutines.*
+import retrofit2.Response
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
@@ -29,7 +30,7 @@ import kotlinx.coroutines.*
  **/
 class LocationListActivity : AppCompatActivity(){
     //--------------------------------------------
-    // 상수 영역
+    // 프로퍼티 영역
     //
 
     //기존 좌표 (backPressed 대비)
@@ -134,7 +135,7 @@ class LocationListActivity : AppCompatActivity(){
     /* 키워드를 가지고 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String){
         if(nm.checkNetworkState()) {
-            searchKeyword(keyword) //검색
+            searchWithPage(keyword, 1) //첫 페이지부터 검색
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
         }
         else
@@ -167,54 +168,53 @@ class LocationListActivity : AppCompatActivity(){
         searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
     }
 
-    /* 키워드에 대한 첫번째 검색을 하는 함수 (첫번째므로 페이지는 항상 1) */
-    private fun searchKeyword(keywordString: String) {
-        searchWithPage(keywordString, 1)
-    }
-
     /* 키워드에 따라 검색을 하되, 페이지를 고려하는 함수 */
     private fun searchWithPage(keywordString: String, page: Int) {
         // 코루틴을 통한 비동기 처리
-        runBlocking {
+        MainScope().launch {
             try {
                 binding.progressCircular.isVisible = true // 로딩 표시
 
+                // page == 1 -> 새로운 검색 시작
                 if (page == 1)
                     adapter.clearList()
 
-                // IO 스레드 사용 (비동기)
-                withContext(Dispatchers.IO) {
-                    //key, 검색어(query), 페이지를 retrofit 객체로 보내 http 응답을 받음
-                    val response = RetrofitUtil.apiService.getSearchLocation(
-                        Key.KAKAO_API, keywordString, page
-                    )
-
-                    //response 상태가 success
-                    if (response.isSuccessful) {
-                        val body = response.body()
-
-                        // Main (UI) 스레드 사용
-                        withContext(Dispatchers.Main) {
-                            body?.let { searchResponse ->
-                                setData(searchResponse, keywordString)
-                            }
-                        }
-                    }
-                    else { //response 실패 시 토스트 메시지 생성
-                        Toast.makeText(
-                            this@LocationListActivity,
-                            "결과를 불러오지 못했습니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                // 음식점 카테고리 검색 결과
+                val responseRestaurant = async {
+                    withContext(Dispatchers.IO){
+                        RetrofitUtil.apiService.getSearchLocationOfRestaurants(query = keywordString, page = page)
                     }
                 }
+
+                // 카페 카테고리 검색 결과
+                val responseCafe = async {
+                    withContext(Dispatchers.IO){
+                        RetrofitUtil.apiService.getSearchLocationOfCafe(query = keywordString, page = page)
+                    }
+                }
+
+                // 결과를 받은 이후(await) 응답 값들로 적절한 작업 수행
+                val responses = arrayOf(responseRestaurant.await(), responseCafe.await())
+                taskWithResponses(responses, keywordString)
+
             }
             catch (e: Exception) {
                 e.printStackTrace()
             }
             finally {
-               binding.progressCircular.isVisible = false // 로딩 표시 완료
+               binding.progressCircular.isVisible = false // 로딩 표시 제거
             }
+        }
+    }
+
+    /* retrofit을 통해 받은 응답 값들을 통해 적절한 작업을 수행하는 함수 */
+    private fun taskWithResponses(responses: Array<Response<LocationResponse>>, keywordString: String){
+        // 음식점, 카페 검색에 대한 결과들로 각각 데이터 만들기 시도
+        responses.forEach { response ->
+            if (response.isSuccessful) //응답을 성공적으로 받음 -> 적절한 데이터 생성
+                response.body()?.let { setData(it, keywordString) }
+            else //응답 실패 -> 토스트 메시지로 에러 알림
+                Toast.makeText(this@LocationListActivity, "결과를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -225,12 +225,7 @@ class LocationListActivity : AppCompatActivity(){
 
         // 검색 결과 데이터를 뷰 형식에 맞게 옮긴다.
         val dataList = places.map {
-            LocationResult(
-                it.address_name,
-                it.place_name,
-                it.category_name,
-                LocationPair(it.y.toFloat(), it.x.toFloat())
-            )
+            LocationResult(it.address_name, it.place_name, it.category_name, LocationPair(it.y.toFloat(), it.x.toFloat()))
         }
 
         //어댑터에 가져온 리스트 추가
