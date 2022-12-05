@@ -87,11 +87,9 @@ class RecordActivity : AppCompatActivity() {
         binding.tvDate.text = info.date
 
         //이미지 적용
-        if(info.imgUsed) { //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
-            info.image?.let {
-                GlideApp.with(this)
-                    .load(strRef.child(it)).into(binding.ivImage)
-            }
+        val image = info.image
+        if(image != null) { //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
+            GlideApp.with(this).load(strRef.child(image)).into(binding.ivImage)
         }
         else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
             when (info.categoryNum) {
@@ -112,9 +110,8 @@ class RecordActivity : AppCompatActivity() {
             .setMessage(R.string.delete_message)
             .setPositiveButton(R.string.yes) {dialog, which ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
-                if(info.imgUsed){
-                    info.image?.let{ strRef.child(it).delete() }
-                }
+                info.image?.let{ strRef.child(it).delete() }
+
                 docRef.collection("restaurants").document(info.dbID).delete()
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()

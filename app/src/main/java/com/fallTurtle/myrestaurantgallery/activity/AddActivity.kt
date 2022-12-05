@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -52,12 +53,11 @@ class AddActivity : AppCompatActivity(){
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
-    private var imgUsed = false
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         if(imgUri != null) {
             binding.ivImage.setImageURI(imgUri)
-            imgUsed = true
+            curImage = imgUri?.lastPathSegment.toString()
         }
     }
 
@@ -73,6 +73,7 @@ class AddActivity : AppCompatActivity(){
     }
 
     private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
+    private var curImage:String? = null
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -145,7 +146,7 @@ class AddActivity : AppCompatActivity(){
         //스피너에 표시할 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(!imgUsed) selectFoodDefaultImage(position)
+                curImage ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -190,15 +191,14 @@ class AddActivity : AppCompatActivity(){
 
             //갤러리에서 사진 가져오는 것을 선택했다면
             imgDlg.setOnGalleryClickListener {
-                val gallery =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 getImg.launch(gallery)
                 imgDlg.closeDialog()
             }
 
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
-                imgUsed = false
+                Log.e("adsdd", "${binding.spCategory.selectedItemPosition}")
                 selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                 imgDlg.closeDialog()
             }
@@ -213,8 +213,8 @@ class AddActivity : AppCompatActivity(){
         //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
         info = intent.getSerializableExtra("info") as Info
 
+        Log.e("adsd","${info.categoryNum}")
         //받은 데이터를 변수 혹은 뷰에 적용
-        imgUsed = info.imgUsed
         binding.etName.setText(info.name)
         binding.spCategory.setSelection(info.categoryNum)
         binding.etLocation.setText(info.location)
@@ -223,14 +223,11 @@ class AddActivity : AppCompatActivity(){
         binding.tvDate.text = info.date
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
-        if(info.imgUsed){
-            info.image?.let {
-                val realRef = strRef.child(it)
-                GlideApp.with(this).load(realRef).into(binding.ivImage)
-            }
-        }
-        else
-            selectFoodDefaultImage(info.categoryNum)
+        info.image?.let {
+            val realRef = strRef.child(it)
+            GlideApp.with(this).load(realRef).into(binding.ivImage)
+        } ?: selectFoodDefaultImage(info.categoryNum)
+
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -256,10 +253,9 @@ class AddActivity : AppCompatActivity(){
                     "image" to setImage(),
                     "date" to binding.tvDate.text.toString(),
                     "name" to binding.etName.text.toString(),
-                    "genreNum" to binding.spCategory.selectedItemPosition,
-                    "genre" to binding.spCategory.selectedItem.toString(),
+                    "categoryNum" to binding.spCategory.selectedItemPosition,
+                    "category" to binding.spCategory.selectedItem.toString(),
                     "location" to binding.etLocation.text.toString(),
-                    "imgUsed" to imgUsed,
                     "memo" to binding.etMemo.text.toString(),
                     "rate" to binding.rbRatingBar.rating,
                     "latitude" to info.latitude,
@@ -282,33 +278,29 @@ class AddActivity : AppCompatActivity(){
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
     }
 
+    /* 저장할 이미지를 지정하는 함수 */
     private fun setImage() : String?{
         //이미지 설정
         var image:String? = null
 
-        if (imgUsed) {
-            // 혹시 이미지가 수정된 것이라면 값을 미리 변경
-            if(isEdit && info.image != imgUri?.lastPathSegment.toString()){
-                info.image?.let{ strRef.child(it).delete() } //기존 데이터는 지운다.
-                info.image = imgUri?.lastPathSegment.toString() //새로운 uri 값을 가져온다.
-            }
+        // edit 상태이고 이미지도 있었음
+        info.image?.let { preImage ->
+            // 지금 가져온 이미지가 있다면 그것 적용, 없으면 기존 edit 이미지 적용
+            image = curImage?.let {
+                if (preImage != it)
+                    strRef.child(preImage).delete() // 기존 이미지는 지운다.
+                it
+            } ?: info.image
+        } ?: run{ image = curImage }
 
-            //이미지 값 설정
-            image = info.image
+        Log.e("asddd", "$image")
 
-
-            //수정 중이 아니었고 현재 이미지가 저장된 이미지와 다르면, 실제로 이미지 저장
-            if (!isEdit || (imgUri != null && info.image != imgUri?.lastPathSegment.toString())) {
-                val stream = FileInputStream(File(getPath(imgUri)))
-                strRef.child(imgUri!!.lastPathSegment.toString()).putStream(stream)
-            }
+        // 실제 storage에 저장
+        image?.let {
+            val stream = FileInputStream(File(getPath(imgUri)))
+            strRef.child(it).putStream(stream)
         }
-        else {
-            //이미지를 사용하지 않는 상태인데, edit 전에는 사용했다면
-            if (isEdit && info.imgUsed)
-                info.image?.let { strRef.child(it).delete() }
-        }
-
+        
         return image
     }
 
@@ -331,6 +323,7 @@ class AddActivity : AppCompatActivity(){
 
     //spinner 기본 이미지 고르기
     private fun selectFoodDefaultImage(position : Int){
+        Log.e("adsd@","$position")
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
             1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)

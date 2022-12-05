@@ -4,7 +4,6 @@ import java.io.Serializable
 
 data class Info(
         val dbID:String = "",
-        var imgUsed:Boolean = false,
         var image:String? = null,
         var name:String = "",
         var location:String = "",

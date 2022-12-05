@@ -64,10 +64,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기
-        if(infoList[position].imgUsed) {
-            infoList[position].image?.let {
-                GlideApp.with(holder.itemView).load(strRef.child(it)).into(holder.ivImage)
-            }
+        val image = infoList[position].image
+        if(image != null) {
+            GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
         }
         else{
             when(infoList[position].categoryNum) {
@@ -96,8 +95,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
             AlertDialog.Builder(v.context)
                 .setMessage(R.string.delete_message)
                 .setPositiveButton(R.string.yes) {dialog, which ->
-                    if(infoList[position].imgUsed)
-                        infoList[position].image?.let { strRef.child(it).delete() }
+                    infoList[position].image?.let { strRef.child(it).delete() }
 
                     docRef.collection("restaurants").document(infoList[position].dbID).delete()
                     Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
