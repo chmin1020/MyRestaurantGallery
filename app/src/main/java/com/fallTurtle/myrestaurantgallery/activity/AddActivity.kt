@@ -86,6 +86,10 @@ class AddActivity : AppCompatActivity(){
 
         //각 뷰의 리스너들 설정
         initListeners()
+        
+        //spinner
+        binding.spCategory.adapter =
+            ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
 
         //edit 여부 체크
         if(isEdit)
@@ -110,10 +114,6 @@ class AddActivity : AppCompatActivity(){
                 else -> false
             }
         }
-
-        //spinner
-        binding.spCategory.adapter =
-            ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
@@ -146,6 +146,7 @@ class AddActivity : AppCompatActivity(){
         //스피너에 표시할 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                Log.e("adsdad","$position")
                 curImage ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -289,9 +290,11 @@ class AddActivity : AppCompatActivity(){
         }
 
         // 저장할 이미지가 있으면 실제 storage에 저장
-        image?.let {
-            val stream = FileInputStream(File(getPath(imgUri)))
-            strRef.child(it).putStream(stream)
+        image?.let { img->
+            imgUri?.let {
+                val stream = FileInputStream(File(getPath(it)))
+                strRef.child(img).putStream(stream)
+            }
         }
 
         return image
@@ -316,7 +319,7 @@ class AddActivity : AppCompatActivity(){
 
     //spinner 기본 이미지 고르기
     private fun selectFoodDefaultImage(position : Int){
-        Log.e("asddd@","$position")
+        Log.e("adsddd@","$position")
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
             1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
@@ -329,12 +332,12 @@ class AddActivity : AppCompatActivity(){
     }
 
     //제대로 된 uri 가져오기
-    private fun getPath(uri: Uri?): String {
+    private fun getPath(uri: Uri): String {
         //콘텐트 리졸버로 해당 uri 값을 받기 위한 접근 시도
-        val cursor: Cursor? = contentResolver.query(uri!!, null, null, null, null)
-        cursor!!.moveToNext()
-        val path = cursor.getString(cursor.getColumnIndex("_data"))
-        cursor.close()
-        return path
+        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+        cursor?.moveToNext()
+        val path = cursor?.getString(cursor.getColumnIndex("_data"))
+        cursor?.close()
+        return path ?: ""
     }
 }
