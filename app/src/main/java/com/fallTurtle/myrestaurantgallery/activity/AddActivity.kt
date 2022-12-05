@@ -198,7 +198,6 @@ class AddActivity : AppCompatActivity(){
 
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
-                Log.e("adsdd", "${binding.spCategory.selectedItemPosition}")
                 selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                 imgDlg.closeDialog()
             }
@@ -223,11 +222,11 @@ class AddActivity : AppCompatActivity(){
         binding.tvDate.text = info.date
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
+        curImage = info.image
         info.image?.let {
             val realRef = strRef.child(it)
             GlideApp.with(this).load(realRef).into(binding.ivImage)
-        } ?: selectFoodDefaultImage(info.categoryNum)
-
+        }
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -281,26 +280,20 @@ class AddActivity : AppCompatActivity(){
     /* 저장할 이미지를 지정하는 함수 */
     private fun setImage() : String?{
         //이미지 설정
-        var image:String? = null
+        val image:String? = curImage
 
-        // edit 상태이고 이미지도 있었음
+        // edit 상태이고 이미지도 있었을 때, 현재 이미지와 이전 이미지가 다르다면
         info.image?.let { preImage ->
-            // 지금 가져온 이미지가 있다면 그것 적용, 없으면 기존 edit 이미지 적용
-            image = curImage?.let {
-                if (preImage != it)
-                    strRef.child(preImage).delete() // 기존 이미지는 지운다.
-                it
-            } ?: info.image
-        } ?: run{ image = curImage }
+            if (preImage != curImage)
+                strRef.child(preImage).delete() // 기존 이미지는 지운다.
+        }
 
-        Log.e("asddd", "$image")
-
-        // 실제 storage에 저장
+        // 저장할 이미지가 있으면 실제 storage에 저장
         image?.let {
             val stream = FileInputStream(File(getPath(imgUri)))
             strRef.child(it).putStream(stream)
         }
-        
+
         return image
     }
 
@@ -323,7 +316,7 @@ class AddActivity : AppCompatActivity(){
 
     //spinner 기본 이미지 고르기
     private fun selectFoodDefaultImage(position : Int){
-        Log.e("adsd@","$position")
+        Log.e("asddd@","$position")
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
             1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
