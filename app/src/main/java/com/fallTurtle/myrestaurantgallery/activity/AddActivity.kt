@@ -15,6 +15,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import coil.Coil
+import coil.api.load
+import coil.transform.BlurTransformation
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
@@ -22,6 +25,9 @@ import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -86,7 +92,7 @@ class AddActivity : AppCompatActivity(){
 
         //각 뷰의 리스너들 설정
         initListeners()
-        
+
         //spinner
         binding.spCategory.adapter =
             ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
@@ -146,7 +152,6 @@ class AddActivity : AppCompatActivity(){
         //스피너에 표시할 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                Log.e("adsdad","$position")
                 curImage ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -199,6 +204,7 @@ class AddActivity : AppCompatActivity(){
 
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
+                curImage = null
                 selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                 imgDlg.closeDialog()
             }
@@ -213,7 +219,6 @@ class AddActivity : AppCompatActivity(){
         //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
         info = intent.getSerializableExtra("info") as Info
 
-        Log.e("adsd","${info.categoryNum}")
         //받은 데이터를 변수 혹은 뷰에 적용
         binding.etName.setText(info.name)
         binding.spCategory.setSelection(info.categoryNum)
@@ -224,9 +229,10 @@ class AddActivity : AppCompatActivity(){
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
         curImage = info.image
-        info.image?.let {
-            val realRef = strRef.child(it)
-            GlideApp.with(this).load(realRef).into(binding.ivImage)
+        info.image?.let { it ->
+            //GlideApp.with(this).load(realRef).into(binding.ivImage)
+            val result = FirebaseHandler.tryGetImage(this, it)
+            loadImage(result, strRef.child(it))
         }
     }
 
@@ -292,16 +298,37 @@ class AddActivity : AppCompatActivity(){
         // 저장할 이미지가 있으면 실제 storage에 저장
         image?.let { img->
             imgUri?.let {
-                val stream = FileInputStream(File(getPath(it)))
-                strRef.child(img).putStream(stream)
+                val path = File(getPath(it))
+                val stream = FileInputStream(path)
+                CoroutineScope(Dispatchers.IO).launch{
+                    strRef.child(img).putStream(stream)
+                    //FirebaseHandler.imageToCache(path, img)
+                }
             }
         }
 
         return image
     }
 
+    /* 가져온 파일 정보를 통해서 이미지뷰에 로드하는 함수 */
+    private fun loadImage(info: Pair<Boolean, File>, realRef: StorageReference){
+        if(info.first) {
+            binding.ivImage.load(info.second){
+                crossfade(true)
+                placeholder(R.drawable.loading_food)
+            }
+        }
+        else {
+            realRef.downloadUrl.addOnCompleteListener { task ->
+                binding.ivImage.load(task.result) {
+                    crossfade(true)
+                    placeholder(R.drawable.loading_food)
+                }
+            }
+        }
+    }
 
-    //수정 취소 시 실행될 함수
+    /* 수정 취소 시 실행될 함수 */
     private fun backToRecord(isEdit: Boolean){
         if(isEdit) {
             //기존에 백업했던 기존 정보들을 다시 record로 보냄
@@ -319,7 +346,6 @@ class AddActivity : AppCompatActivity(){
 
     //spinner 기본 이미지 고르기
     private fun selectFoodDefaultImage(position : Int){
-        Log.e("adsddd@","$position")
         when(position){
             0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
             1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
