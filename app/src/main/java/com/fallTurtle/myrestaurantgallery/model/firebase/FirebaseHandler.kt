@@ -1,6 +1,5 @@
 package com.fallTurtle.myrestaurantgallery.model.firebase
 
-import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -49,20 +48,6 @@ abstract class FirebaseHandler {
         /* 앱에서 로그아웃 하는 함수 */
         fun logout() {
             mAuth.signOut()
-        }
-
-        /* */
-        fun tryGetImage(context: Context, fid: String): Pair<Boolean, File>{
-            var isExist = false
-            val localFile = File(context.cacheDir, fid)
-
-            if(localFile.exists()){
-                isExist = true
-            }
-            else{
-                storageRef.child(fid).getFile(localFile).addOnSuccessListener { isExist = true }
-            }
-            return Pair(isExist, localFile)
         }
     }
  }

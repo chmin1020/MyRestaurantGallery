@@ -11,17 +11,21 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
+import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
+import com.google.firebase.storage.StorageReference
+import java.io.File
 import java.util.ArrayList
 
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
-class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
+class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     //--------------------------------------------
     // 해당 어댑터에서 사용할 뷰홀더
     //
@@ -66,7 +70,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
         //뷰 항목 채우기
         val image = infoList[position].image
         if(image != null) {
-            GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
+            //GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
+            val result = ImageHandler.getImageInfo(path, image)
+            ImageHandler.loadImage(result, strRef.child(image), holder.ivImage)
         }
         else{
             when(infoList[position].categoryNum) {

@@ -31,7 +31,7 @@ import java.io.IOException
  * 이 지도를 통해 검색으로 선택한 식당의 위치를 확인하거나, 현재 위치로 값을 지정할 수 있다.
  * 이를 위해 구글 맵 API 사용 및 GPS 기능 사용이 있었다.
  **/
-class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //--------------------------------------------
     // 인스턴스 영역
     //

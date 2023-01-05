@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,17 +14,15 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import coil.Coil
 import coil.api.load
-import coil.transform.BlurTransformation
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
+import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
 import java.io.File
@@ -231,8 +228,8 @@ class AddActivity : AppCompatActivity(){
         curImage = info.image
         info.image?.let { it ->
             //GlideApp.with(this).load(realRef).into(binding.ivImage)
-            val result = FirebaseHandler.tryGetImage(this, it)
-            loadImage(result, strRef.child(it))
+            val result = ImageHandler.getImageInfo(this.cacheDir, it)
+            ImageHandler.loadImage(result, strRef.child(it), binding.ivImage)
         }
     }
 
@@ -300,32 +297,14 @@ class AddActivity : AppCompatActivity(){
             imgUri?.let {
                 val path = File(getPath(it))
                 val stream = FileInputStream(path)
-                CoroutineScope(Dispatchers.IO).launch{
-                    strRef.child(img).putStream(stream)
-                    //FirebaseHandler.imageToCache(path, img)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val job = async { strRef.child(img).putStream(stream) }
+                    job.join()
                 }
             }
         }
 
         return image
-    }
-
-    /* 가져온 파일 정보를 통해서 이미지뷰에 로드하는 함수 */
-    private fun loadImage(info: Pair<Boolean, File>, realRef: StorageReference){
-        if(info.first) {
-            binding.ivImage.load(info.second){
-                crossfade(true)
-                placeholder(R.drawable.loading_food)
-            }
-        }
-        else {
-            realRef.downloadUrl.addOnCompleteListener { task ->
-                binding.ivImage.load(task.result) {
-                    crossfade(true)
-                    placeholder(R.drawable.loading_food)
-                }
-            }
-        }
     }
 
     /* 수정 취소 시 실행될 함수 */
