@@ -1,12 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.model.retrofit
 
-import com.fallTurtle.myrestaurantgallery.BuildConfig
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 /**
  * 사용할 Retrofit2 객체를 가져오는 object.
@@ -20,7 +16,7 @@ object RetrofitUtil {
     /* Retrofit 객체를 만들어서 반환하는 함수 */
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(Url.KAKAOMAP_URL) //
+            .baseUrl(Url.KAKAOMAP_URL)
             .addConverterFactory(GsonConverterFactory.create()) // json 을 받아서 gson 으로 파싱
             .build()
     }

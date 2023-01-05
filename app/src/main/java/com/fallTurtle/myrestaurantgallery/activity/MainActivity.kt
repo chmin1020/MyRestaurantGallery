@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //related to recyclerView
-    private val listAdapter = ListAdapter()
-    private var list  = ArrayList<Info>()
+    private val itemsAdapter by lazy { ListAdapter(this.cacheDir) }
+    private var items = ArrayList<Info>()
 
 
     //--------------------------------------------
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
-        binding.recyclerView.adapter = listAdapter
+        binding.recyclerView.adapter = itemsAdapter
 
         //툴바와 메뉴 세팅
         setSupportActionBar(binding.toolbar)
@@ -84,7 +84,6 @@ class MainActivity : AppCompatActivity() {
             //로그아웃 선택 시
             R.id.menu_logout -> {
                 FirebaseHandler.logout()
-
                 val progress = Intent(this, ProgressActivity::class.java)
                 progress.putExtra("endCode",2)
                 startActivity(progress)
@@ -95,10 +94,8 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_withdrawal -> {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.withdrawal_ask)
-                    .setPositiveButton(R.string.yes) {dialog, which ->
-                        withdrawCurrentUser()
-                    }
-                    .setNegativeButton(R.string.no){dialog, which ->}
+                    .setPositiveButton(R.string.yes) {_,_ -> withdrawCurrentUser() }
+                    .setNegativeButton(R.string.no){_,_ ->}
                     .show()
             }
 
@@ -126,8 +123,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPermissionGranted() { }
             //권한 획득 거부 시 --> 앱 사용 불가능
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                val deniedToast = Toast.makeText(this@MainActivity, "권한이 없으면 레시피 저장 기능 사용이 불가능합니다.", Toast.LENGTH_SHORT)
-                deniedToast.show()
+                Toast.makeText(this@MainActivity, "권한을 허용해주세요", Toast.LENGTH_SHORT).show()
                 finishAffinity()
             }
         }
@@ -144,12 +140,9 @@ class MainActivity : AppCompatActivity() {
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
         //파이어스토어에 담겨 있는 유저 관련 DB 파일 전부 삭제
-        for(item in list){
-            //저장 정보에 이미지도 있다면 storage 내부 해당 이미지 제거
-            item.image?.let{ strRef.child(it).delete() }
-
-            //각 item id를 통해 데이터베이스 내부 저장 정보 하나씩 제거
-            docRef.collection("restaurants").document(item.dbID).delete()
+        for(item in items){
+            item.image?.let{ strRef.child(it).delete() } //이미지
+            docRef.collection("restaurants").document(item.dbID).delete() //아이템 데이터
         }
 
         //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
@@ -158,10 +151,8 @@ class MainActivity : AppCompatActivity() {
 
         //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
         fireUser?.delete()?.addOnCompleteListener{ task->
-            if(task.isSuccessful)
-                FirebaseAuth.getInstance().signOut()
-            else
-                Toast.makeText(this,"오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
+            if(task.isSuccessful) FirebaseAuth.getInstance().signOut()
+            else Toast.makeText(this,"오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
         }
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
@@ -176,13 +167,13 @@ class MainActivity : AppCompatActivity() {
     /* 파이어베이스에서 현재 유저를 위한 DB 데이터를 가져와서 화면에 갱신하는 함수 */
     private fun updateDB() {
         // document 레퍼런스 내부를 리스트로 업데이트
-        docRef.collection("restaurants").addSnapshotListener { value, e ->
+        docRef.collection("restaurants").addSnapshotListener { value, _ ->
             //리스트를 초기화하고 새로 등록
-            list.clear()
-            value?.forEach{ list.add(it.toObject(Info::class.java)) }
+            items.clear()
+            value?.forEach{ items.add(it.toObject(Info::class.java)) }
 
             //갱신한 리스트대로 어댑터 갱신
-            listAdapter.update(list)
+            itemsAdapter.update(items)
         }
     }
 }
