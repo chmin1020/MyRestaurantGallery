@@ -14,16 +14,13 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
-import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
 import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
@@ -157,7 +154,7 @@ class AddActivity : AppCompatActivity(){
         //datePicker 다이얼로그 설정
         binding.llDate.setOnClickListener {
             val cal = Calendar.getInstance()
-            val dp = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            val dp = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.tvDate.text = dText
             }
@@ -341,7 +338,7 @@ class AddActivity : AppCompatActivity(){
         //콘텐트 리졸버로 해당 uri 값을 받기 위한 접근 시도
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
         cursor?.moveToNext()
-        val path = cursor?.getString(cursor.getColumnIndex("_data"))
+        val path = cursor?.getString(cursor.getColumnIndex("_data") + 1)
         cursor?.close()
         return path ?: ""
     }

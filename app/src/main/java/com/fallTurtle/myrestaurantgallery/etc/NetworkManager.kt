@@ -15,16 +15,14 @@ class NetworkManager(private val context: Context) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //최신버전
-            //현재 네트워크 연결 중이 아니라면 false
-            val nw = connectivityManager.activeNetwork ?: return false
-
-            //현재 네트워크의 capability 가져오기 -> 없으면 false
-            val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+            //현재 네트워크 연결 중이 아니거나, 네트워크가 인터넷 연결이 안되어 있으면 false
+            val currentActiveNet = connectivityManager.activeNetwork ?: return false
+            val netAbility = connectivityManager.getNetworkCapabilities(currentActiveNet) ?: return false
 
             //와이파이 또는 셀룰러 네트워크를 통해 연결 중이라면 true
             return when {
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                netAbility.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                netAbility.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
                 else -> false
             }
 
