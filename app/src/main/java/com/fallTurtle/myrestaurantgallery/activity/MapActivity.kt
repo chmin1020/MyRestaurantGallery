@@ -37,23 +37,24 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //
 
     //네트워크 연결 체크 매니저
-    private val nm: NetworkManager by lazy { NetworkManager(this) }
+    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
 
-    //view binding
+    //뷰 바인딩
     private val binding:ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
 
-    //map object
+    //지도 관련 객체
     private lateinit var mMap: GoogleMap
     private val markerOps: MarkerOptions by lazy { MarkerOptions() }
     private var marker: Marker? = null
 
     //location info
     private val locClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
-    private lateinit var lr: LocationRequest
+    private val locationRequest: LocationRequest
+            by lazy { LocationRequest.create().apply { priority = LocationRequest.PRIORITY_HIGH_ACCURACY }}
     private lateinit var curLocation: Location
     private val geocoder:Geocoder by lazy { Geocoder(this)}
 
-    //getResult
+    //지역 검색 화면에서 선택 데이터를 가져와 적용하는 레지스터
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         locClient.removeLocationUpdates(locationCallback)
         it.data?.let{ intent->
@@ -63,7 +64,9 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
         moveCamera()
     }
 
+    //지도 활용 시 필요한 looper
     private val looperForUse = Looper.myLooper() ?: Looper.getMainLooper()
+
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -74,17 +77,15 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        if(!nm.checkNetworkState()){
+        //지도를 불러오기 위해서는 네트워크 연결 필요함
+        if(!networkManager.checkNetworkState()){
             Toast.makeText(this, "네트워크를 연결해 주세요.", Toast.LENGTH_SHORT).show()
             finish()
         }
 
-        //get some map objects here
+        //지도 부분 세팅
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        lr =  LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
 
         //뷰의 리스너들 세팅
         initListeners()
@@ -104,11 +105,9 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
-        //search 버튼을 눌렀을 때
+        //search 버튼을 눌렀을 때 (getAddress 레지스터 실행)
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
-            intent.putExtra("latitude", curLocation.latitude)
-            intent.putExtra("longitude", curLocation.longitude)
             getAddress.launch(intent)
         }
 
@@ -127,9 +126,8 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //gps fab 버튼을 눌렀을 때
         binding.fabMyLocation.setOnClickListener{
             //맵 관련 권한을 사용할 수 있다면 gps 기능을 통해 위치 이동
-            Looper.getMainLooper()
             if(checkMapPermission()) {
-                locClient.requestLocationUpdates(lr, locationCallback, looperForUse)
+                locClient.requestLocationUpdates(locationRequest, locationCallback, looperForUse)
                 moveCamera()
                 Toast.makeText(this,"현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
             }
@@ -170,7 +168,7 @@ class   MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if(curLocation.latitude == -1.0 || curLocation.longitude == -1.0) {
             if (checkMapPermission()) {
                 Toast.makeText(this, "지정 위치가 없어 현재 위치가 표시됩니다.", Toast.LENGTH_SHORT).show()
-                locClient.requestLocationUpdates(lr, locationCallback, looperForUse)
+                locClient.requestLocationUpdates(locationRequest, locationCallback, looperForUse)
             }
             else {
                 Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()

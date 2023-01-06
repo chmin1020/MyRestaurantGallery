@@ -1,10 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -30,33 +28,23 @@ import retrofit2.Response
  **/
 class LocationListActivity : AppCompatActivity(){
     //--------------------------------------------
-    // 프로퍼티 영역
-    //
-
-    //기존 좌표 (backPressed 대비)
-    private val oriLatitude: Double by lazy { intent.getDoubleExtra("latitude", 0.0) }
-    private val oriLongitude: Double by lazy { intent.getDoubleExtra("longitude", 0.0) }
-
-
-    //--------------------------------------------
     // 인스턴스 영역
     //
 
-    //editText 자동 키보드
-    private val etSearch: EditText by lazy { binding.etSearch }
-    private val imm: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
+    //editText 키보드 관리자
+    private val inputManager: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
-    //네트워크 연결 체크 매니저
-    private val nm: NetworkManager by lazy { NetworkManager(this) }
+    //네트워크 연결 체크 관리자
+    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
 
-    //viewModel
+    //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val viewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
 
     //리사이클러뷰
     private val adapter: LocationAdapter by lazy { LocationAdapter(this) }
 
-    //view binding
+    //뷰 바인딩
     private val binding:ActivityLocationListBinding by lazy{ ActivityLocationListBinding.inflate(layoutInflater)}
 
 
@@ -83,13 +71,8 @@ class LocationListActivity : AppCompatActivity(){
         super.onResume()
 
         //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
-        etSearch.requestFocus()
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
-    }
-
-    /* onBackPressed()에서는 기존 좌표를 그대로 다시 Map 화면에 보내서 오류가 없도록 한다. */
-    override fun onBackPressed() {
-        cancelLocationUpdate()
+        binding.etSearch.requestFocus()
+        inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT)
     }
 
 
@@ -121,9 +104,7 @@ class LocationListActivity : AppCompatActivity(){
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
         //뒤로 가기 버튼 클릭
-        binding.ivBack.setOnClickListener {
-            cancelLocationUpdate()
-        }
+        binding.ivBack.setOnClickListener { finish()}
 
         //키보드에서 엔터를 클릭
         binding.etSearch.setOnKeyListener{ _, keyCode, event ->
@@ -135,40 +116,26 @@ class LocationListActivity : AppCompatActivity(){
         }
 
         //검색 버튼 클릭
-        binding.ivSearch.setOnClickListener {
-            doSearch(binding.etSearch.text.toString())
-        }
-    }
-
-    /* 키워드를 가지고 실제 검색을 하는 함수 */
-    private fun doSearch(keyword: String){
-        adapter.currentSearchString = keyword
-        if(nm.checkNetworkState()) {
-            searchWithPage(keyword, 1) //첫 페이지부터 검색
-            imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
-        }
-        else
-            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
-    }
-
-    /* 선택을 하지 않고 Map 화면으로 돌아갈 때, 기존 좌표 값을 그대로 유지하도록 하는 함수 */
-    private fun cancelLocationUpdate(){
-        imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
-
-        //인텐트 결과 값을 기존 좌표 값으로 설정한다.
-        val backTo = Intent(this, MapActivity::class.java).apply {
-            putExtra("x", oriLatitude)
-            putExtra("y", oriLongitude)
-        }
-        setResult(RESULT_OK, backTo)
-
-        finish() //현재 화면 종료
+        binding.ivSearch.setOnClickListener { doSearch(binding.etSearch.text.toString()) }
     }
 
 
     //--------------------------------------------
     // 내부 함수 영역 (검색)
     //
+
+    /* 키워드를 가지고 실제 검색을 하는 함수 */
+    private fun doSearch(keyword: String){
+        adapter.currentSearchString = keyword //현재 검색 키워드 백업
+
+        //네트워크 상태에 따른 검색 작업 실시
+        if(networkManager.checkNetworkState()) {
+            searchWithPage(keyword, 1) //첫 페이지부터 검색
+            inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, 0) //키보드는 숨긴다.
+        }
+        else
+            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+    }
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
     private fun loadNext() {
@@ -181,7 +148,7 @@ class LocationListActivity : AppCompatActivity(){
         try {
             binding.progressCircular.isVisible = true // 로딩 표시
 
-            // 결과를 받은 이후(await) 응답 값들로 적절한 작업 수행
+            // 뷰모델을 통한 retrofit 응답 값 get
             if (page == 1) adapter.clearList() //새로운 검색 시작
             viewModel.getResponseOfLocationSearch(keywordString, page)
         }
