@@ -12,7 +12,7 @@ import retrofit2.http.Query
  * retrofit2 API 를 통해 정보를 가져오려 하는 인터페이스.
  * 이 앱에서는 GET 요청만 필요하므로 Get 요청에 해당하는 함수만 가진다.
  */
-interface APIService {
+interface LocationSearchInterface {
     //GET 명령을 해당 url 에게 보내서 searchLocation 정보를 얻어오는 함수를 정의한다. (LocationResponse 객체로 받아옴)
 
     //첫번째 GET 명령 : 키워드에 맞는 음식점 검색

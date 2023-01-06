@@ -8,8 +8,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fallTurtle.myrestaurantgallery.view_model.LocationSearchViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
@@ -17,9 +20,6 @@ import com.fallTurtle.myrestaurantgallery.item.LocationPair
 import com.fallTurtle.myrestaurantgallery.item.LocationResult
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.Place
-import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
-import com.fallTurtle.myrestaurantgallery.model.retrofit.RetrofitUtil
-import kotlinx.coroutines.*
 import retrofit2.Response
 
 /**
@@ -34,8 +34,8 @@ class LocationListActivity : AppCompatActivity(){
     //
 
     //기존 좌표 (backPressed 대비)
-    private val oriLati: Double by lazy { intent.getDoubleExtra("latitude", 0.0) }
-    private val oriLongi: Double by lazy { intent.getDoubleExtra("longitude", 0.0) }
+    private val oriLatitude: Double by lazy { intent.getDoubleExtra("latitude", 0.0) }
+    private val oriLongitude: Double by lazy { intent.getDoubleExtra("longitude", 0.0) }
 
 
     //--------------------------------------------
@@ -48,6 +48,10 @@ class LocationListActivity : AppCompatActivity(){
 
     //네트워크 연결 체크 매니저
     private val nm: NetworkManager by lazy { NetworkManager(this) }
+
+    //viewModel
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val viewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
 
     //리사이클러뷰
     private val adapter: LocationAdapter by lazy { LocationAdapter(this) }
@@ -68,6 +72,10 @@ class LocationListActivity : AppCompatActivity(){
         //리사이클러뷰 설정 및 몇몇 뷰의 리스너 지정
         initRecyclerView()
         initListeners()
+
+        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
+        val listObserver = Observer<Array<Response<LocationResponse>>> { taskWithResponses(it) }
+        viewModel.finalResponse.observe(this, listObserver)
     }
 
     /* onResume()에서는 검색을 위해 키보드를 바로 올리는 작업을 수행해준다. */
@@ -118,7 +126,7 @@ class LocationListActivity : AppCompatActivity(){
         }
 
         //키보드에서 엔터를 클릭
-        binding.etSearch.setOnKeyListener{ v, keyCode, event ->
+        binding.etSearch.setOnKeyListener{ _, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN){
                 doSearch(binding.etSearch.text.toString())
                 return@setOnKeyListener true
@@ -134,6 +142,7 @@ class LocationListActivity : AppCompatActivity(){
 
     /* 키워드를 가지고 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String){
+        adapter.currentSearchString = keyword
         if(nm.checkNetworkState()) {
             searchWithPage(keyword, 1) //첫 페이지부터 검색
             imm.hideSoftInputFromWindow(etSearch.windowToken, 0) //키보드는 숨긴다.
@@ -148,8 +157,8 @@ class LocationListActivity : AppCompatActivity(){
 
         //인텐트 결과 값을 기존 좌표 값으로 설정한다.
         val backTo = Intent(this, MapActivity::class.java).apply {
-            putExtra("x", oriLati)
-            putExtra("y", oriLongi)
+            putExtra("x", oriLatitude)
+            putExtra("y", oriLongitude)
         }
         setResult(RESULT_OK, backTo)
 
@@ -163,63 +172,40 @@ class LocationListActivity : AppCompatActivity(){
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
     private fun loadNext() {
-        if (binding.recyclerView.adapter?.itemCount == 0)
-            return
+        if (binding.recyclerView.adapter?.itemCount == 0) return
         searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
     }
 
     /* 키워드에 따라 검색을 하되, 페이지를 고려하는 함수 */
     private fun searchWithPage(keywordString: String, page: Int) {
-        // 코루틴을 통한 비동기 처리
-        MainScope().launch {
-            try {
-                binding.progressCircular.isVisible = true // 로딩 표시
+        try {
+            binding.progressCircular.isVisible = true // 로딩 표시
 
-                // page == 1 -> 새로운 검색 시작
-                if (page == 1)
-                    adapter.clearList()
-
-                // 음식점 카테고리 검색 결과
-                val responseRestaurant = async {
-                    withContext(Dispatchers.IO){
-                        RetrofitUtil.apiService.getSearchLocationOfRestaurants(query = keywordString, page = page)
-                    }
-                }
-
-                // 카페 카테고리 검색 결과
-                val responseCafe = async {
-                    withContext(Dispatchers.IO){
-                        RetrofitUtil.apiService.getSearchLocationOfCafe(query = keywordString, page = page)
-                    }
-                }
-
-                // 결과를 받은 이후(await) 응답 값들로 적절한 작업 수행
-                val responses = arrayOf(responseRestaurant.await(), responseCafe.await())
-                taskWithResponses(responses, keywordString)
-
-            }
-            catch (e: Exception) {
-                e.printStackTrace()
-            }
-            finally {
-               binding.progressCircular.isVisible = false // 로딩 표시 제거
-            }
+            // 결과를 받은 이후(await) 응답 값들로 적절한 작업 수행
+            if (page == 1) adapter.clearList() //새로운 검색 시작
+            viewModel.getResponseOfLocationSearch(keywordString, page)
+        }
+        catch (e: Exception) {
+            Toast.makeText(this@LocationListActivity, "검색 실패", Toast.LENGTH_SHORT).show()
+        }
+        finally {
+            binding.progressCircular.isVisible = false // 로딩 표시 제거
         }
     }
 
-    /* retrofit을 통해 받은 응답 값들을 통해 적절한 작업을 수행하는 함수 */
-    private fun taskWithResponses(responses: Array<Response<LocationResponse>>, keywordString: String){
+    /* 받은 응답 값들을 통해 적절한 작업을 수행하는 함수 */
+    private fun taskWithResponses(responses: Array<Response<LocationResponse>>){
         // 음식점, 카페 검색에 대한 결과들로 각각 데이터 만들기 시도
         responses.forEach { response ->
             if (response.isSuccessful) //응답을 성공적으로 받음 -> 적절한 데이터 생성
-                response.body()?.let { setData(it, keywordString) }
+                response.body()?.let { setData(it) }
             else //응답 실패 -> 토스트 메시지로 에러 알림
                 Toast.makeText(this@LocationListActivity, "결과를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
-    private fun setData(searchInfo: LocationResponse, keywordString: String) {
+    private fun setData(searchInfo: LocationResponse) {
         //리사이클러뷰에 담을 리스트
         val places: List<Place> = searchInfo.documents
 
@@ -235,7 +221,6 @@ class LocationListActivity : AppCompatActivity(){
         adapter.isEnd = searchInfo.meta.is_end
         if(!adapter.isEnd)
             adapter.currentPage = adapter.currentPage + 1
-        adapter.currentSearchString = keywordString //다음 페이지 검색 대비로 키워드도 저장
 
         //검색 결과가 없을 시
         if(adapter.itemCount == 0)
