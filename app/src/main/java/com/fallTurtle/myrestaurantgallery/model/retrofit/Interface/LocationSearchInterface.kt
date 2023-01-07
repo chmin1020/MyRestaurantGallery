@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.model.retrofit
+package com.fallTurtle.myrestaurantgallery.model.retrofit.Interface
 
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
@@ -32,6 +32,4 @@ interface LocationSearchInterface {
         @Query("page") page: Int,
         @Query("category_group_code") code: String = "CE7"
     ): Response<LocationResponse>
-
-
 }

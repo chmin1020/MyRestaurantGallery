@@ -1,9 +1,12 @@
-package com.fallTurtle.myrestaurantgallery.model.firebase
+package com.fallTurtle.myrestaurantgallery.model.room
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.io.Serializable
 
+@Entity
 data class Info(
-        val dbID:String = "",
+        @PrimaryKey val dbID:String = "",
         var image:String? = null,
         var name:String = "",
         var location:String = "",

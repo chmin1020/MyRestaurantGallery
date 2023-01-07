@@ -1,6 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
@@ -9,23 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
-import com.fallTurtle.myrestaurantgallery.etc.GlideApp
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
-import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.storage.StorageReference
+import com.fallTurtle.myrestaurantgallery.model.room.Info
 import java.io.File
 import java.util.ArrayList
 
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
-class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
+class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
     //--------------------------------------------
     // 해당 어댑터에서 사용할 뷰홀더
     //
@@ -37,16 +32,13 @@ class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.Cus
         var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
     }
 
+
     //--------------------------------------------
     // 프로퍼티 영역
     //
 
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
     private var infoList: List<Info> = ArrayList()
-
-    //Firebase
-    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
-    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
 
 
     //--------------------------------------------
@@ -68,13 +60,10 @@ class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.Cus
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기
-        val image = infoList[position].image
-        if(image != null) {
-            //GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
-            val result = ImageHandler.getImageInfo(path, image)
-            ImageHandler.loadImage(result, strRef.child(image), holder.ivImage)
-        }
-        else{
+        //val image = infoList[position].image
+        //if(image != null)
+        //    GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
+        //else{
             when(infoList[position].categoryNum) {
                 0 -> holder.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> holder.ivImage.setImageResource(R.drawable.chinese_food)
@@ -84,7 +73,7 @@ class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.Cus
                 5 -> holder.ivImage.setImageResource(R.drawable.drink)
                 6 -> holder.ivImage.setImageResource(R.drawable.etc)
             }
-        }
+        //}
         holder.tvName.text = infoList[position].name
         holder.tvGenre.text = infoList[position].category
         holder.tvRate.text = infoList[position].rate.toString()
@@ -96,26 +85,9 @@ class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.Cus
 
             v.context.startActivity(record)
         }
-        //길게 누를 시 삭제 질의
-        holder.itemView.setOnLongClickListener{ v->
-            AlertDialog.Builder(v.context)
-                .setMessage(R.string.delete_message)
-                .setPositiveButton(R.string.yes) {dialog, which ->
-                    infoList[position].image?.let { strRef.child(it).delete() }
-
-                    docRef.collection("restaurants").document(infoList[position].dbID).delete()
-                    Toast.makeText(v.context, R.string.delete_complete, Toast.LENGTH_SHORT).show()
-                    update(infoList)
-                }
-                .setNegativeButton(R.string.no) {dialog, which -> }
-                .show()
-            return@setOnLongClickListener true
-        }
     }
 
-    override fun getItemCount(): Int {
-        return infoList.size
-    }
+    override fun getItemCount(): Int = infoList.size
 
 
     //--------------------------------------------
@@ -123,8 +95,10 @@ class ListAdapter(private val path: File) : RecyclerView.Adapter<ListAdapter.Cus
     //
 
     @SuppressLint("NotifyDataSetChanged")
-    fun update(items : List<Info>){
-        this.infoList = items
-        notifyDataSetChanged()
+    fun update(items : List<Info>?){
+        items?.let {
+            this.infoList = it
+            notifyDataSetChanged()
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
-import com.fallTurtle.myrestaurantgallery.model.retrofit.LocationSearchInterface
+import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
