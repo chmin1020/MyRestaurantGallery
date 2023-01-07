@@ -16,7 +16,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
-import com.fallTurtle.myrestaurantgallery.view_model.RoomViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[RoomViewModel::class.java] }
+    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
 
@@ -55,8 +55,9 @@ class MainActivity : AppCompatActivity() {
         //권한 허락을 위한 다이얼로그
         showPermissionDialog()
 
-        //파이어베이스 유저 레퍼런스 세팅
-        userViewModel.updateUser()
+        //새로 로그인 -> 데이터 복구 필요함
+        if(intent.getBooleanExtra("newLogin", true))
+            dataViewModel.restoreItemsFromAccount()
 
         //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
         val listObserver = Observer<List<Info>> { itemsAdapter.update(dataViewModel.getAllItems().value) }

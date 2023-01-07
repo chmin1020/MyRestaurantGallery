@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class RoomRepository(application: Application) {
+class DataRepository(application: Application) {
     //room DB 관련 인스턴스 (DB, DAO, elements)
     private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)!!
     private val roomDao = database.infoRoomDao()
@@ -14,6 +17,17 @@ class RoomRepository(application: Application) {
     //firebase data 리포지토리
     private val firebaseDataRepository = FirebaseDataRepository()
 
+    /* Firestore 데이터를 불러와서 room 데이터베이스로 전체 삽입하는 함수 */
+    fun restoreFirestoreDataToRoom(){
+        firebaseDataRepository.getAllFireStoreItems().get().addOnSuccessListener {
+            //
+            CoroutineScope(Dispatchers.IO).launch{
+                it.toObjects(Info::class.java).forEach{ item -> roomDao.insert(item) }
+            }
+        }
+    }
+
+    /* roomDB 내의 모든 데이터를 삭제하는 함수 (로그아웃, 탈퇴 시 실행) */
     fun roomClear(){
         roomDao.clearAllItems()
     }
@@ -23,19 +37,15 @@ class RoomRepository(application: Application) {
         return items
     }
 
-    /* roomDB에 대한 기본적인 삽입 이벤트를 정의한 함수 */
-    fun roomInsert(item: Info) {
+    /* 아이템 삽입 이벤트를 정의한 함수 */
+    fun itemInsert(item: Info) {
         roomDao.insert(item)
-
-        //firebase 연동
         firebaseDataRepository.addNewItem(item)
     }
 
-    /* roomDB에 대한 기본적인 삭제 이벤트를 정의한 함수 */
-    fun roomDelete(item: Info) {
+    /* 아이템 삭제 이벤트를 정의한 함수 */
+    fun itemDelete(item: Info) {
         roomDao.delete(item)
-
-        //firebase 연동
         firebaseDataRepository.deleteItem(item)
     }
 }

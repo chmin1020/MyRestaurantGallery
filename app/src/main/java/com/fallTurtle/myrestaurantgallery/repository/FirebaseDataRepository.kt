@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.repository
 
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.StorageReference
 import java.io.FileInputStream
@@ -17,6 +18,10 @@ class FirebaseDataRepository {
     fun deleteItem(item: Info) {
         item.image?.let { storageRef().child(it).delete() }
         storeRef().collection("restaurants").document(item.dbID).delete()
+    }
+
+    fun getAllFireStoreItems(): CollectionReference{
+        return storeRef().collection("restaurants")
     }
 
     fun getImageRef(img: String): StorageReference {

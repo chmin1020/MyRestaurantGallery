@@ -1,13 +1,11 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
-import android.util.Log
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 
 /**
- * Firebase 기능을 사용할 수 있게 돕는 핸들러.
- * 이 코드에서 사용하는 2가지 기능(fire store, storage)의 레퍼런스를 저장하고 전달한다.
- * 이를 위해 필요한 현재 유저(FirebaseUser)에 대한 정보에 대해서도 마찬가지의 기능을 가진다.
+ * Firebase 유저 관련 기능을 수행하는 리포지토리.
+ * 현재 유저(FirebaseUser)에 대한 정보에 대해 로그인(update), 로그아웃, 탈퇴 기능을 수행한다.
  **/
 class FirebaseUserRepository {
     /* 현재 유저 정보를 새롭게 갱신하는 함수 */

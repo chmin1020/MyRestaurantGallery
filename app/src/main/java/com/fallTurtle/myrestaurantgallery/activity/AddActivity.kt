@@ -20,7 +20,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.fallTurtle.myrestaurantgallery.view_model.RoomViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,7 +46,7 @@ class AddActivity : AppCompatActivity(){
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[RoomViewModel::class.java] }
+    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
