@@ -20,10 +20,8 @@ class DataRepository(application: Application) {
     /* Firestore 데이터를 불러와서 room 데이터베이스로 전체 삽입하는 함수 */
     fun restoreFirestoreDataToRoom(){
         firebaseDataRepository.getAllFireStoreItems().get().addOnSuccessListener {
-            //
-            CoroutineScope(Dispatchers.IO).launch{
-                it.toObjects(Info::class.java).forEach{ item -> roomDao.insert(item) }
-            }
+            //io 스레드 내에서 roomDB 데이터 채우기
+            CoroutineScope(Dispatchers.IO).launch{ it.toObjects(Info::class.java).forEach{ item -> roomDao.insert(item) } }
         }
     }
 

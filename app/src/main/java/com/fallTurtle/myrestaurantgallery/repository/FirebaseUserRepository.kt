@@ -1,13 +1,46 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
+import android.content.Intent
+import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.GoogleAuthProvider
 
 /**
  * Firebase 유저 관련 기능을 수행하는 리포지토리.
  * 현재 유저(FirebaseUser)에 대한 정보에 대해 로그인(update), 로그아웃, 탈퇴 기능을 수행한다.
  **/
 class FirebaseUserRepository {
+    /* 유저 로그인 상태 확인 함수 */
+    fun isUserExist(): Boolean = (FirebaseUtils.getUser() != null)
+
+
+    /* 로그인 관련 함수 */
+    fun getTokenForLogin(result: Intent?): String?{
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result)
+
+        return try {
+            //받은 결과의 아이디 토큰을 통해 파이어베이스 인증 시도
+            val account = task.getResult(ApiException::class.java) ?: throw NullPointerException()
+            account.idToken ?: throw NullPointerException()
+        }
+        catch (e: NullPointerException) { null }
+    }
+
+    fun finalLoginWithCredential(idToken: String, job: OnCompleteListener<AuthResult>){
+        //Token 보내서 credential 받아오기
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+
+        //받은 credential 통해 인증 시도 (성공 시 job 실행)
+        FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener(job)
+    }
+
+
     /* 현재 유저 정보를 새롭게 갱신하는 함수 */
     fun updateUser(){
         FirebaseUtils.updateUser()
