@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
+import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -26,6 +28,10 @@ class LoginActivity: AppCompatActivity() {
     private val mAuth by lazy { FirebaseAuth.getInstance() }
     private val mClient by lazy { GoogleSignIn.getClient(this, googleSignInOptions) }
     private lateinit var googleSignInOptions: GoogleSignInOptions
+
+    //뷰모델
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
 
     //--------------------------------------------
@@ -66,7 +72,7 @@ class LoginActivity: AppCompatActivity() {
         binding.signInButton.setOnClickListener{ signIn() }
 
         //if already login -> skip this activity
-        mAuth.currentUser?.let { showMain() }
+        mAuth.currentUser?.let { showMain(false) }
     }
 
 
@@ -90,13 +96,14 @@ class LoginActivity: AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 //인증이 되었다면 유저 데이터 받을 수 있음 -> 유저 데이터를 가지고 메인 화면으로 이동
                 if (task.isSuccessful)
-                    mAuth.currentUser?.let { showMain() }
+                    mAuth.currentUser?.let { showMain(true) }
             }
     }
 
     /* 파이어베이스 인증에도 성공했다면, 메인 화면으로 이동할 수 있게 하는 함수 */
-    private fun showMain() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun showMain(newLogin: Boolean) {
+        userViewModel.updateUser()
+        val intent = Intent(this, MainActivity::class.java).also { it.putExtra("newLogin", newLogin) }
         startActivity(intent)
         finish()
     }
