@@ -14,16 +14,13 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.item.ImgDialog
-import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import kotlinx.coroutines.*
-import java.io.File
-import java.io.FileInputStream
+import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.view_model.RoomViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,11 +42,11 @@ class AddActivity : AppCompatActivity(){
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
 
     //네트워크 연결 체크 매니저
-    private val nm: NetworkManager by lazy { NetworkManager(this) }
+    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
 
-    //Firebase
-    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
-    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
+    //뷰모델
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[RoomViewModel::class.java] }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
@@ -223,46 +220,31 @@ class AddActivity : AppCompatActivity(){
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
         curImage = info.image
-        info.image?.let { it ->
-            //GlideApp.with(this).load(realRef).into(binding.ivImage)
-            val result = ImageHandler.getImageInfo(this.cacheDir, it)
-            ImageHandler.loadImage(result, strRef.child(it), binding.ivImage)
-        }
+        //info.image?.let { GlideApp.with(this).load(firebaseViewModel.getImageRef(it)).into(binding.ivImage) }
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(isEdit:Boolean){
+        fun getNewID(): String
+            = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
+
         //네트워크 연결 상태라면
-        if(nm.checkNetworkState()) {
+        if(networkManager.checkNetworkState()) {
             //저장 과정 (이름과 장소는 필수!)
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
                     .show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
-                val id: String =
-                    if (isEdit)
-                        info.dbID
-                    else
-                        SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA)
-                            .format(Date(System.currentTimeMillis()))
-                            .toString()
+                val id: String = if (isEdit) info.dbID else getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-                val newRes = mapOf(
-                    "image" to setImage(),
-                    "date" to binding.tvDate.text.toString(),
-                    "name" to binding.etName.text.toString(),
-                    "categoryNum" to binding.spCategory.selectedItemPosition,
-                    "category" to binding.spCategory.selectedItem.toString(),
-                    "location" to binding.etLocation.text.toString(),
-                    "memo" to binding.etMemo.text.toString(),
-                    "rate" to binding.rbRatingBar.rating,
-                    "latitude" to info.latitude,
-                    "longitude" to info.longitude,
-                    "dbID" to id
-                )
-                docRef.collection("restaurants").document(id).set(newRes)
+                val newItem = Info(image = setImage(), date = binding.tvDate.text.toString(),
+                                name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
+                                category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
+                                memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
+                                latitude = info.latitude, longitude = info.longitude, dbID = id)
+                roomViewModel.insertNewItem(newItem)
 
                 //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
@@ -284,22 +266,23 @@ class AddActivity : AppCompatActivity(){
         val image:String? = curImage
 
         // edit 상태이고 이미지도 있었을 때, 현재 이미지와 이전 이미지가 다르다면
-        info.image?.let { preImage ->
+        /*info.image?.let { preImage ->
             if (preImage != curImage)
-                strRef.child(preImage).delete() // 기존 이미지는 지운다.
-        }
+                firebaseViewModel.deleteImage(preImage) // 기존 이미지는 지운다.
+        }*/
 
         // 저장할 이미지가 있으면 실제 storage에 저장
-        image?.let { img->
+        /*image?.let { img->
             imgUri?.let {
                 val path = File(getPath(it))
                 val stream = FileInputStream(path)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val job = async { strRef.child(img).putStream(stream) }
+                    val job = async { firebaseViewModel.addNewImage(img,stream) }
                     job.join()
                 }
             }
         }
+        */
 
         return image
     }

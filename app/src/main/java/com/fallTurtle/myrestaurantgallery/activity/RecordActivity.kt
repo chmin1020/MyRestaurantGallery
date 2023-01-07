@@ -7,11 +7,12 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
-import com.fallTurtle.myrestaurantgallery.model.etc.ImageHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.Info
+import com.fallTurtle.myrestaurantgallery.etc.GlideApp
+import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.view_model.RoomViewModel
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -29,9 +30,9 @@ class RecordActivity : AppCompatActivity() {
     //for saving edit information
     private var info = Info()
 
-    //Firebase
-    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
-    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
+    //뷰모델
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[RoomViewModel::class.java] }
 
 
     //--------------------------------------------
@@ -87,13 +88,10 @@ class RecordActivity : AppCompatActivity() {
         binding.tvDate.text = info.date
 
         //이미지 적용
-        val image = info.image
-        if(image != null) { //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
-            //GlideApp.with(this).load(strRef.child(image)).into(binding.ivImage)
-            val result = ImageHandler.getImageInfo(this.cacheDir, image)
-            ImageHandler.loadImage(result, strRef.child(image), binding.ivImage)
-        }
-        else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
+        //val image = info.image
+        //if(image != null)  //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
+        //    GlideApp.with(this).load(firebaseViewModel.getImageRef(image)).into(binding.ivImage)
+        //else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
             when (info.categoryNum) {
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
@@ -103,22 +101,21 @@ class RecordActivity : AppCompatActivity() {
                 5 -> binding.ivImage.setImageResource(R.drawable.drink)
                 6 -> binding.ivImage.setImageResource(R.drawable.etc)
             }
-        }
+        //}
     }
 
     /* 이전 액티비티에서 받은 정보를 가지고 와서 뷰에 적용하는 함수 */
     private fun makeDeleteDialog(){
         AlertDialog.Builder(this)
             .setMessage(R.string.delete_message)
-            .setPositiveButton(R.string.yes) {dialog, which ->
+            .setPositiveButton(R.string.yes) {_,_ ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
-                info.image?.let{ strRef.child(it).delete() }
-
-                docRef.collection("restaurants").document(info.dbID).delete()
+                //firebaseViewModel.deleteItem(info)
+                roomViewModel.deleteItem(info)
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()
             }
-            .setNegativeButton(R.string.no) {dialog, which -> }
+            .setNegativeButton(R.string.no) {_,_ -> }
             .show()
     }
 

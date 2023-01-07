@@ -8,13 +8,15 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
-import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseHandler
-import com.fallTurtle.myrestaurantgallery.model.firebase.Info
-import com.google.firebase.auth.FirebaseAuth
+import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.RoomViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 
@@ -29,17 +31,16 @@ class MainActivity : AppCompatActivity() {
     // 인스턴스 영역
     //
 
-    //Firebase
-    private val docRef by lazy{ FirebaseHandler.getFirestoreRef() }
-    private val strRef by lazy{ FirebaseHandler.getStorageRef() }
-    private val fireUser by lazy{ FirebaseHandler.getUser() }
-
     //view binding
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //related to recyclerView
-    private val itemsAdapter by lazy { ListAdapter(this.cacheDir) }
-    private var items = ArrayList<Info>()
+    private val itemsAdapter by lazy { ListAdapter(this.cacheDir, this) }
+
+    //뷰모델
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[RoomViewModel::class.java] }
+    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
 
     //--------------------------------------------
@@ -54,8 +55,12 @@ class MainActivity : AppCompatActivity() {
         //권한 허락을 위한 다이얼로그
         showPermissionDialog()
 
-        //파이어베이스 레퍼런스 세팅
-        FirebaseHandler.updateUserId()
+        //파이어베이스 유저 레퍼런스 세팅
+        userViewModel.updateUser()
+
+        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
+        val listObserver = Observer<List<Info>> { itemsAdapter.update(dataViewModel.getAllItems().value) }
+        dataViewModel.getAllItems().observe(this, listObserver)
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -64,12 +69,6 @@ class MainActivity : AppCompatActivity() {
         //툴바와 메뉴 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-    }
-
-    /* onResume()에서는 화면에 보여줄 (변경된) 내용을 데이터베이스에서 가져온다. */
-    override fun onResume(){
-        super.onResume()
-        updateDB()
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             //로그아웃 선택 시
             R.id.menu_logout -> {
-                FirebaseHandler.logout()
+                userViewModel.logoutUser()
                 val progress = Intent(this, ProgressActivity::class.java)
                 progress.putExtra("endCode",2)
                 startActivity(progress)
@@ -139,21 +138,7 @@ class MainActivity : AppCompatActivity() {
 
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
-        //파이어스토어에 담겨 있는 유저 관련 DB 파일 전부 삭제
-        for(item in items){
-            item.image?.let{ strRef.child(it).delete() } //이미지
-            docRef.collection("restaurants").document(item.dbID).delete() //아이템 데이터
-        }
-
-        //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
-        docRef.delete()
-        strRef.delete()
-
-        //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
-        fireUser?.delete()?.addOnCompleteListener{ task->
-            if(task.isSuccessful) FirebaseAuth.getInstance().signOut()
-            else Toast.makeText(this,"오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
-        }
+        userViewModel.withdrawUser()
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
         val progress = Intent(this, ProgressActivity::class.java)
@@ -162,18 +147,5 @@ class MainActivity : AppCompatActivity() {
 
         //현재 액티비티(메인 화면)은 종료
         finish()
-    }
-
-    /* 파이어베이스에서 현재 유저를 위한 DB 데이터를 가져와서 화면에 갱신하는 함수 */
-    private fun updateDB() {
-        // document 레퍼런스 내부를 리스트로 업데이트
-        docRef.collection("restaurants").addSnapshotListener { value, _ ->
-            //리스트를 초기화하고 새로 등록
-            items.clear()
-            value?.forEach{ items.add(it.toObject(Info::class.java)) }
-
-            //갱신한 리스트대로 어댑터 갱신
-            itemsAdapter.update(items)
-        }
     }
 }
