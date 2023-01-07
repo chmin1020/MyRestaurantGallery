@@ -14,6 +14,10 @@ class RoomRepository(application: Application) {
     //firebase data 리포지토리
     private val firebaseDataRepository = FirebaseDataRepository()
 
+    fun roomClear(){
+        roomDao.clearAllItems()
+    }
+
     /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
     fun roomGetList(): LiveData<List<Info>> {
         return items
@@ -23,21 +27,7 @@ class RoomRepository(application: Application) {
     fun roomInsert(item: Info) {
         roomDao.insert(item)
 
-        /*val newRes = mapOf(
-            "image" to setImage(),
-            "date" to binding.tvDate.text.toString(),
-            "name" to binding.etName.text.toString(),
-            "categoryNum" to binding.spCategory.selectedItemPosition,
-            "category" to binding.spCategory.selectedItem.toString(),
-            "location" to binding.etLocation.text.toString(),
-            "memo" to binding.etMemo.text.toString(),
-            "rate" to binding.rbRatingBar.rating,
-            "latitude" to info.latitude,
-            "longitude" to info.longitude,
-            "dbID" to id
-        )*/
-
-        //firebase 저장
+        //firebase 연동
         firebaseDataRepository.addNewItem(item)
     }
 

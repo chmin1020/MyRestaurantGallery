@@ -16,6 +16,11 @@ class RoomViewModel(application: Application): AndroidViewModel(application) {
         return roomRepository.roomGetList()
     }
 
+    /* 룸 DB 리스트 내용을 모두 지울 때 사용하는 함수 */
+    fun clearAllItems(){
+        CoroutineScope(Dispatchers.IO).launch { roomRepository.roomClear() }
+    }
+
     /* 기본적인 룸 DB의 삽입 이벤트를 위한 함수 */
     fun insertNewItem(item: Info) {
         CoroutineScope(Dispatchers.IO).launch { roomRepository.roomInsert(item) }
