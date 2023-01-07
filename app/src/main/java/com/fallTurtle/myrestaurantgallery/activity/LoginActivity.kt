@@ -20,12 +20,14 @@ import com.google.firebase.auth.AuthResult
  * 따라서 FirebaseAuth, 그 밖에 다른 연관된 작업을 통해 로그인 확인 및 통과 등을 수행한다.
  **/
 class LoginActivity: AppCompatActivity() {
-    //binding
+    //뷰 바인딩
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
-    //google Login
-    private val mClient by lazy { GoogleSignIn.getClient(this, googleSignInOptions) }
-    private lateinit var googleSignInOptions: GoogleSignInOptions
+    //구글 로그인 옵션
+    private val googleSignInOptions: GoogleSignInOptions by lazy {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+    }
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
@@ -56,14 +58,10 @@ class LoginActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //로그인 시도를 위한 구글 로그인 관련 옵션
-        googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-           .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
-
         //login 버튼을 누르면 구글 계정으로 로그인을 시도하는 이벤트 발생
         binding.signInButton.setOnClickListener{ signIn() }
 
-        //if already login -> skip this activity
+        //로그인 시도 (이미 로그인 중이면 메인화면으로 넘어감)
         tryToShowMain(false)
     }
 
@@ -74,7 +72,7 @@ class LoginActivity: AppCompatActivity() {
 
     /* 정보를 받아와서 (구글)로그인을 시도하는 함수 */
     private fun signIn(){
-        val signInIntent = mClient.signInIntent
+        val signInIntent = GoogleSignIn.getClient(this, googleSignInOptions).signInIntent
         getSignLauncher.launch(signInIntent)
     }
 
