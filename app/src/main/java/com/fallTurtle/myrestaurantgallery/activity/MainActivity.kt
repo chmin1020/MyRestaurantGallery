@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             //로그아웃 선택 시
             R.id.menu_logout -> {
+                dataViewModel.clearAllItems()
                 userViewModel.logoutUser()
                 val progress = Intent(this, ProgressActivity::class.java)
                 progress.putExtra("endCode",2)
@@ -138,7 +139,8 @@ class MainActivity : AppCompatActivity() {
 
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
-        userViewModel.withdrawUser()
+        dataViewModel.clearAllItems()
+        userViewModel.withdrawUser(dataViewModel.getAllItems().value)
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
         val progress = Intent(this, ProgressActivity::class.java)

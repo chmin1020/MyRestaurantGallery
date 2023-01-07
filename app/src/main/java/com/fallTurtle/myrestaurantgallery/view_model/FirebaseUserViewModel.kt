@@ -3,6 +3,7 @@ package com.fallTurtle.myrestaurantgallery.view_model
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.FirebaseUserRepository
 import kotlinx.coroutines.launch
 
@@ -18,7 +19,7 @@ class FirebaseUserViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch { firebaseRepository.logoutUser() }
     }
 
-    fun withdrawUser(){
-        viewModelScope.launch { firebaseRepository.withDrawUser() }
+    fun withdrawUser(deletingItems: List<Info>?){
+        viewModelScope.launch { firebaseRepository.withDrawUser(deletingItems) }
     }
 }

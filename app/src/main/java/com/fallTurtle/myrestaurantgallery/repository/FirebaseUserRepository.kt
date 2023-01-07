@@ -1,16 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
-import java.io.FileInputStream
 
 /**
  * Firebase 기능을 사용할 수 있게 돕는 핸들러.
@@ -29,14 +21,20 @@ class FirebaseUserRepository {
     }
 
     /* 앱에서 사용자 탈퇴하는 함수 */
-    fun withDrawUser(){
-        //현재 유저의 저장 데이터를 담기 위한 document(이메일로 구분) 자체를 제거
+    fun withDrawUser(deletingItems: List<Info>?){
+        //현재 유저의 저장 데이터 각각 제거(Firestore 특성 상)
+        deletingItems?.forEach {
+            FirebaseUtils.getStoreRef().collection("restaurants").document(it.dbID).delete()
+            it.image?.let{ path -> FirebaseUtils.getStorageRef().child(path).delete() }
+        }
+
+        //현재 유저의 저장 데이터를 담은 레퍼런스들을 제거
         FirebaseUtils.getStoreRef().delete()
         FirebaseUtils.getStorageRef().delete()
 
-        //유저 자체를 파이어베이스 시스템 내부에서 삭제 (실패 시 error 토스트 메시지 출력)
+        //유저를 파이어베이스 시스템 내부에서 삭제
         FirebaseUtils.getUser()?.delete()?.addOnCompleteListener{ task->
-            if(task.isSuccessful) FirebaseAuth.getInstance().signOut()
+            if(task.isSuccessful) FirebaseUtils.getAuth().signOut()
         }
     }
 }

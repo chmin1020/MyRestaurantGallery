@@ -13,4 +13,7 @@ interface InfoRoomDao {
 
     @Query("SELECT * FROM Info")
     fun getAllItems(): LiveData<List<Info>>
+
+    @Query("DELETE FROM Info")
+    fun clearAllItems()
 }
