@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.FirebaseUserRepository
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.launch
@@ -17,6 +18,10 @@ class FirebaseUserViewModel(application: Application) : AndroidViewModel(applica
     fun checkUser(): Boolean {
         userRepository.updateUser()
         return userRepository.isUserExist()
+    }
+
+    fun getOptionForLogin(request: String): GoogleSignInOptions{
+        return userRepository.getOptionForLogin(request)
     }
 
     fun getTokenForLogin(result: Intent?): String? {

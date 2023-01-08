@@ -43,4 +43,8 @@
     <string name="add_new_item">Add new item</string>
     <string name="search_location">location searching</string>
     <string name="current_location">set current location</string>
+
+    <!--firebase auth value-->
+    <string name="firebase_client_id" translatable="false">63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com</string>
+
 </resources>

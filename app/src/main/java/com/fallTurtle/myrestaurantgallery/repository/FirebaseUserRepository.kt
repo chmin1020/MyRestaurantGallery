@@ -20,7 +20,13 @@ class FirebaseUserRepository {
     fun isUserExist(): Boolean = (FirebaseUtils.getUser() != null)
 
 
-    /* 로그인 관련 함수 */
+    /* 로그인을 위해 서버에 보낼 옵션 값을 반환하는 함수 */
+    fun getOptionForLogin(request: String): GoogleSignInOptions {
+        return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(request).requestEmail().build()
+    }
+
+    /* 응답 결과로부터 토큰을 추출 시도하는 함수 */
     fun getTokenForLogin(result: Intent?): String?{
         val task = GoogleSignIn.getSignedInAccountFromIntent(result)
 
@@ -32,11 +38,10 @@ class FirebaseUserRepository {
         catch (e: NullPointerException) { null }
     }
 
+    /* 토큰으로 인증을 통한 최종 로그인을 시도하는 함수 */
     fun finalLoginWithCredential(idToken: String, job: OnCompleteListener<AuthResult>){
-        //Token 보내서 credential 받아오기
+        //Token 보내서 credential 받고 인증 시도 (성공 시 job 실행)
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-
-        //받은 credential 통해 인증 시도 (성공 시 job 실행)
         FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener(job)
     }
 
