@@ -9,15 +9,11 @@ import kotlinx.coroutines.*
 
 class DataViewModel(application: Application): AndroidViewModel(application) {
     private val dataTotalRepository = DataRepository(application)
+    val dataItems: LiveData<List<Info>> = dataTotalRepository.roomGetList()
 
     /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
     fun restoreItemsFromAccount(){
         CoroutineScope(Dispatchers.IO).launch { dataTotalRepository.restoreFirestoreDataToRoom() }
-    }
-
-    /* 룸 DB 리스트 데이터에 접근할 때 사용되는 함수 */
-    fun getAllItems() : LiveData<List<Info>> {
-        return dataTotalRepository.roomGetList()
     }
 
     /* 룸 DB 리스트 내용을 모두 지울 때 사용하는 함수 */

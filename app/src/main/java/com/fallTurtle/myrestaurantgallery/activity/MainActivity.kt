@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -63,8 +62,8 @@ class MainActivity : AppCompatActivity() {
             dataViewModel.restoreItemsFromAccount()
 
         //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
-        val listObserver = Observer<List<Info>> { itemsAdapter.update(dataViewModel.getAllItems().value) }
-        dataViewModel.getAllItems().observe(this, listObserver)
+        val listObserver = Observer<List<Info>> { itemsAdapter.update(it) }
+        dataViewModel.dataItems.observe(this, listObserver)
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -145,7 +144,7 @@ class MainActivity : AppCompatActivity() {
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
         dataViewModel.clearAllItems()
-        userViewModel.withdrawUser(dataViewModel.getAllItems().value)
+        userViewModel.withdrawUser(dataViewModel.dataItems.value)
             .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청

@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.item
+package com.fallTurtle.myrestaurantgallery.model.etc
 
 /**
  * 위치 값을 저장하는 데이터 클래스.
