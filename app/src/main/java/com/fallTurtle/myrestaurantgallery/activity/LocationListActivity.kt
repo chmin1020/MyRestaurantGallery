@@ -14,8 +14,8 @@ import com.fallTurtle.myrestaurantgallery.view_model.LocationSearchViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.item.LocationPair
-import com.fallTurtle.myrestaurantgallery.item.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.Place
 import retrofit2.Response

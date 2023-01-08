@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityProgressBinding
-import com.fallTurtle.myrestaurantgallery.item.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import kotlinx.coroutines.*
 
 /**

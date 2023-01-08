@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
-import com.fallTurtle.myrestaurantgallery.item.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 
 /**
  * 위치 정보 검색 결과에 대한 리스트를 위한 recylcerView 전용 어댑터

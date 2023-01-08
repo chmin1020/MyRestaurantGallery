@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.item
+package com.fallTurtle.myrestaurantgallery.model.etc
 
 /**
  * 각 식당에 대한 정보 중 리스트에 필요한 것을 담는 데이터 클래스.
@@ -8,4 +8,5 @@ data class LocationResult(
     val fullAddress:String,
     val name:String,
     val category: String,
-    val lp:LocationPair)
+    val lp: LocationPair
+)

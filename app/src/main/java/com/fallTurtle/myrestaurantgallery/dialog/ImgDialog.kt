@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.item
+package com.fallTurtle.myrestaurantgallery.dialog
 
 import android.app.Dialog
 import android.content.Context
