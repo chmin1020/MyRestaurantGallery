@@ -1,14 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
 import android.content.Intent
-import com.fallTurtle.myrestaurantgallery.R
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthProvider
 
 /**
@@ -16,9 +15,10 @@ import com.google.firebase.auth.GoogleAuthProvider
  * 현재 유저(FirebaseUser)에 대한 정보에 대해 로그인(update), 로그아웃, 탈퇴 기능을 수행한다.
  **/
 class FirebaseUserRepository {
-    /* 유저 로그인 상태 확인 함수 */
-    fun isUserExist(): Boolean = (FirebaseUtils.getUser() != null)
+    private val isUserExist: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
 
+    /* 유저 로그인 상태 확인 함수 */
+    fun getUserState(): LiveData<Boolean> = isUserExist
 
     /* 로그인을 위해 서버에 보낼 옵션 값을 반환하는 함수 */
     fun getOptionForLogin(request: String): GoogleSignInOptions {
@@ -28,27 +28,27 @@ class FirebaseUserRepository {
 
     /* 응답 결과로부터 토큰을 추출 시도하는 함수 */
     fun getTokenForLogin(result: Intent?): String?{
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result)
-
         return try {
             //받은 결과의 아이디 토큰을 통해 파이어베이스 인증 시도
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result)
             val account = task.getResult(ApiException::class.java) ?: throw NullPointerException()
             account.idToken ?: throw NullPointerException()
         }
-        catch (e: NullPointerException) { null }
+        catch (e: Exception) { null }
     }
 
     /* 토큰으로 인증을 통한 최종 로그인을 시도하는 함수 */
-    fun finalLoginWithCredential(idToken: String, job: OnCompleteListener<AuthResult>){
+    fun finalLoginWithCredential(idToken: String){
         //Token 보내서 credential 받고 인증 시도 (성공 시 job 실행)
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener(job)
+        FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener { updateUser() }
     }
 
 
     /* 현재 유저 정보를 새롭게 갱신하는 함수 */
     fun updateUser(){
         FirebaseUtils.updateUser()
+            .also { isUserExist.postValue(FirebaseUtils.getUser() != null) }
     }
 
     /* 앱에서 로그아웃하는 함수 */

@@ -33,13 +33,14 @@ import java.util.*
  **/
 class AddActivity : AppCompatActivity(){
     //--------------------------------------------
-    // 인스턴스 영역
+    // 프로퍼티 영역
     //
 
-    //for saving edit information
+    //수정 데이터 저장을 위한 객체
+    private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
     private var info = Info()
 
-    //view binding
+    //뷰 바인딩
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
 
     //네트워크 연결 체크 매니저
@@ -47,15 +48,15 @@ class AddActivity : AppCompatActivity(){
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
+    private val dataViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var imgUri: Uri? = null
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
-        if(imgUri != null) {
-            binding.ivImage.setImageURI(imgUri)
-            curImage = imgUri?.lastPathSegment.toString()
+        imgUri?.let{ uri->
+            binding.ivImage.setImageURI(uri)
+            curImage = uri.lastPathSegment.toString()
         }
     }
 
@@ -77,9 +78,9 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
-
-    private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
+    //현재 페이지에서 담고 있는 이미지
     private var curImage:String? = null
+
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -175,16 +176,16 @@ class AddActivity : AppCompatActivity(){
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
 
-            var lati:Double? = null
-            var longi:Double? = null
+            var latitude:Double? = null
+            var longitude:Double? = null
 
             if(isEdit) {
-                lati = info.latitude
-                longi = info.longitude
+                latitude = info.latitude
+                longitude = info.longitude
             }
 
-            intent.putExtra("latitude", lati)
-            intent.putExtra("longitude", longi)
+            intent.putExtra("latitude", latitude)
+            intent.putExtra("longitude", longitude)
             getAddress.launch(intent)
         }
 
@@ -238,8 +239,7 @@ class AddActivity : AppCompatActivity(){
         if(networkManager.checkNetworkState()) {
             //저장 과정 (이름과 장소는 필수!)
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
-                Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
                 val id: String = if (isEdit) info.dbID else getNewID()
@@ -250,7 +250,7 @@ class AddActivity : AppCompatActivity(){
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
                                 latitude = info.latitude, longitude = info.longitude, dbID = id)
-                roomViewModel.insertNewItem(newItem)
+                dataViewModel.insertNewItem(newItem)
 
                 //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
