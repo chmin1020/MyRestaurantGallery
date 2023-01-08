@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
 import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
 
 /**
  * 앱의 로그인 화면을 담당하는 액티비티.
@@ -26,8 +25,8 @@ class LoginActivity: AppCompatActivity() {
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
-    //로그인 인터페이스
-    private val loginSuccessInterface: OnCompleteListener<AuthResult> = OnCompleteListener { tryToShowMain(true) }
+    //공유 설정 (로그인 유지 여부)
+    private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
 
 
     //--------------------------------------------
@@ -37,9 +36,9 @@ class LoginActivity: AppCompatActivity() {
     //로그인 요청에 대한 결과를 가져오는 launcher
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         //요청이 성공해서 토큰을 받았다면 계정 인증 시도, 실패 시 토스트 메시지 출력
-        userViewModel.getTokenForLogin(it.data)?.let { token->
-            userViewModel.loginUser(token, loginSuccessInterface) } ?:
-            run{ Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show() }
+        userViewModel.getTokenForLogin(it.data)
+            ?.let { token-> userViewModel.loginUser(token) }
+            ?: run{ Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show() }
     }
 
 
@@ -54,8 +53,9 @@ class LoginActivity: AppCompatActivity() {
         //login 버튼을 누르면 구글 계정으로 로그인을 시도하는 이벤트 발생
         binding.signInButton.setOnClickListener{ signIn() }
 
-        //로그인 시도 (이미 로그인 중이면 메인화면으로 넘어감)
-        tryToShowMain(false)
+        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
+        val userObserver = Observer<Boolean> { if(it) tryToShowMain() }
+        userViewModel.userState.observe(this, userObserver)
     }
 
 
@@ -72,14 +72,14 @@ class LoginActivity: AppCompatActivity() {
     }
 
     /* 파이어베이스 인증에도 성공했다면, 메인 화면으로 이동할 수 있게 하는 함수 */
-    private fun tryToShowMain(newLogin: Boolean) {
-        if(userViewModel.checkUser()) {
-            val intent = Intent(this, MainActivity::class.java)
-                .also { it.putExtra("newLogin", newLogin) }
-            if(newLogin) Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
+    private fun tryToShowMain() {
+        val newLogin = !sharedPreferences.getBoolean("isLogin", false)
+        sharedPreferences.edit().putBoolean("isLogin", true).apply()
 
-            startActivity(intent)
-            finish()
-        }
+        val intent = Intent(this, MainActivity::class.java).also { it.putExtra("newLogin", newLogin) }
+        if(newLogin) Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
+
+        startActivity(intent)
+        finish()
     }
 }

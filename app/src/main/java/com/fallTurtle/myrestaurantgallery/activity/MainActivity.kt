@@ -3,6 +3,7 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
+    //공유 설정 (로그인 유지 여부)
+    private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -84,7 +87,8 @@ class MainActivity : AppCompatActivity() {
             //로그아웃 선택 시
             R.id.menu_logout -> {
                 dataViewModel.clearAllItems()
-                userViewModel.logoutUser()
+                userViewModel.logoutUser().also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
+
                 val progress = Intent(this, ProgressActivity::class.java)
                 progress.putExtra("endCode",2)
                 startActivity(progress)
@@ -142,6 +146,7 @@ class MainActivity : AppCompatActivity() {
     private fun withdrawCurrentUser(){
         dataViewModel.clearAllItems()
         userViewModel.withdrawUser(dataViewModel.getAllItems().value)
+            .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
         val progress = Intent(this, ProgressActivity::class.java)
