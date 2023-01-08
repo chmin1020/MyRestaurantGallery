@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -69,6 +70,14 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
+    //뒤로 가기 버튼 누를 시 작동할 트리거
+    private val backPressCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            backToRecord(intent.getBooleanExtra("isEdit", false))
+        }
+    }
+
+
     private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
     private var curImage:String? = null
 
@@ -111,6 +120,9 @@ class AddActivity : AppCompatActivity(){
                 else -> false
             }
         }
+
+        //뒤로 가기 액션 추가
+        this.onBackPressedDispatcher.addCallback(this, backPressCallback)
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
@@ -125,12 +137,6 @@ class AddActivity : AppCompatActivity(){
             android.R.id.home -> backToRecord(intent.getBooleanExtra("isEdit", false))
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    /* onBackPressed()에서는 뒤로 가기 버튼을 눌렸을 때 수행할 일을 정의한다. */
-    override fun onBackPressed() {
-        super.onBackPressed()
-        backToRecord(intent.getBooleanExtra("isEdit", false))
     }
 
 
