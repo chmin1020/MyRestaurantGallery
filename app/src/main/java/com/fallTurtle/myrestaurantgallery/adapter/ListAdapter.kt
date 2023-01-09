@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.model.room.Info
@@ -77,6 +78,13 @@ class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapt
         holder.tvName.text = infoList[position].name
         holder.tvGenre.text = infoList[position].category
         holder.tvRate.text = infoList[position].rate.toString()
+
+        infoList[position].image?.let {
+            holder.ivImage.load(File(it)){
+                crossfade(true)
+                placeholder(R.drawable.loading_food)
+            }
+        }
 
         //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->

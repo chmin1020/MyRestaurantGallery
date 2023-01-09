@@ -1,13 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.repository.item.image
 
+import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
-import java.io.FileInputStream
 
 class StorageRepository{
     private val storageRef = FirebaseUtils.getStorageRef()
 
-    fun addNewImage(imageName: String, stream: FileInputStream){
-        //item.image?.let { storageRepository.deleteImage(it) }
+    fun insertImage(imageName: String, uri: Uri){
+        storageRef.child(imageName).putFile(uri)
     }
 
     fun deleteImage(imageName: String){
