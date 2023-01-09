@@ -6,6 +6,8 @@ import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 class StorageRepository{
     private val storageRef = FirebaseUtils.getStorageRef()
 
+    fun getProperReference() = storageRef
+
     fun insertImage(imageName: String, uri: Uri){
         storageRef.child(imageName).putFile(uri)
     }

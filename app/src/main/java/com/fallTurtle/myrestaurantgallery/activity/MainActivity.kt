@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
+import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
@@ -31,15 +31,15 @@ class MainActivity : AppCompatActivity() {
     // 인스턴스 영역
     //
 
-    //view binding
+    //뷰 바인딩
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    //related to recyclerView
-    private val itemsAdapter by lazy { ListAdapter(this.cacheDir, this) }
+    //리사이클러뷰 어댑터
+    private val itemsAdapter by lazy { ItemAdapter(filesDir.toString())}
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+    private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
     //공유 설정 (로그인 유지 여부)
@@ -60,11 +60,11 @@ class MainActivity : AppCompatActivity() {
 
         //새로 로그인 -> 데이터 복구 필요함
         if(intent.getBooleanExtra("newLogin", true))
-            dataViewModel.restoreItemsFromAccount()
+            itemViewModel.restoreItemsFromAccount()
 
         //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
         val listObserver = Observer<List<Info>> { itemsAdapter.update(it) }
-        dataViewModel.dataItems.observe(this, listObserver)
+        itemViewModel.dataItems.observe(this, listObserver)
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             //로그아웃 선택 시
             R.id.menu_logout -> {
-                dataViewModel.clearAllItems()
+                itemViewModel.clearAllItems()
                 userViewModel.logoutUser().also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
 
                 val progress = Intent(this, ProgressActivity::class.java)
@@ -144,8 +144,8 @@ class MainActivity : AppCompatActivity() {
 
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
-        dataViewModel.clearAllItems()
-        userViewModel.withdrawUser(dataViewModel.dataItems.value)
+        itemViewModel.clearAllItems()
+        userViewModel.withdrawUser(itemViewModel.dataItems.value)
             .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
 
         //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청

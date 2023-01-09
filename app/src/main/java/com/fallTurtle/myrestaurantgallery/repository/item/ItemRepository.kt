@@ -10,16 +10,18 @@ import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
 class ItemRepository(application: Application) {
     //firebase data 리포지토리
     private val dataRepository = DataRepository(application)
-    private val imageRepository = ImageRepository(application.contentResolver)
+    private val imageRepository = ImageRepository(application.filesDir.toString(), application.contentResolver)
 
-    /* Firestore 데이터를 불러와서 room 데이터베이스로 전체 삽입하는 함수 */
-    fun restoreFirestoreDataToRoom(){
+    /* Firestore 데이터를 불러와서 로컬 저장 공간에 전체 삽입하는 함수 */
+    fun restorePreviousItem(){
         dataRepository.restoreLocalData()
+        imageRepository.restoreLocalImages()
     }
 
     /* roomDB 내의 모든 데이터를 삭제하는 함수 (로그아웃, 탈퇴 시 실행) */
     fun itemClear(){
         dataRepository.clearLocalData()
+        imageRepository.clearLocalImages()
     }
 
     /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
@@ -28,11 +30,11 @@ class ItemRepository(application: Application) {
     }
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    fun itemInsert(item: Info, uri: Uri?, preImagePath: String?) {
+    fun itemInsert(item: Info, uri: Uri?, preImageName: String?) {
         dataRepository.insertData(item)
 
         //이미지가 바뀌었다면 기존 이미지 제거, 현재 이미지 추가
-        preImagePath?.let { if(it != item.image) imageRepository.deleteImage(it)}
+        preImageName?.let { if(it != item.image) imageRepository.deleteImage(it)}
         item.image?.let { name -> uri?.let{ imageRepository.insertImage(name, it) } }
     }
 

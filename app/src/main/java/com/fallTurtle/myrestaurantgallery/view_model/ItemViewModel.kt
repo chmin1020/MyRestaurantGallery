@@ -2,14 +2,12 @@ package com.fallTurtle.myrestaurantgallery.view_model
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.item.ItemRepository
 import kotlinx.coroutines.*
-import java.io.File
 
 class ItemViewModel(application: Application): AndroidViewModel(application) {
     //데이터 비즈니스 로직 리포지토리
@@ -20,7 +18,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
     /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
     fun restoreItemsFromAccount(){
-        viewModelScope.launch(Dispatchers.IO) { itemRepository.restoreFirestoreDataToRoom() }
+        viewModelScope.launch(Dispatchers.IO) { itemRepository.restorePreviousItem() }
     }
 
     /* 룸 DB(로컬 데이터) 내용을 모두 지울 때 사용하는 함수 */

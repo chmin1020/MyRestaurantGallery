@@ -3,26 +3,25 @@ package com.fallTurtle.myrestaurantgallery.repository.item.image
 import android.content.ContentResolver
 import android.net.Uri
 
-class ImageRepository(resolver: ContentResolver) {
+class ImageRepository(localPath: String, resolver: ContentResolver) {
     private val storageRepository = StorageRepository()
-    private val localImageRepository = LocalImageRepository(resolver)
+    private val localImageRepository = LocalImageRepository(localPath, resolver)
+
+    fun clearLocalImages(){
+        localImageRepository.clearSavedImages()
+    }
 
     fun restoreLocalImages(){
-     /*   fireStoreRepository.getProperCollection().get().addOnSuccessListener {
-            //io 스레드 내에서 roomDB 데이터 채우기
-            CoroutineScope(Dispatchers.IO).launch{
-                it.toObjects(Info::class.java).forEach{ item -> roomRepository.insertData(item) }
-            }
-        }*/
+        localImageRepository.restoreImages(storageRepository.getProperReference())
     }
 
-    fun insertImage(imagePath: String, uri: Uri){
-        storageRepository.insertImage(imagePath, uri)
-        localImageRepository.insertImage(imagePath, uri)
+    fun insertImage(imageName: String, uri: Uri){
+        storageRepository.insertImage(imageName, uri)
+        localImageRepository.insertImage(imageName, uri)
     }
 
-    fun deleteImage(imagePath: String){
-        storageRepository.deleteImage(imagePath)
-        localImageRepository.deleteImage(imagePath)
+    fun deleteImage(imageName: String){
+        storageRepository.deleteImage(imageName)
+        localImageRepository.deleteImage(imageName)
     }
 }
