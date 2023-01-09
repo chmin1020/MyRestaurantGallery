@@ -16,7 +16,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.ListAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
-import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
+    private val dataViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
     //공유 설정 (로그인 유지 여부)
