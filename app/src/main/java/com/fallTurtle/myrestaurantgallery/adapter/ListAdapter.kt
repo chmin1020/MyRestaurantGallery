@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,30 +62,10 @@ class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapt
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기
-        //val image = infoList[position].image
-        //if(image != null)
-        //    GlideApp.with(holder.itemView).load(strRef.child(image)).into(holder.ivImage)
-        //else{
-            when(infoList[position].categoryNum) {
-                0 -> holder.ivImage.setImageResource(R.drawable.korean_food)
-                1 -> holder.ivImage.setImageResource(R.drawable.chinese_food)
-                2 -> holder.ivImage.setImageResource(R.drawable.japanese_food)
-                3 -> holder.ivImage.setImageResource(R.drawable.western_food)
-                4 -> holder.ivImage.setImageResource(R.drawable.coffee_and_drink)
-                5 -> holder.ivImage.setImageResource(R.drawable.drink)
-                6 -> holder.ivImage.setImageResource(R.drawable.etc)
-            }
-        //}
         holder.tvName.text = infoList[position].name
         holder.tvGenre.text = infoList[position].category
         holder.tvRate.text = infoList[position].rate.toString()
-
-        infoList[position].image?.let {
-            holder.ivImage.load(File(it)){
-                crossfade(true)
-                placeholder(R.drawable.loading_food)
-            }
-        }
+        fillImageView(infoList[position].image, infoList[position].categoryNum, holder.ivImage)
 
         //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->
@@ -108,5 +89,26 @@ class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapt
             this.infoList = it
             notifyDataSetChanged()
         }
+    }
+
+    private fun fillImageView(imagePath: String?, categoryNum: Int, imageView: ImageView){
+        imagePath?.let {
+            imageView.load(File(it)){
+                crossfade(true)
+                placeholder(R.drawable.loading_food)
+            }
+        } ?:
+        run{
+            when(categoryNum) {
+                0 -> imageView.setImageResource(R.drawable.korean_food)
+                1 -> imageView.setImageResource(R.drawable.chinese_food)
+                2 -> imageView.setImageResource(R.drawable.japanese_food)
+                3 -> imageView.setImageResource(R.drawable.western_food)
+                4 -> imageView.setImageResource(R.drawable.coffee_and_drink)
+                5 -> imageView.setImageResource(R.drawable.drink)
+                6 -> imageView.setImageResource(R.drawable.etc)
+            }
+        }
+
     }
 }

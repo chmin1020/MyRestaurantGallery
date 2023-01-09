@@ -89,18 +89,13 @@ class RecordActivity : AppCompatActivity() {
         binding.tvDate.text = info.date
 
         //이미지 적용
-        //val image = info.image
-
         info.image?.let {
             binding.ivImage.load(File(it)){
                 crossfade(true)
                 placeholder(R.drawable.loading_food)
             }
-        }
-
-        //if(image != null)  //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
-        //    GlideApp.with(this).load(firebaseViewModel.getImageRef(image)).into(binding.ivImage)
-        //else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
+        } ?:
+        run{
             when (info.categoryNum) {
                 0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
                 1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
@@ -110,7 +105,7 @@ class RecordActivity : AppCompatActivity() {
                 5 -> binding.ivImage.setImageResource(R.drawable.drink)
                 6 -> binding.ivImage.setImageResource(R.drawable.etc)
             }
-        //}
+        }
     }
 
     /* 이전 액티비티에서 받은 정보를 가지고 와서 뷰에 적용하는 함수 */

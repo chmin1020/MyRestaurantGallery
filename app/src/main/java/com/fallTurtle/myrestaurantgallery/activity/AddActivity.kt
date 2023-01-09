@@ -15,12 +15,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,7 +40,7 @@ class AddActivity : AppCompatActivity(){
 
     //수정 데이터 저장을 위한 객체
     private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
-    private var info = Info()
+    private var infoForEdit = Info()
 
     //뷰 바인딩
     private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
@@ -67,8 +69,8 @@ class AddActivity : AppCompatActivity(){
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
-            info.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
-            info.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
+            infoForEdit.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
+            infoForEdit.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
             binding.etLocation.setText(address)
         }
     }
@@ -179,8 +181,8 @@ class AddActivity : AppCompatActivity(){
             var longitude:Double? = null
 
             if(isEdit) {
-                latitude = info.latitude
-                longitude = info.longitude
+                latitude = infoForEdit.latitude
+                longitude = infoForEdit.longitude
             }
 
             intent.putExtra("latitude", latitude)
@@ -214,19 +216,25 @@ class AddActivity : AppCompatActivity(){
     /* 수정 관련 정보들을 받아서 저장하고 또 적용하는 함수 */
     private fun getEditInfo(){
         //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
-        info = intent.getSerializableExtra("info") as Info
+        infoForEdit = intent.getSerializableExtra("info") as Info
 
         //받은 데이터를 변수 혹은 뷰에 적용
-        binding.etName.setText(info.name)
-        binding.spCategory.setSelection(info.categoryNum)
-        binding.etLocation.setText(info.location)
-        binding.etMemo.setText(info.memo)
-        binding.rbRatingBar.rating = info.rate.toFloat()
-        binding.tvDate.text = info.date
+        binding.etName.setText(infoForEdit.name)
+        binding.spCategory.setSelection(infoForEdit.categoryNum)
+        binding.etLocation.setText(infoForEdit.location)
+        binding.etMemo.setText(infoForEdit.memo)
+        binding.rbRatingBar.rating = infoForEdit.rate.toFloat()
+        binding.tvDate.text = infoForEdit.date
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
-        curImgName = info.image
-        //info.image?.let { GlideApp.with(this).load(firebaseViewModel.getImageRef(it)).into(binding.ivImage) }
+        curImgName = infoForEdit.image
+        //이미지 적용
+        curImgName?.let {
+            binding.ivImage.load(File(it)) {
+                crossfade(true)
+                placeholder(R.drawable.loading_food)
+            }
+        }
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -241,15 +249,15 @@ class AddActivity : AppCompatActivity(){
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
-                val id: String = if (isEdit) info.dbID else getNewID()
+                val id: String = if (isEdit) infoForEdit.dbID else getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
                 val newItem = Info(image = curImgName, date = binding.tvDate.text.toString(),
                                 name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
-                                latitude = info.latitude, longitude = info.longitude, dbID = id)
-                itemViewModel.insertNewItem(newItem, imgUri)
+                                latitude = infoForEdit.latitude, longitude = infoForEdit.longitude, dbID = id)
+                itemViewModel.insertItem(newItem, imgUri, infoForEdit.image)
 
                 //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
@@ -268,7 +276,7 @@ class AddActivity : AppCompatActivity(){
         if(isEdit) {
             //기존에 백업했던 기존 정보들을 다시 record 화면으로 보냄
             val back = Intent(this, RecordActivity::class.java)
-            back.putExtra("info", info)
+            back.putExtra("info", infoForEdit)
             startActivity(back)
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
