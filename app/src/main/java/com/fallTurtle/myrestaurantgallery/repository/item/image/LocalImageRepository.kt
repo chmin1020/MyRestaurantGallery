@@ -10,7 +10,8 @@ import java.io.FileOutputStream
 
 class LocalImageRepository(private val resolver: ContentResolver) {
     fun insertImage(imageName: String, uri: Uri){
-        saveImage(imageName, uri)
+        if(!File(imageName).exists())
+            saveImage(imageName, uri)
     }
 
     ///////
@@ -34,8 +35,6 @@ class LocalImageRepository(private val resolver: ContentResolver) {
     //////
 
     fun deleteImage(imagePath: String){
-        val deleteFile = File(imagePath)
-        val result = deleteFile.delete().toString()
-        Log.d("imageDeleteTry", result)
+        File(imagePath).delete().toString()
     }
 }

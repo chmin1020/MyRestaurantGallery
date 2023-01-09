@@ -28,8 +28,11 @@ class ItemRepository(application: Application) {
     }
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    fun itemInsert(item: Info, uri: Uri?) {
+    fun itemInsert(item: Info, uri: Uri?, preImagePath: String?) {
         dataRepository.insertData(item)
+
+        //이미지가 바뀌었다면 기존 이미지 제거, 현재 이미지 추가
+        preImagePath?.let { if(it != item.image) imageRepository.deleteImage(it)}
         item.image?.let { name -> uri?.let{ imageRepository.insertImage(name, it) } }
     }
 

@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.view_model
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -28,8 +29,8 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     }
 
     /* 기본적인 아이템 삽입(혹은 갱신) 이벤트를 위한 함수 */
-    fun insertNewItem(item: Info, imgUri: Uri?) {
-        viewModelScope.launch(Dispatchers.IO) { itemRepository.itemInsert(item, imgUri) }
+    fun insertItem(item: Info, imgUri: Uri?, preImgPath: String?) {
+        viewModelScope.launch(Dispatchers.IO) { itemRepository.itemInsert(item, imgUri, preImgPath) }
     }
 
     /* 기본적인 아이템 삭제 이벤트를 위한 함수 */
