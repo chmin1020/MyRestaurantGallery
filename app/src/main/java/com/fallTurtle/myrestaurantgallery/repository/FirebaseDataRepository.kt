@@ -23,16 +23,4 @@ class FirebaseDataRepository {
     fun getAllFireStoreItems(): CollectionReference{
         return storeRef().collection("restaurants")
     }
-
-    fun getImageRef(img: String): StorageReference {
-        return storageRef().child(img)
-    }
-
-    fun addNewImage(img: String, stream: FileInputStream){
-        storageRef().child(img).putStream(stream)
-    }
-
-    fun deleteImage(img: String){
-        storageRef().child(img).delete()
-    }
 }

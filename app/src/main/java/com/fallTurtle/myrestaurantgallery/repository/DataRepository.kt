@@ -1,12 +1,14 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
 
 class DataRepository(application: Application) {
     //room DB 관련 인스턴스 (DB, DAO, elements)

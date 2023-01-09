@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     //공유 설정 (로그인 유지 여부)
     private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
 
+
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
     //
