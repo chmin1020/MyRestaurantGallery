@@ -72,7 +72,8 @@ class LocationListActivity : AppCompatActivity(){
 
         //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
         binding.etSearch.requestFocus()
-        inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT)
+        binding.etSearch.postDelayed(
+            { inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
     }
 
 
@@ -90,9 +91,7 @@ class LocationListActivity : AppCompatActivity(){
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
-                //어댑터가 null -> 동작을 수행하지 않음
-                recyclerView.adapter ?: return
+                recyclerView.adapter ?: return //어댑터가 null -> 동작을 수행하지 않음
 
                 // 페이지 끝에 도달한 경우(위에서 구한 인덱스도 비교)
                 if (!recyclerView.canScrollVertically(1) && !adapter.isEnd)
@@ -108,10 +107,8 @@ class LocationListActivity : AppCompatActivity(){
 
         //키보드에서 엔터를 클릭
         binding.etSearch.setOnKeyListener{ _, keyCode, event ->
-            if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN){
-                doSearch(binding.etSearch.text.toString())
-                return@setOnKeyListener true
-            }
+            if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+                return@setOnKeyListener true.also { doSearch(binding.etSearch.text.toString()) }
             return@setOnKeyListener false
         }
 
@@ -150,7 +147,7 @@ class LocationListActivity : AppCompatActivity(){
 
             // 뷰모델을 통한 retrofit 응답 값 get
             if (page == 1) adapter.clearList() //새로운 검색 시작
-            viewModel.getResponseOfLocationSearch(keywordString, page)
+            viewModel.searchLocationWithQuery(keywordString, page)
         }
         catch (e: Exception) {
             Toast.makeText(this@LocationListActivity, "검색 실패", Toast.LENGTH_SHORT).show()
@@ -173,11 +170,8 @@ class LocationListActivity : AppCompatActivity(){
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
     private fun setData(searchInfo: LocationResponse) {
-        //리사이클러뷰에 담을 리스트
-        val places: List<Place> = searchInfo.documents
-
         // 검색 결과 데이터를 뷰 형식에 맞게 옮긴다.
-        val dataList = places.map {
+        val dataList = searchInfo.documents.map {
             LocationResult(it.address_name, it.place_name, it.category_name, LocationPair(it.y.toFloat(), it.x.toFloat()))
         }
 

@@ -19,7 +19,7 @@ class LocationSearchViewModel(application: Application) : AndroidViewModel(appli
     val finalResponse: LiveData<Array<Response<LocationResponse>>> = searchRepository.getSearchResponse()
 
     /* 인자대로 검색하여 결과를 livedata 내에 적용하는 함수 */
-    fun getResponseOfLocationSearch(query: String, page: Int){
+    fun searchLocationWithQuery(query: String, page: Int){
         viewModelScope.launch(Dispatchers.IO) { searchRepository.searchTotalInfo(query, page) }
     }
 }
