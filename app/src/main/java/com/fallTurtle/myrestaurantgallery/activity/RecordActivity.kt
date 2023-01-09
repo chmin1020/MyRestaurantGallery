@@ -8,10 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import java.io.File
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -31,7 +33,7 @@ class RecordActivity : AppCompatActivity() {
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+    private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
 
     //--------------------------------------------
@@ -88,6 +90,14 @@ class RecordActivity : AppCompatActivity() {
 
         //이미지 적용
         //val image = info.image
+
+        info.image?.let {
+            binding.ivImage.load(File(it)){
+                crossfade(true)
+                placeholder(R.drawable.loading_food)
+            }
+        }
+
         //if(image != null)  //이미지 사용 시 Glide 기능으로 해당 이미지 로딩
         //    GlideApp.with(this).load(firebaseViewModel.getImageRef(image)).into(binding.ivImage)
         //else { //이미지 미사용 시 기본 그림 이미지를 정보에 맞게 적용
@@ -110,7 +120,7 @@ class RecordActivity : AppCompatActivity() {
             .setPositiveButton(R.string.yes) {_,_ ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
                 //firebaseViewModel.deleteItem(info)
-                roomViewModel.deleteItem(info)
+                itemViewModel.deleteItem(info)
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()
             }

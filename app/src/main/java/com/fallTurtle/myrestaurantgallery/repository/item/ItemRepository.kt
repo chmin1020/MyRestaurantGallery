@@ -1,18 +1,16 @@
 package com.fallTurtle.myrestaurantgallery.repository.item
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ItemRepository(application: Application) {
     //firebase data 리포지토리
     private val dataRepository = DataRepository(application)
-    private val imageRepository = ImageRepository()
+    private val imageRepository = ImageRepository(application.contentResolver)
 
     /* Firestore 데이터를 불러와서 room 데이터베이스로 전체 삽입하는 함수 */
     fun restoreFirestoreDataToRoom(){
@@ -30,14 +28,15 @@ class ItemRepository(application: Application) {
     }
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    fun itemInsert(item: Info) {
+    fun itemInsert(item: Info, uri: Uri?) {
         dataRepository.insertData(item)
+        item.image?.let { name -> uri?.let{ imageRepository.insertImage(name, it) } }
     }
 
     /* 아이템 삭제 이벤트를 정의한 함수 */
     fun itemDelete(item: Info) {
         dataRepository.deleteData(item)
-        imageRepository
+        item.image?.let { imageRepository.deleteImage(it) }
     }
 
 }

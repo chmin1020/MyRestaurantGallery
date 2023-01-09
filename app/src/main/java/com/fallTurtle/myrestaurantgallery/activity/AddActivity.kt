@@ -57,7 +57,7 @@ class AddActivity : AppCompatActivity(){
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
-            curImgName = uri.lastPathSegment.toString()
+            curImgName = filesDir.toString() + "/" + uri.lastPathSegment.toString()
             binding.ivImage.setImageURI(uri)
         }
     }
@@ -249,7 +249,7 @@ class AddActivity : AppCompatActivity(){
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
                                 latitude = info.latitude, longitude = info.longitude, dbID = id)
-                itemViewModel.insertNewItem(newItem)
+                itemViewModel.insertNewItem(newItem, imgUri)
 
                 //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
