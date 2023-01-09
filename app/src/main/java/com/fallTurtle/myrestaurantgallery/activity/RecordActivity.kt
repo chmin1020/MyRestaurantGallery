@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -31,7 +31,7 @@ class RecordActivity : AppCompatActivity() {
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
+    private val roomViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
 
     //--------------------------------------------

@@ -20,7 +20,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,7 +48,7 @@ class AddActivity : AppCompatActivity(){
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val dataViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
+    private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var curImgName: String? = null
@@ -249,7 +249,7 @@ class AddActivity : AppCompatActivity(){
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
                                 latitude = info.latitude, longitude = info.longitude, dbID = id)
-                dataViewModel.insertNewItem(newItem)
+                itemViewModel.insertNewItem(newItem)
 
                 //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
                 val progress = Intent(this, ProgressActivity::class.java)
@@ -266,7 +266,7 @@ class AddActivity : AppCompatActivity(){
     /* 수정 취소 시 실행될 함수 */
     private fun backToRecord(isEdit: Boolean){
         if(isEdit) {
-            //기존에 백업했던 기존 정보들을 다시 record로 보냄
+            //기존에 백업했던 기존 정보들을 다시 record 화면으로 보냄
             val back = Intent(this, RecordActivity::class.java)
             back.putExtra("info", info)
             startActivity(back)
