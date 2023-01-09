@@ -90,7 +90,7 @@ class RecordActivity : AppCompatActivity() {
 
         //이미지 적용
         info.image?.let {
-            binding.ivImage.load(File(it)){
+            binding.ivImage.load(File("${filesDir}/$it")){
                 crossfade(true)
                 placeholder(R.drawable.loading_food)
             }

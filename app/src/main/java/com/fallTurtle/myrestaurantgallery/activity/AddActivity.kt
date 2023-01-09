@@ -25,6 +25,7 @@ import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -59,7 +60,7 @@ class AddActivity : AppCompatActivity(){
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
-            curImgName = filesDir.toString() + "/" + uri.lastPathSegment.toString()
+            curImgName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
             binding.ivImage.setImageURI(uri)
         }
     }
@@ -230,7 +231,7 @@ class AddActivity : AppCompatActivity(){
         curImgName = infoForEdit.image
         //이미지 적용
         curImgName?.let {
-            binding.ivImage.load(File(it)) {
+            binding.ivImage.load(File("${filesDir}/$it")) {
                 crossfade(true)
                 placeholder(R.drawable.loading_food)
             }

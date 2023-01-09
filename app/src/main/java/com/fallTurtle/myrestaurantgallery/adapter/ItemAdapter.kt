@@ -1,11 +1,9 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +20,7 @@ import java.util.ArrayList
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
-class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapter<ListAdapter.CustomViewHolder>() {
+class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
     //--------------------------------------------
     // 해당 어댑터에서 사용할 뷰홀더
     //
@@ -93,7 +91,7 @@ class ListAdapter(private val path: File, context: Context) : RecyclerView.Adapt
 
     private fun fillImageView(imagePath: String?, categoryNum: Int, imageView: ImageView){
         imagePath?.let {
-            imageView.load(File(it)){
+            imageView.load(File("${localPath}/$it")){
                 crossfade(true)
                 placeholder(R.drawable.loading_food)
             }

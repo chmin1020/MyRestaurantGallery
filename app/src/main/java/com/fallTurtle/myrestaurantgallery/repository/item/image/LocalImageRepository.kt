@@ -4,11 +4,23 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.storage.StorageReference
 import java.io.File
 import java.io.FileOutputStream
 
-class LocalImageRepository(private val resolver: ContentResolver) {
+class LocalImageRepository(private val localPath: String, private val resolver: ContentResolver) {
+    fun restoreImages(backupReference: StorageReference){
+        backupReference.listAll().addOnSuccessListener {
+            it.items.forEach{ eachRef -> eachRef.getFile(File("$localPath/${eachRef.name}")) }
+        }
+    }
+
+    fun clearSavedImages(){
+        File(localPath).listFiles()?.forEach { it.delete() }
+    }
+
+
     fun insertImage(imageName: String, uri: Uri){
         if(!File(imageName).exists())
             saveImage(imageName, uri)
@@ -16,8 +28,8 @@ class LocalImageRepository(private val resolver: ContentResolver) {
 
     ///////
 
-    private fun saveImage(imagePath: String, uri: Uri){
-        saveBitmapAsImage(makeBitMap(uri), imagePath)
+    private fun saveImage(imageName: String, uri: Uri){
+        saveBitmapAsImage(makeBitMap(uri), imageName)
     }
 
     private fun makeBitMap(uri: Uri): Bitmap{
@@ -25,8 +37,8 @@ class LocalImageRepository(private val resolver: ContentResolver) {
         return BitmapFactory.decodeStream(inStream).also { inStream?.close() }
     }
 
-    private fun saveBitmapAsImage(bitmap: Bitmap, imagePath: String){
-        val newFile = File(imagePath)
+    private fun saveBitmapAsImage(bitmap: Bitmap, imageName: String){
+        val newFile = File("$localPath/$imageName")
         val outStream = FileOutputStream(newFile)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
         outStream.close()
@@ -34,7 +46,7 @@ class LocalImageRepository(private val resolver: ContentResolver) {
 
     //////
 
-    fun deleteImage(imagePath: String){
-        File(imagePath).delete().toString()
+    fun deleteImage(imageName: String){
+        File(imageName).delete().toString()
     }
 }
