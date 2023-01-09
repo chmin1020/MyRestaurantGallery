@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,12 +17,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
-import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
+import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.DataViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * 항목 추가 화면을 담당하는 액티비티.
@@ -51,12 +51,14 @@ class AddActivity : AppCompatActivity(){
     private val dataViewModel by lazy { ViewModelProvider(this, viewModelFactory)[DataViewModel::class.java] }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
+    private var curImgName: String? = null
+
     private var imgUri: Uri? = null
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
+            curImgName = uri.lastPathSegment.toString()
             binding.ivImage.setImageURI(uri)
-            curImage = uri.lastPathSegment.toString()
         }
     }
 
@@ -77,9 +79,6 @@ class AddActivity : AppCompatActivity(){
             backToRecord(intent.getBooleanExtra("isEdit", false))
         }
     }
-
-    //현재 페이지에서 담고 있는 이미지
-    private var curImage:String? = null
 
 
     //--------------------------------------------
@@ -150,7 +149,7 @@ class AddActivity : AppCompatActivity(){
         //스피너에 표시할 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                curImage ?: selectFoodDefaultImage(position)
+                curImgName ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -202,7 +201,7 @@ class AddActivity : AppCompatActivity(){
 
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
-                curImage = null
+                curImgName = null
                 selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                 imgDlg.closeDialog()
             }
@@ -226,7 +225,7 @@ class AddActivity : AppCompatActivity(){
         binding.tvDate.text = info.date
 
         //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
-        curImage = info.image
+        curImgName = info.image
         //info.image?.let { GlideApp.with(this).load(firebaseViewModel.getImageRef(it)).into(binding.ivImage) }
     }
 
@@ -245,7 +244,7 @@ class AddActivity : AppCompatActivity(){
                 val id: String = if (isEdit) info.dbID else getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-                val newItem = Info(image = setImage(), date = binding.tvDate.text.toString(),
+                val newItem = Info(image = curImgName, date = binding.tvDate.text.toString(),
                                 name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
@@ -257,40 +256,11 @@ class AddActivity : AppCompatActivity(){
                 if (isEdit) progress.putExtra("endCode", 0)
                 else progress.putExtra("endCode", 1)
                 startActivity(progress)
-
-                //이 화면은 종료
                 finish()
             }
         }
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
-    }
-
-    /* 저장할 이미지를 지정하는 함수 */
-    private fun setImage() : String?{
-        //이미지 설정
-        val image:String? = curImage
-
-        // edit 상태이고 이미지도 있었을 때, 현재 이미지와 이전 이미지가 다르다면
-        /*info.image?.let { preImage ->
-            if (preImage != curImage)
-                firebaseViewModel.deleteImage(preImage) // 기존 이미지는 지운다.
-        }*/
-
-        // 저장할 이미지가 있으면 실제 storage에 저장
-        /*image?.let { img->
-            imgUri?.let {
-                val path = File(getPath(it))
-                val stream = FileInputStream(path)
-                CoroutineScope(Dispatchers.IO).launch {
-                    val job = async { firebaseViewModel.addNewImage(img,stream) }
-                    job.join()
-                }
-            }
-        }
-        */
-
-        return image
     }
 
     /* 수정 취소 시 실행될 함수 */
@@ -320,15 +290,5 @@ class AddActivity : AppCompatActivity(){
             5 -> binding.ivImage.setImageResource(R.drawable.drink)
             6 -> binding.ivImage.setImageResource(R.drawable.etc)
         }
-    }
-
-    //제대로 된 uri 가져오기
-    private fun getPath(uri: Uri): String {
-        //콘텐트 리졸버로 해당 uri 값을 받기 위한 접근 시도
-        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
-        cursor?.moveToNext()
-        val path = cursor?.getString(cursor.getColumnIndex("_data") + 1)
-        cursor?.close()
-        return path ?: ""
     }
 }

@@ -31,7 +31,7 @@ class FirebaseUserRepository {
         return try {
             //받은 결과의 아이디 토큰을 통해 파이어베이스 인증 시도
             val task = GoogleSignIn.getSignedInAccountFromIntent(result)
-            val account = task.getResult(ApiException::class.java) ?: throw NullPointerException()
+            val account = task.result ?: throw NullPointerException()
             account.idToken ?: throw NullPointerException()
         }
         catch (e: Exception) { null }
