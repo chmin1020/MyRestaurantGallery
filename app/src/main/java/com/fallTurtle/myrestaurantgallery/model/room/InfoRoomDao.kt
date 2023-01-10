@@ -9,11 +9,11 @@ interface InfoRoomDao {
     suspend fun insert(item: Info)
 
     @Delete
-    fun delete(item: Info)
+    suspend fun delete(item: Info)
 
     @Query("SELECT * FROM Info")
     fun getAllItems(): LiveData<List<Info>>
 
     @Query("DELETE FROM Info")
-    fun clearAllItems()
+    suspend fun clearAllItems()
 }

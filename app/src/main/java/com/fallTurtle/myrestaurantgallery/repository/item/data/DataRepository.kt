@@ -12,11 +12,11 @@ class DataRepository(application: Application) {
 
     fun getSavedData() = roomRepository.getSavedData()
 
-    fun clearLocalData(){
+    suspend fun clearLocalData(){
         roomRepository.clearSavedData()
     }
 
-    fun restoreLocalData(){
+    suspend fun restoreLocalData(){
         fireStoreRepository.getProperCollection().get().addOnSuccessListener {
             //io 스레드 내에서 roomDB 데이터 채우기
             CoroutineScope(Dispatchers.IO).launch{
@@ -30,7 +30,7 @@ class DataRepository(application: Application) {
         roomRepository.insertData(data)
     }
 
-    fun deleteData(data: Info){
+    suspend fun deleteData(data: Info){
         fireStoreRepository.deleteData(data)
         roomRepository.deleteData(data)
     }

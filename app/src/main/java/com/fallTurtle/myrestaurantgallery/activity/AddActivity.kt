@@ -264,7 +264,7 @@ class AddActivity : AppCompatActivity(){
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
-                val id: String = if (isEdit) infoForEdit.dbID else getNewID()
+                val id = if (isEdit) infoForEdit.dbID else getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
                 val newItem = Info(image = curImgName, date = binding.tvDate.text.toString(),

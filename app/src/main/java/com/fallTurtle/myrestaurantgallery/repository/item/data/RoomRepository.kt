@@ -13,7 +13,7 @@ class RoomRepository(application: Application) {
 
     fun getSavedData() = items
 
-    fun clearSavedData(){
+    suspend fun clearSavedData(){
         roomDao.clearAllItems()
     }
 
@@ -21,7 +21,7 @@ class RoomRepository(application: Application) {
         roomDao.insert(item)
     }
 
-    fun deleteData(item: Info){
+    suspend fun deleteData(item: Info){
         roomDao.delete(item)
     }
 
