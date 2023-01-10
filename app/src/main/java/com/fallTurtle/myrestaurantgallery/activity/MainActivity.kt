@@ -88,11 +88,6 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_logout -> {
                 itemViewModel.clearAllItems()
                 userViewModel.logoutUser().also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
-
-                val progress = Intent(this, ProgressActivity::class.java)
-                progress.putExtra("endCode",2)
-                startActivity(progress)
-                finish()
             }
 
             //탈퇴 선택 시
@@ -147,11 +142,6 @@ class MainActivity : AppCompatActivity() {
         itemViewModel.clearAllItems()
         userViewModel.withdrawUser(itemViewModel.dataItems.value)
             .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
-
-        //탈퇴 처리 시간동안 사용자에게 대기 화면을 보여주기 위해 intent 로 progressActivity 실행 요청
-        val progress = Intent(this, ProgressActivity::class.java)
-        progress.putExtra("endCode",3)
-        startActivity(progress)
 
         //현재 액티비티(메인 화면)은 종료
         finish()

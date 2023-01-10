@@ -25,7 +25,7 @@ class DataRepository(application: Application) {
         }
     }
 
-    fun insertData(data: Info){
+    suspend fun insertData(data: Info){
         fireStoreRepository.insertData(data)
         roomRepository.insertData(data)
     }
