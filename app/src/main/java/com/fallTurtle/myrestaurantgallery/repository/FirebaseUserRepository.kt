@@ -9,6 +9,8 @@ import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Firebase 유저 관련 기능을 수행하는 리포지토리.
@@ -52,25 +54,27 @@ class FirebaseUserRepository {
     }
 
     /* 앱에서 로그아웃하는 함수 */
-    fun logoutUser() {
-        FirebaseUtils.getAuth().signOut()
+    suspend fun logoutUser() {
+        withContext(Dispatchers.IO){ FirebaseUtils.getAuth().signOut() }
     }
 
     /* 앱에서 사용자 탈퇴하는 함수 */
-    fun withDrawUser(deletingItems: List<Info>?){
-        //현재 유저의 저장 데이터 각각 제거(Firestore 특성 상)
-        deletingItems?.forEach {
-            FirebaseUtils.getStoreRef().collection("restaurants").document(it.dbID).delete()
-            it.image?.let{ path -> FirebaseUtils.getStorageRef().child(path).delete() }
-        }
+    suspend fun withDrawUser(deletingItems: List<Info>?){
+        withContext(Dispatchers.IO) {
+            //현재 유저의 저장 데이터 각각 제거(Firestore 특성 상)
+            deletingItems?.forEach {
+                FirebaseUtils.getStoreRef().collection("restaurants").document(it.dbID).delete()
+                it.image?.let { path -> FirebaseUtils.getStorageRef().child(path).delete() }
+            }
 
-        //현재 유저의 저장 데이터를 담은 레퍼런스들을 제거
-        FirebaseUtils.getStoreRef().delete()
-        FirebaseUtils.getStorageRef().delete()
+            //현재 유저의 저장 데이터를 담은 레퍼런스들을 제거
+            FirebaseUtils.getStoreRef().delete()
+            FirebaseUtils.getStorageRef().delete()
 
-        //유저를 파이어베이스 시스템 내부에서 삭제
-        FirebaseUtils.getUser()?.delete()?.addOnCompleteListener{ task->
-            if(task.isSuccessful) FirebaseUtils.getAuth().signOut()
+            //유저를 파이어베이스 시스템 내부에서 삭제
+            FirebaseUtils.getUser()?.delete()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) FirebaseUtils.getAuth().signOut()
+            }
         }
     }
 }

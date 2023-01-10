@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
+import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
@@ -27,10 +28,6 @@ import com.gun0912.tedpermission.TedPermission
  * 정리하자면 리스트를 보여줌과 동시에, 앱에서 가진 모든 다른 화면으로 이동할 수 있는 창구의 역할을 한다.
  **/
 class MainActivity : AppCompatActivity() {
-    //--------------------------------------------
-    // 인스턴스 영역
-    //
-
     //뷰 바인딩
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -42,8 +39,27 @@ class MainActivity : AppCompatActivity() {
     private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
 
+    //옵저버들
+    private val itemsObserver = Observer<List<Info>> { itemsAdapter.update(it) }
+    private val itemProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
+    private val itemFinishObserver = Observer<Boolean> { itemFinish = it; tryActivityFinish() }
+    private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading()}
+    private val userFinishObserver = Observer<Boolean> { userFinish = it; tryActivityFinish() }
+
+    //로딩 다이얼로그
+    private val progressDialog by lazy { ProgressDialog(this) }
+
     //공유 설정 (로그인 유지 여부)
     private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
+
+    // 유저와 아이템 부분의 비즈니스 작업의 상태 등을 판별할 프로퍼티
+    private var userProgress = false
+    private var itemProgress = false
+    private var userFinish = false
+    private var itemFinish = false
+
+    // 로그아웃 또는 탈퇴 시 적절한 메시지
+    private var endToastMessage = R.string.logout_success
 
 
     //--------------------------------------------
@@ -62,9 +78,8 @@ class MainActivity : AppCompatActivity() {
         if(intent.getBooleanExtra("newLogin", true))
             itemViewModel.restoreItemsFromAccount()
 
-        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
-        val listObserver = Observer<List<Info>> { itemsAdapter.update(it) }
-        itemViewModel.dataItems.observe(this, listObserver)
+        //viewModel 관찰하는 옵저버들 설정
+        setObservers()
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -86,8 +101,10 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             //로그아웃 선택 시
             R.id.menu_logout -> {
-                itemViewModel.clearAllItems()
-                userViewModel.logoutUser().also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
+                endToastMessage = R.string.logout_success
+                sharedPreferences.edit().putBoolean("isLogin", false).apply()
+                userViewModel.logoutUser()
+                itemViewModel.clearAllLocalItems()
             }
 
             //탈퇴 선택 시
@@ -95,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.withdrawal_ask)
                     .setPositiveButton(R.string.yes) {_,_ -> withdrawCurrentUser() }
-                    .setNegativeButton(R.string.no){_,_ ->}
+                    .setNegativeButton(R.string.no){_,_ -> }
                     .show()
             }
 
@@ -104,7 +121,6 @@ class MainActivity : AppCompatActivity() {
                 val addIntent = Intent(this@MainActivity, AddActivity::class.java)
                 addIntent.putExtra("isEdit", false)
                 startActivity(addIntent)
-
                 overridePendingTransition(R.anim.slide_up_in, R.anim.slide_up_out) //전환 효과 (슬라이딩)
             }
         }
@@ -116,12 +132,25 @@ class MainActivity : AppCompatActivity() {
     // 내부 함수 영역
     //
 
+    /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
+    private fun setObservers(){
+        //아이템 뷰모델 속 데이터 리스트 변화 관찰
+        itemViewModel.dataItems.observe(this, itemsObserver)
+
+        //각 뷰모델 속 작업 진행 여부 변화 관찰
+        itemViewModel.progressing.observe(this, itemProgressObserver)
+        userViewModel.progressing.observe(this, userProgressObserver)
+
+        //각 뷰모델 속 작업 종료 여부 변화 관찰
+        itemViewModel.finish.observe(this, itemFinishObserver)
+        userViewModel.finish.observe(this, userFinishObserver)
+    }
+
     /* 앱 실행 전 권한을 받기 위한 다이얼로그 (TedPermission 사용) */
     private fun showPermissionDialog() {
         //권한 허가 질문에 대한 응답 리스너
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() { }
-            //권한 획득 거부 시 --> 앱 사용 불가능
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
                 Toast.makeText(this@MainActivity, "권한을 허용해주세요", Toast.LENGTH_SHORT).show()
                 finishAffinity()
@@ -137,10 +166,25 @@ class MainActivity : AppCompatActivity() {
             .check()
     }
 
+    /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
+    private fun decideShowLoading(){
+        if(userProgress && itemProgress) progressDialog.show()
+        else progressDialog.close()
+    }
+
+    /* 유저와 아이템 작업 종료 시 액티비티를 종료하는 함수 */
+    private fun tryActivityFinish(){
+        if(userFinish && itemFinish) {
+            Toast.makeText(this, endToastMessage, Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
-        itemViewModel.clearAllItems()
+        endToastMessage = R.string.withdrawal_success
+        sharedPreferences.edit().putBoolean("isLogin", false).apply()
         userViewModel.withdrawUser(itemViewModel.dataItems.value)
-            .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
+        itemViewModel.clearAllLocalItems()
     }
 }

@@ -35,11 +35,12 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     }
 
     /* 룸 DB(로컬 데이터) 내용을 모두 지울 때 사용하는 함수 */
-    fun clearAllItems(){
+    fun clearAllLocalItems(){
         viewModelScope.launch {
             insideProgressing.postValue(true)
-            itemRepository.itemClear()
+            itemRepository.localItemClear()
             insideProgressing.postValue(false)
+            insideFinish.postValue(true)
         }
     }
 

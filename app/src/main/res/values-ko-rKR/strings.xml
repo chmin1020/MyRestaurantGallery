@@ -45,4 +45,7 @@
     <string name="add_new_item">새로운 아이템 추가</string>
     <string name="search_location">위치 검색</string>
     <string name="current_location">현위치 선택</string>
+
+    <!--firebase auth value-->
+    <string name="firebase_client_id" translatable="false">63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com</string>
 </resources>
