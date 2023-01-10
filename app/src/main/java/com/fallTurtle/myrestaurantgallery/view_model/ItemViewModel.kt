@@ -22,8 +22,8 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     val progressing: LiveData<Boolean> = insideProgressing
 
     //아이템 처리를 한 이후 해당 화면은 종료됨
-    private val insideFinish = MutableLiveData(false)
-    val finish: LiveData<Boolean> = insideFinish
+    private val insideWorkFinishFlag = MutableLiveData(false)
+    val workFinishFlag: LiveData<Boolean> = insideWorkFinishFlag
 
     /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
     fun restoreItemsFromAccount(){
@@ -31,6 +31,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
             insideProgressing.postValue(true)
             itemRepository.restorePreviousItem()
             insideProgressing.postValue(false)
+            insideWorkFinishFlag.postValue(true)
         }
     }
 
@@ -40,7 +41,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
             insideProgressing.postValue(true)
             itemRepository.localItemClear()
             insideProgressing.postValue(false)
-            insideFinish.postValue(true)
+            insideWorkFinishFlag.postValue(true)
         }
     }
 
@@ -50,7 +51,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
             insideProgressing.postValue(true)
             itemRepository.itemInsert(item, imgUri, preImgPath)
             insideProgressing.postValue(false)
-            insideFinish.postValue(true)
+            insideWorkFinishFlag.postValue(true)
         }
     }
 
@@ -60,7 +61,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
             insideProgressing.postValue(true)
             itemRepository.itemDelete(item)
             insideProgressing.postValue(false)
-            insideFinish.postValue(true)
+            insideWorkFinishFlag.postValue(true)
         }
     }
 }

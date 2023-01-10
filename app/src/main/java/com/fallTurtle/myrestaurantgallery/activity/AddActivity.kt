@@ -135,7 +135,7 @@ class AddActivity : AppCompatActivity(){
         itemViewModel.progressing.observe(this, progressObserver)
 
         val finishObserver = Observer<Boolean> { if(it) finish() }
-        itemViewModel.finish.observe(this, finishObserver)
+        itemViewModel.workFinishFlag.observe(this, finishObserver)
 
         //뒤로 가기 액션 추가
         this.onBackPressedDispatcher.addCallback(this, backPressCallback)
