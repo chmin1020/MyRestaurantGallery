@@ -7,7 +7,7 @@ import com.google.firebase.firestore.CollectionReference
 class FireStoreRepository {
     private fun collectionRef(): CollectionReference = FirebaseUtils.getStoreRef().collection("restaurants")
 
-    suspend fun insertData(item: Info){
+    fun insertData(item: Info){
         collectionRef().document(item.dbID).set(item)
     }
 

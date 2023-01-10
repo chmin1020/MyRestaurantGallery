@@ -74,10 +74,6 @@ class MainActivity : AppCompatActivity() {
         //권한 허락을 위한 다이얼로그
         showPermissionDialog()
 
-        //새로 로그인 -> 데이터 복구 필요함
-        if(intent.getBooleanExtra("newLogin", true))
-            itemViewModel.restoreItemsFromAccount()
-
         //viewModel 관찰하는 옵저버들 설정
         setObservers()
 
@@ -142,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         userViewModel.progressing.observe(this, userProgressObserver)
 
         //각 뷰모델 속 작업 종료 여부 변화 관찰
-        itemViewModel.finish.observe(this, itemFinishObserver)
+        itemViewModel.workFinishFlag.observe(this, itemFinishObserver)
         userViewModel.finish.observe(this, userFinishObserver)
     }
 

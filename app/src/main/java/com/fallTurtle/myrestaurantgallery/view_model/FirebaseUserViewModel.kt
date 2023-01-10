@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.FirebaseUserRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FirebaseUserViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,7 +31,11 @@ class FirebaseUserViewModel(application: Application) : AndroidViewModel(applica
 
     /* 토큰을 통한 최종 인증된 로그인을 시도하는 함수 */
     fun loginUser(idToken: String){
-        viewModelScope.launch(Dispatchers.IO) { userRepository.finalLoginWithCredential(idToken) }
+        viewModelScope.launch {
+            insideProgressing.postValue(true)
+            userRepository.finalLoginWithCredential(idToken)
+            insideProgressing.postValue(false)
+        }
     }
 
     /* 로그아웃하는 함수 */

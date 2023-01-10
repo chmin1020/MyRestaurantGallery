@@ -23,11 +23,7 @@ import java.io.File
  * 메뉴를 통해 아이템을 삭제하거나 수정을 위한 AddActivity 제공 화면으로 이동할 수 있다.
  **/
 class RecordActivity : AppCompatActivity() {
-    //--------------------------------------------
-    // 인스턴스 영역
-    //
-
-    //view binding
+    //뷰 바인딩
     private val binding : ActivityRecordBinding by lazy { ActivityRecordBinding.inflate(layoutInflater) }
 
     //for saving edit information
@@ -62,7 +58,7 @@ class RecordActivity : AppCompatActivity() {
         itemViewModel.progressing.observe(this, progressObserver)
 
         val finishObserver = Observer<Boolean> { if(it) finish() }
-        itemViewModel.finish.observe(this, finishObserver)
+        itemViewModel.workFinishFlag.observe(this, finishObserver)
     }
 
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */

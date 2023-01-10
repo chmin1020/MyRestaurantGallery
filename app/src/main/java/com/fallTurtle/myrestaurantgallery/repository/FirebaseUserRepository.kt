@@ -40,17 +40,18 @@ class FirebaseUserRepository {
     }
 
     /* 토큰으로 인증을 통한 최종 로그인을 시도하는 함수 */
-    fun finalLoginWithCredential(idToken: String){
-        //Token 보내서 credential 받고 인증 시도 (성공 시 job 실행)
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener { updateUser() }
+    suspend fun finalLoginWithCredential(idToken: String){
+        withContext(Dispatchers.IO) {
+            //Token 보내서 credential 받고 인증 시도 (성공 시 job 실행)
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            FirebaseUtils.getAuth().signInWithCredential(credential).addOnCompleteListener { updateUser() }
+        }
     }
 
 
     /* 현재 유저 정보를 새롭게 갱신하는 함수 */
     fun updateUser(){
-        FirebaseUtils.updateUser()
-            .also { isUserExist.postValue(FirebaseUtils.getUser() != null) }
+        FirebaseUtils.updateUser().also { isUserExist.postValue(FirebaseUtils.getUser() != null) }
     }
 
     /* 앱에서 로그아웃하는 함수 */
