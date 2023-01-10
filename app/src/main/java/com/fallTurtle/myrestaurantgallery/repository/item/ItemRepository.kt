@@ -24,7 +24,7 @@ class ItemRepository(application: Application) {
     }
 
     /* roomDB 내의 모든 데이터를 삭제하는 함수 (로그아웃, 탈퇴 시 실행) */
-    suspend fun itemClear(){
+    suspend fun localItemClear(){
         dataRepository.clearLocalData()
         imageRepository.clearLocalImages()
     }
