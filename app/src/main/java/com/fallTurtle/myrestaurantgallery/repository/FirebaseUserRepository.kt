@@ -1,13 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 
 /**

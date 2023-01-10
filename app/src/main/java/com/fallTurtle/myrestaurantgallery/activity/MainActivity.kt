@@ -142,8 +142,5 @@ class MainActivity : AppCompatActivity() {
         itemViewModel.clearAllItems()
         userViewModel.withdrawUser(itemViewModel.dataItems.value)
             .also { sharedPreferences.edit().putBoolean("isLogin", false).apply() }
-
-        //현재 액티비티(메인 화면)은 종료
-        finish()
     }
 }

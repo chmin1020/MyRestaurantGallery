@@ -12,21 +12,21 @@ class ItemRepository(application: Application) {
     private val dataRepository = DataRepository(application)
     private val imageRepository = ImageRepository(application.filesDir.toString(), application.contentResolver)
 
+    /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
+    fun getItems(): LiveData<List<Info>> {
+        return dataRepository.getSavedData()
+    }
+
     /* Firestore 데이터를 불러와서 로컬 저장 공간에 전체 삽입하는 함수 */
-    fun restorePreviousItem(){
+    suspend fun restorePreviousItem(){
         dataRepository.restoreLocalData()
         imageRepository.restoreLocalImages()
     }
 
     /* roomDB 내의 모든 데이터를 삭제하는 함수 (로그아웃, 탈퇴 시 실행) */
-    fun itemClear(){
+    suspend fun itemClear(){
         dataRepository.clearLocalData()
         imageRepository.clearLocalImages()
-    }
-
-    /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
-    fun getItems(): LiveData<List<Info>> {
-        return dataRepository.getSavedData()
     }
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
@@ -39,7 +39,7 @@ class ItemRepository(application: Application) {
     }
 
     /* 아이템 삭제 이벤트를 정의한 함수 */
-    fun itemDelete(item: Info) {
+    suspend fun itemDelete(item: Info) {
         dataRepository.deleteData(item)
         item.image?.let { imageRepository.deleteImage(it) }
     }
