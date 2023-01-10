@@ -17,7 +17,6 @@ import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
-import com.fallTurtle.myrestaurantgallery.model.retrofit.response.Place
 import retrofit2.Response
 
 /**

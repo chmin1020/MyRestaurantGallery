@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,18 +15,21 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
+import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.system.measureTimeMillis
+import java.util.Calendar
+import java.util.Locale
+import java.util.Date
 
 
 /**
@@ -52,6 +56,9 @@ class AddActivity : AppCompatActivity(){
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+
+    //로딩 다이얼로그
+    private val progressDialog by lazy { ProgressDialog(this) }
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var curImgName: String? = null
@@ -123,6 +130,13 @@ class AddActivity : AppCompatActivity(){
                 else -> false
             }
         }
+
+        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
+        val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+        itemViewModel.progressing.observe(this, progressObserver)
+
+        val finishObserver = Observer<Boolean> { if(it) finish() }
+        itemViewModel.finish.observe(this, finishObserver)
 
         //뒤로 가기 액션 추가
         this.onBackPressedDispatcher.addCallback(this, backPressCallback)
@@ -258,14 +272,8 @@ class AddActivity : AppCompatActivity(){
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
                                 latitude = infoForEdit.latitude, longitude = infoForEdit.longitude, dbID = id)
-                itemViewModel.insertItem(newItem, imgUri, infoForEdit.image)
 
-                //로딩 화면 실행 (저장 작업을 위한 extra time 마련)
-                val progress = Intent(this, ProgressActivity::class.java)
-                if (isEdit) progress.putExtra("endCode", 0)
-                else progress.putExtra("endCode", 1)
-                startActivity(progress)
-                finish()
+                itemViewModel.insertItem(newItem, imgUri, infoForEdit.image)
             }
         }
         else

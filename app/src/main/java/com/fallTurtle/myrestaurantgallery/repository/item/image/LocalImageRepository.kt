@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.storage.StorageReference
 import java.io.File
 import java.io.FileOutputStream
@@ -19,7 +18,6 @@ class LocalImageRepository(private val localPath: String, private val resolver: 
     fun clearSavedImages(){
         File(localPath).listFiles()?.forEach { it.delete() }
     }
-
 
     fun insertImage(imageName: String, uri: Uri){
         if(!File(imageName).exists())

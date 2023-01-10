@@ -7,10 +7,12 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
+import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.io.File
@@ -35,6 +37,8 @@ class RecordActivity : AppCompatActivity() {
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
+    //로딩 다이얼로그
+    private val progressDialog by lazy { ProgressDialog(this) }
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -52,6 +56,13 @@ class RecordActivity : AppCompatActivity() {
 
         //받아온 데이터 각 뷰에 적용시켜서 화면 완성
         getSavedInfo()
+
+        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
+        val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+        itemViewModel.progressing.observe(this, progressObserver)
+
+        val finishObserver = Observer<Boolean> { if(it) finish() }
+        itemViewModel.finish.observe(this, finishObserver)
     }
 
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
@@ -114,7 +125,6 @@ class RecordActivity : AppCompatActivity() {
             .setMessage(R.string.delete_message)
             .setPositiveButton(R.string.yes) {_,_ ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
-                //firebaseViewModel.deleteItem(info)
                 itemViewModel.deleteItem(info)
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()

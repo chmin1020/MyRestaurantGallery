@@ -17,7 +17,7 @@ class RoomRepository(application: Application) {
         roomDao.clearAllItems()
     }
 
-    fun insertData(item: Info){
+    suspend fun insertData(item: Info){
         roomDao.insert(item)
     }
 
