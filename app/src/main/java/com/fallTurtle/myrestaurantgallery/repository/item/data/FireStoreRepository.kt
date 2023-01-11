@@ -2,7 +2,12 @@ package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class FireStoreRepository {
     private fun collectionRef(): CollectionReference = FirebaseUtils.getStoreRef().collection("restaurants")
@@ -15,7 +20,12 @@ class FireStoreRepository {
         collectionRef().document(item.dbID).delete()
     }
 
-    fun getProperCollection(): CollectionReference{
-        return collectionRef()
+    suspend fun getAllDataInStore(): QuerySnapshot? {
+        return suspendCoroutine { continuation ->
+            collectionRef().get().addOnCompleteListener {
+                if(it.isSuccessful) continuation.resume(it.result)
+                else continuation.resume(null)
+            }
+        }
     }
 }

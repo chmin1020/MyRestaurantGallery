@@ -12,7 +12,8 @@ class ImageRepository(localPath: String, resolver: ContentResolver) {
     }
 
     suspend fun restoreLocalImages(){
-        localImageRepository.restoreImages(storageRepository.getProperReference())
+        val loadResult = storageRepository.getAllImagesInStorage()
+        loadResult?.let { localImageRepository.restoreImages(it) }
     }
 
     suspend fun insertImage(imageName: String, uri: Uri){
