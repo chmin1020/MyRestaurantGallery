@@ -12,6 +12,8 @@ class DataRepository(application: Application) {
 
     fun getSavedData() = roomRepository.getSavedData()
 
+    suspend fun getProperData(id:String) = roomRepository.getProperItem(id)
+
     suspend fun clearLocalData(){
         roomRepository.clearSavedData()
     }

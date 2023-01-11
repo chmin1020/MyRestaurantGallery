@@ -68,7 +68,7 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
         //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->
             val record = Intent(v.context, RecordActivity::class.java)
-            record.putExtra("info", infoList[position])
+            record.putExtra("item_id", infoList[position].dbID)
 
             v.context.startActivity(record)
         }

@@ -13,6 +13,8 @@ class RoomRepository(application: Application) {
 
     fun getSavedData() = items
 
+    suspend fun getProperItem(id: String): Info = roomDao.getProperItem(id)
+
     suspend fun clearSavedData(){
         roomDao.clearAllItems()
     }

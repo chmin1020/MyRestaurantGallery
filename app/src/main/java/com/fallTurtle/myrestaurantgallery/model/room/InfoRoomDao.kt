@@ -16,4 +16,7 @@ interface InfoRoomDao {
 
     @Query("DELETE FROM Info")
     suspend fun clearAllItems()
+
+    @Query("SELECT * FROM Info WHERE dbID is :id")
+    suspend fun getProperItem(id: String): Info
 }

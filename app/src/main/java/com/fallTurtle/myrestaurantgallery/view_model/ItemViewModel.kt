@@ -25,6 +25,18 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     private val insideWorkFinishFlag = MutableLiveData(false)
     val workFinishFlag: LiveData<Boolean> = insideWorkFinishFlag
 
+    private val insideSelectedItem = MutableLiveData<Info>()
+    val selectedItem: LiveData<Info> = insideSelectedItem
+
+    /* DB primary key(id)에 따른 적절한 아이템을 선택하는 함수 */
+    fun setProperItem(id: String){
+        viewModelScope.launch(Dispatchers.IO){
+            insideProgressing.postValue(true)
+            insideSelectedItem.postValue(itemRepository.getProperItem(id))
+            insideProgressing.postValue(false)
+        }
+    }
+
     /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
     fun restoreItemsFromAccount(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,10 +68,10 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     }
 
     /* 기본적인 아이템 삭제 이벤트를 위한 함수 */
-    fun deleteItem(item: Info) {
+    fun deleteItem(itemId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
-            itemRepository.itemDelete(item)
+            itemRepository.itemDelete(itemId)
             insideProgressing.postValue(false)
             insideWorkFinishFlag.postValue(true)
         }
