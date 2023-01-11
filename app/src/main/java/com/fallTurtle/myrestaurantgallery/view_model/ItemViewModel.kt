@@ -27,7 +27,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
     /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
     fun restoreItemsFromAccount(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.restorePreviousItem()
             insideProgressing.postValue(false)
@@ -37,7 +37,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
     /* 룸 DB(로컬 데이터) 내용을 모두 지울 때 사용하는 함수 */
     fun clearAllLocalItems(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.localItemClear()
             insideProgressing.postValue(false)
@@ -47,7 +47,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
     /* 기본적인 아이템 삽입(혹은 갱신) 이벤트를 위한 함수 */
     fun insertItem(item: Info, imgUri: Uri?, preImgPath: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.itemInsert(item, imgUri, preImgPath)
             insideProgressing.postValue(false)
@@ -57,7 +57,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
     /* 기본적인 아이템 삭제 이벤트를 위한 함수 */
     fun deleteItem(item: Info) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.itemDelete(item)
             insideProgressing.postValue(false)

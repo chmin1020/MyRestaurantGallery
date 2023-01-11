@@ -4,24 +4,19 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ListResult
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class LocalImageRepository(private val localPath: String, private val resolver: ContentResolver) {
-    suspend fun restoreImages(backupReference: StorageReference){
-        withContext(Dispatchers.IO){
-            val backupLoadTask = backupReference.listAll()
-
-            while(true){
-                if(backupLoadTask.isComplete && backupLoadTask.isSuccessful){
-                    backupLoadTask.result.items.forEach { each ->
-                        val fileSaveTask = each.getFile(File("$localPath/${each.name}"))
-                        while(true) if (fileSaveTask.isComplete) break
-                    }
-                    break
+    suspend fun restoreImages(backupImages: ListResult) {
+        suspendCoroutine<Any?> { continuation ->
+            backupImages.items.forEach { each ->
+                each.getFile(File("$localPath/${each.name}")).addOnCompleteListener {
+                    if (it.isComplete) continuation.resume(null)
                 }
             }
         }

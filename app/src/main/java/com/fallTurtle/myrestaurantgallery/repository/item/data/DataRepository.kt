@@ -2,11 +2,9 @@ package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import android.app.Application
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.firestore.QuerySnapshot
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class DataRepository(application: Application) {
     private val fireStoreRepository = FireStoreRepository()
@@ -19,17 +17,8 @@ class DataRepository(application: Application) {
     }
 
     suspend fun restoreLocalData(){
-        withContext(Dispatchers.IO) {
-            val loadTask = fireStoreRepository.getProperCollection().get()
-
-            //io 스레드 내에서 roomDB 데이터 채우기
-            while (true) {
-                if (loadTask.isComplete) {
-                    loadTask.result.forEach { roomRepository.insertData(it.toObject(Info::class.java)) }
-                    break
-                }
-            }
-        }
+        val loadResult = fireStoreRepository.getAllDataInStore()
+        loadResult?.let { it.forEach { each -> roomRepository.insertData(each.toObject(Info::class.java)) } }
     }
 
     suspend fun insertData(data: Info){
