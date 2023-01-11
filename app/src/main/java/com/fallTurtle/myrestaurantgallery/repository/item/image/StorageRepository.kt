@@ -22,10 +22,14 @@ class StorageRepository{
     }
 
     suspend fun insertImage(imageName: String, uri: Uri){
-        withContext(Dispatchers.IO){ storageRef.child(imageName).putFile(uri) }
+        suspendCoroutine<Any?> { continuation ->
+            storageRef.child(imageName).putFile(uri).addOnCompleteListener{ continuation.resume(null)}
+        }
     }
 
     suspend fun deleteImage(imageName: String){
-        withContext(Dispatchers.IO){ storageRef.child(imageName).delete() }
+        suspendCoroutine<Any?> { continuation ->
+            storageRef.child(imageName).delete().addOnCompleteListener { continuation.resume(null) }
+        }
     }
 }

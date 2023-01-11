@@ -18,8 +18,16 @@ class LocationSearchViewModel(application: Application) : AndroidViewModel(appli
     //model 변화를 적용할 livedata. auto 변경하여 final 최종 적용
     val finalResponse: LiveData<Array<Response<LocationResponse>>> = searchRepository.getSearchResponse()
 
+    //아이템 처리 진행 여부를 알려주는 boolean 프로퍼티
+    private val insideProgressing = MutableLiveData(false)
+    val progressing: LiveData<Boolean> = insideProgressing
+
     /* 인자대로 검색하여 결과를 livedata 내에 적용하는 함수 */
     fun searchLocationWithQuery(query: String, page: Int){
-        viewModelScope.launch(Dispatchers.IO) { searchRepository.searchTotalInfo(query, page) }
+        viewModelScope.launch(Dispatchers.IO) {
+            insideProgressing.postValue(true)
+            searchRepository.searchTotalInfo(query, page)
+            insideProgressing.postValue(false)
+        }
     }
 }
