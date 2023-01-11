@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.view_model.LocationSearchViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
+import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
@@ -23,22 +24,24 @@ import retrofit2.Response
  * 맛집을 검색하는 창을 제공하는 액티비티.
  * 이 액티비티에서는 직접 식당 이름을 검색하고, 그에 맞는 결과를 확인하여 선택할 수 있다.
  * 이 때, 검색 결과를 위해서 카카오 맵 API 를 Retrofit2 객체를 활용해서 사용했다.
- * 검색 결과는 recyclerView 내부에 적절하게 배치한다.
  **/
 class LocationListActivity : AppCompatActivity(){
-    //--------------------------------------------
-    // 인스턴스 영역
-    //
-
     //editText 키보드 관리자
     private val inputManager: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
     //네트워크 연결 체크 관리자
     private val networkManager: NetworkManager by lazy { NetworkManager(this) }
 
+    //로딩 다이얼로그
+    private val progressDialog by lazy { ProgressDialog(this) }
+
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val viewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
+    private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
+
+    //옵저버들
+    private val listObserver = Observer<Array<Response<LocationResponse>>> { taskWithResponses(it) }
+    private val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
 
     //리사이클러뷰
     private val adapter: LocationAdapter by lazy { LocationAdapter(this) }
@@ -60,9 +63,8 @@ class LocationListActivity : AppCompatActivity(){
         initRecyclerView()
         initListeners()
 
-        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
-        val listObserver = Observer<Array<Response<LocationResponse>>> { taskWithResponses(it) }
-        viewModel.finalResponse.observe(this, listObserver)
+        //observer 관찰 대상 설정
+        initObservers()
     }
 
     /* onResume()에서는 검색을 위해 키보드를 바로 올리는 작업을 수행해준다. */
@@ -115,6 +117,12 @@ class LocationListActivity : AppCompatActivity(){
         binding.ivSearch.setOnClickListener { doSearch(binding.etSearch.text.toString()) }
     }
 
+    /*각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
+    private fun initObservers(){
+        locationViewModel.finalResponse.observe(this, listObserver)
+        locationViewModel.progressing.observe(this, progressObserver)
+    }
+
 
     //--------------------------------------------
     // 내부 함수 영역 (검색)
@@ -141,19 +149,9 @@ class LocationListActivity : AppCompatActivity(){
 
     /* 키워드에 따라 검색을 하되, 페이지를 고려하는 함수 */
     private fun searchWithPage(keywordString: String, page: Int) {
-        try {
-            binding.progressCircular.isVisible = true // 로딩 표시
-
-            // 뷰모델을 통한 retrofit 응답 값 get
-            if (page == 1) adapter.clearList() //새로운 검색 시작
-            viewModel.searchLocationWithQuery(keywordString, page)
-        }
-        catch (e: Exception) {
-            Toast.makeText(this@LocationListActivity, "검색 실패", Toast.LENGTH_SHORT).show()
-        }
-        finally {
-            binding.progressCircular.isVisible = false // 로딩 표시 제거
-        }
+        // 뷰모델을 통한 retrofit 응답 값 get
+        if (page == 1) adapter.clearList() //새로운 검색 시작
+        locationViewModel.searchLocationWithQuery(keywordString, page)
     }
 
     /* 받은 응답 값들을 통해 적절한 작업을 수행하는 함수 */
