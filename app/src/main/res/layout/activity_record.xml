@@ -1,119 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="15"
-    tools:context=".activity.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:menu="@menu/record_activity_menu"/>
+    <data>
+        <import type="android.view.View"/>
 
-    <TextView
-        android:id="@+id/tv_date"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginStart="80dp"
-        android:layout_marginEnd="80dp"
-        android:textSize="22sp"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textColor="#000000"
-        android:background="@drawable/date_sign"/>
+        <variable
+            name="info"
+            type="com.fallTurtle.myrestaurantgallery.model.room.Info" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4.5"
-        android:layout_margin="20dp"
-        android:background="@drawable/grid_border">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="15"
+        tools:context=".activity.MainActivity">
 
-        <ImageView
-            android:id="@+id/iv_image"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/korean_food"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:menu="@menu/record_activity_menu"/>
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:text="@{info.date}"
+            android:textSize="22sp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:background="@drawable/date_sign"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4.5"
+            android:layout_margin="20dp"
+            android:background="@drawable/grid_border">
+
+            <ImageView
+                android:id="@+id/iv_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/korean_food"
+                app:imagePath="@{info.image}"
+                app:categoryNum="@{info.categoryNum}"/>
+
+        </LinearLayout>
+
+        <RatingBar
+            android:id="@+id/rb_ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:numStars="5"
+            android:rating="@{info.rate}"
+            android:stepSize="1"
+            android:isIndicator="true"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"
+            android:text="@{info.name}"
+            android:textColor="@color/regularText"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:padding ="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@{info.category}"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:padding ="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@{info.location}"
+            android:textColor="@color/regularText"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:maxLines="1"
+            android:padding ="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_memo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="4.5"
+            android:background="@drawable/edit_text_border"
+            android:gravity="start"
+            android:text="@{info.memo}"
+            android:textSize="18sp"
+            android:textColor="@color/regularText"
+            android:padding ="5dp"/>
 
     </LinearLayout>
 
-    <RatingBar
-        android:id="@+id/rb_ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:numStars="5"
-        android:rating="0"
-        android:stepSize="1"
-        android:isIndicator="true"/>
-
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:maxLines="1"
-        android:text="@string/example_name"
-        android:textColor="@color/regularText"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:padding ="10dp"/>
-
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:padding ="10dp"/>
-
-    <TextView
-        android:id="@+id/tv_location"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:text="@string/example_location"
-        android:textColor="@color/regularText"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:maxLines="1"
-        android:padding ="10dp"/>
-
-    <TextView
-        android:id="@+id/tv_memo"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="5dp"
-        android:layout_weight="4.5"
-        android:background="@drawable/edit_text_border"
-        android:gravity="start"
-        android:textSize="18sp"
-        android:textColor="@color/regularText"
-        android:padding ="5dp"/>
-
-</LinearLayout>
+</layout>

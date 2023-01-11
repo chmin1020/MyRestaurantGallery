@@ -7,15 +7,14 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
-import java.io.File
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -24,17 +23,23 @@ import java.io.File
  **/
 class RecordActivity : AppCompatActivity() {
     //뷰 바인딩
-    private val binding : ActivityRecordBinding by lazy { ActivityRecordBinding.inflate(layoutInflater) }
+    private val binding: ActivityRecordBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_record)}
 
-    //for saving edit information
-    private var info = Info()
+    //선택된 아이템 id
+    private var itemId: String? = null
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
+    //옵저버들
+    private val progressObserver = Observer<Boolean> { decideShowLoading(it)}
+    private val finishObserver = Observer<Boolean> { if(it) finish() }
+    private val itemObserver = Observer<Info> { binding.info = it }
+
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }
+
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
@@ -43,22 +48,21 @@ class RecordActivity : AppCompatActivity() {
     /* onCreate()에서는 툴바를 설정하고 뷰에 내용을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
 
         //툴바 설정
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        //받아온 데이터 각 뷰에 적용시켜서 화면 완성
-        getSavedInfo()
+        //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
+        itemId = intent.getStringExtra("item_id")
+        itemId?.let { itemViewModel.setProperItem(it) }
+            ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
 
-        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
-        val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+        //옵저버 설정
         itemViewModel.progressing.observe(this, progressObserver)
-
-        val finishObserver = Observer<Boolean> { if(it) finish() }
         itemViewModel.workFinishFlag.observe(this, finishObserver)
+        itemViewModel.selectedItem.observe(this, itemObserver)
     }
 
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
@@ -83,45 +87,12 @@ class RecordActivity : AppCompatActivity() {
     //
 
     /* 이전 액티비티에서 받은 정보를 가지고 와서 뷰에 적용하는 함수 */
-    private fun getSavedInfo(){
-        //adapter 데이터 받기
-        info = intent.getSerializableExtra("info") as Info
-
-        //받은 데이터를 적절한 뷰에 적용
-        binding.tvName.text = info.name
-        binding.tvCategory.text = info.category
-        binding.tvLocation.text = info.location
-        binding.tvMemo.text = info.memo
-        binding.rbRatingBar.rating = info.rate.toFloat()
-        binding.tvDate.text = info.date
-
-        //이미지 적용
-        info.image?.let {
-            binding.ivImage.load(File("${filesDir}/$it")){
-                crossfade(true)
-                placeholder(R.drawable.loading_food)
-            }
-        } ?:
-        run{
-            when (info.categoryNum) {
-                0 -> binding.ivImage.setImageResource(R.drawable.korean_food)
-                1 -> binding.ivImage.setImageResource(R.drawable.chinese_food)
-                2 -> binding.ivImage.setImageResource(R.drawable.japanese_food)
-                3 -> binding.ivImage.setImageResource(R.drawable.western_food)
-                4 -> binding.ivImage.setImageResource(R.drawable.coffee_and_drink)
-                5 -> binding.ivImage.setImageResource(R.drawable.drink)
-                6 -> binding.ivImage.setImageResource(R.drawable.etc)
-            }
-        }
-    }
-
-    /* 이전 액티비티에서 받은 정보를 가지고 와서 뷰에 적용하는 함수 */
     private fun makeDeleteDialog(){
         AlertDialog.Builder(this)
             .setMessage(R.string.delete_message)
             .setPositiveButton(R.string.yes) {_,_ ->
                 //삭제를 원하면 reference 내에서 해당 이미지 삭제
-                itemViewModel.deleteItem(info)
+                itemId?.let{ itemViewModel.deleteItem(it) }
                 Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
                 finish()
             }
@@ -133,7 +104,6 @@ class RecordActivity : AppCompatActivity() {
     private fun moveToEditActivity(){
         //intent 만들고 데이터 모두 extra 내에 담기
         val edit = Intent(this, AddActivity::class.java)
-        edit.putExtra("info", info)
         edit.putExtra("isEdit", true)
 
         //intent 통해서 AddActivity 요청
@@ -142,5 +112,11 @@ class RecordActivity : AppCompatActivity() {
 
         //현재 액티비티는 종료
         finish()
+    }
+
+    /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
+    private fun decideShowLoading(yes: Boolean){
+        if(yes) progressDialog.show()
+        else progressDialog.close()
     }
 }

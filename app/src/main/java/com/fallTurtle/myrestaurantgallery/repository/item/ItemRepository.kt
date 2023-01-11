@@ -17,6 +17,8 @@ class ItemRepository(application: Application) {
         return dataRepository.getSavedData()
     }
 
+    suspend fun getProperItem(id: String) = dataRepository.getProperData(id)
+
     /* Firestore 데이터를 불러와서 로컬 저장 공간에 전체 삽입하는 함수 */
     suspend fun restorePreviousItem(){
         dataRepository.restoreLocalData()
@@ -39,9 +41,10 @@ class ItemRepository(application: Application) {
     }
 
     /* 아이템 삭제 이벤트를 정의한 함수 */
-    suspend fun itemDelete(item: Info) {
-        dataRepository.deleteData(item)
-        item.image?.let { imageRepository.deleteImage(it) }
+    suspend fun itemDelete(itemId: String) {
+        val targetItem = dataRepository.getProperData(itemId)
+        dataRepository.deleteData(targetItem)
+        targetItem.image?.let { imageRepository.deleteImage(it) }
     }
 
 }
