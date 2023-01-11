@@ -1,153 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="15"
-    tools:context=".activity.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id = "@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:menu = "@menu/add_activity_menu"
-        app:titleTextAppearance="@style/toolbarText"/>
+    <data>
+        <import type="android.view.View"/>
 
-    <LinearLayout
-        android:id="@+id/ll_date"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:weightSum="5"
-        android:layout_marginStart="80dp"
-        android:layout_marginEnd="80dp"
-        android:orientation="horizontal"
-        android:background="@drawable/date_sign">
-
-        <TextView
-            android:id="@+id/tv_date"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textColor="#000000"/>
-
-        <ImageView
-            android:id="@+id/iv_date"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:src="@drawable/calendar"/>
-
-
-    </LinearLayout>
+        <variable
+            name="info"
+            type="com.fallTurtle.myrestaurantgallery.model.room.Info" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4.5"
-        android:layout_margin="20dp"
-        android:background="@drawable/grid_border">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="15"
+        tools:context=".activity.AddActivity">
 
-        <ImageView
-            android:id="@+id/iv_image"
+        <androidx.appcompat.widget.Toolbar
+            android:id = "@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/korean_food"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:menu = "@menu/add_activity_menu"
+            app:titleTextAppearance="@style/toolbarText"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_date"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:orientation="horizontal"
+            android:background="@drawable/date_sign">
 
-    <RatingBar
-        android:id="@+id/rb_ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:layout_margin="8dp"
-        android:numStars="5"
-        android:rating="0"
-        android:stepSize="1"/>
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:text="@{info.date}"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textColor="#000000"/>
 
-    <EditText
-        android:id="@+id/et_name"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:maxLines="1"
-        android:hint="@string/example_name"
-        android:autofillHints="@string/example_name"
-        android:inputType="text" />
+            <ImageView
+                android:id="@+id/iv_date"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/calendar"/>
 
-    <Spinner
-        android:id="@+id/sp_category"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:entries="@array/category_spinner"
-        android:spinnerMode="dialog"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:weightSum="5"
-        android:orientation="horizontal">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4.5"
+            android:layout_margin="20dp"
+            android:background="@drawable/grid_border">
+
+            <ImageView
+                android:id="@+id/iv_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/korean_food"
+                app:imagePath="@{info.image}"
+                app:categoryNum="@{info.categoryNum}"/>
+
+        </LinearLayout>
+
+        <RatingBar
+            android:id="@+id/rb_ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:numStars="5"
+            android:rating="@{info.rate}"
+            android:stepSize="1"/>
+
         <EditText
-            android:id="@+id/et_location"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
+            android:text="@{info.name}"
             android:maxLines="1"
-            android:hint="@string/location_myself"
-            android:autofillHints="text"
+            android:hint="@string/example_name"
+            android:autofillHints="@string/example_name"
             android:inputType="text" />
 
-        <Button
-            android:id="@+id/btn_map"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <Spinner
+            android:id="@+id/sp_category"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="20dp"
-            android:padding="2dp"
-            android:text="@string/find"
-            android:textColor="#000000"/>
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:entries="@array/category_spinner"
+            android:spinnerMode="dialog"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:weightSum="5"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_location"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@{info.location}"
+                android:maxLines="1"
+                android:hint="@string/location_myself"
+                android:autofillHints="text"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/btn_map"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="20dp"
+                android:padding="2dp"
+                android:text="@string/find"
+                android:textColor="#000000"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_memo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="4.5"
+            android:text="@{info.memo}"
+            android:autofillHints="@string/example_memo"
+            android:background="@drawable/edit_text_border"
+            android:gravity="start"
+            android:hint="@string/example_memo"
+            android:inputType="text"
+            android:padding="5dp" />
+
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_memo"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="5dp"
-        android:layout_weight="4.5"
-        android:autofillHints="@string/example_memo"
-        android:background="@drawable/edit_text_border"
-        android:gravity="start"
-        android:hint="@string/example_memo"
-        android:inputType="text"
-        android:padding="5dp" />
-
-</LinearLayout>
+</layout>

@@ -11,20 +11,19 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -38,16 +37,8 @@ import java.util.Date
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
 class AddActivity : AppCompatActivity(){
-    //--------------------------------------------
-    // 프로퍼티 영역
-    //
-
-    //수정 데이터 저장을 위한 객체
-    private val isEdit by lazy { intent.getBooleanExtra("isEdit", false) }
-    private var infoForEdit = Info()
-
-    //뷰 바인딩
-    private val binding by lazy { ActivityAddBinding.inflate(layoutInflater) }
+    //바인딩
+    private val binding:ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
     //네트워크 연결 체크 매니저
     private val networkManager: NetworkManager by lazy { NetworkManager(this) }
@@ -58,6 +49,11 @@ class AddActivity : AppCompatActivity(){
 
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }
+
+    //선택된 아이템 관련 변수들
+    private var itemId: String? = null
+    private var itemLocation = LocationPair()
+    private var preImgPath: String? = null
 
     //이미지를 갤러리에서 받아오기 위한 요소들
     private var curImgName: String? = null
@@ -76,16 +72,9 @@ class AddActivity : AppCompatActivity(){
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             address = it.data?.getStringExtra("address")
-            infoForEdit.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
-            infoForEdit.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
+            itemLocation.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
+            itemLocation.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
             binding.etLocation.setText(address)
-        }
-    }
-
-    //뒤로 가기 버튼 누를 시 작동할 트리거
-    private val backPressCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            backToRecord(intent.getBooleanExtra("isEdit", false))
         }
     }
 
@@ -97,7 +86,6 @@ class AddActivity : AppCompatActivity(){
     /* onCreate()에서는 뷰와 퍼미션 체크, 리사이클러뷰, 툴바, 이벤트 등의 기본적인 것들을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
 
         //각 뷰의 리스너들 설정
         initListeners()
@@ -106,15 +94,10 @@ class AddActivity : AppCompatActivity(){
         binding.spCategory.adapter =
             ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
 
-        //edit 여부 체크
-        if(isEdit)
-            getEditInfo()
-        else{
-            //date picker default(수정 작업이 아니므로 날짜만 기본 세팅)
-            val sdf = SimpleDateFormat ( "yyyy년 M월 d일", Locale.KOREA)
-            val today = sdf.format(Date(Calendar.getInstance().timeInMillis))
-            binding.tvDate.text = today
-        }
+        //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
+        binding.info = Info() //디폴트
+        itemId = intent.getStringExtra("item_id")
+        itemId?.let { itemViewModel.setProperItem(it) }
 
         //toolbar
         setSupportActionBar(binding.toolbar)
@@ -122,10 +105,7 @@ class AddActivity : AppCompatActivity(){
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.save_item -> {
-                    saveCurrentItemProcess(isEdit)
-                    true
-                }
+                R.id.save_item -> true.also { saveCurrentItemProcess() }
                 else -> false
             }
         }
@@ -137,8 +117,13 @@ class AddActivity : AppCompatActivity(){
         val finishObserver = Observer<Boolean> { if(it) finish() }
         itemViewModel.workFinishFlag.observe(this, finishObserver)
 
-        //뒤로 가기 액션 추가
-        this.onBackPressedDispatcher.addCallback(this, backPressCallback)
+        val selectedItemObserver = Observer<Info> {
+            binding.info = it
+            binding.spCategory.setSelection(it.categoryNum)
+            curImgName = it.image
+            preImgPath = it.image
+        }
+        itemViewModel.selectedItem.observe(this, selectedItemObserver)
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
@@ -149,9 +134,7 @@ class AddActivity : AppCompatActivity(){
 
     /* onOptionsItemSelected()에서는 툴바에서 선택한 옵션에 따라 나타날 이벤트를 정의한다. */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            android.R.id.home -> backToRecord(intent.getBooleanExtra("isEdit", false))
-        }
+        if(item.itemId == android.R.id.home) finish()
         return super.onOptionsItemSelected(item)
     }
 
@@ -177,30 +160,14 @@ class AddActivity : AppCompatActivity(){
                 val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.tvDate.text = dText
             }
-            val dpDialog = DatePickerDialog(
-                this,
-                dp,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            )
-            dpDialog.show()
+            DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
         }
 
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-
-            var latitude:Double? = null
-            var longitude:Double? = null
-
-            if(isEdit) {
-                latitude = infoForEdit.latitude
-                longitude = infoForEdit.longitude
-            }
-
-            intent.putExtra("latitude", latitude)
-            intent.putExtra("longitude", longitude)
+            intent.putExtra("latitude", binding.info?.latitude ?: -1.0)
+            intent.putExtra("longitude", binding.info?.longitude ?: -1.0)
             getAddress.launch(intent)
         }
 
@@ -227,32 +194,8 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
-    /* 수정 관련 정보들을 받아서 저장하고 또 적용하는 함수 */
-    private fun getEditInfo(){
-        //adapter 데이터 받기 (수정 취소를 대비하여 객체에 내용 백업)
-        infoForEdit = intent.getSerializableExtra("info") as Info
-
-        //받은 데이터를 변수 혹은 뷰에 적용
-        binding.etName.setText(infoForEdit.name)
-        binding.spCategory.setSelection(infoForEdit.categoryNum)
-        binding.etLocation.setText(infoForEdit.location)
-        binding.etMemo.setText(infoForEdit.memo)
-        binding.rbRatingBar.rating = infoForEdit.rate.toFloat()
-        binding.tvDate.text = infoForEdit.date
-
-        //이미지를 사용하는 정보라면 storage 내에서 이미지도 가져온다. (아니면 default)
-        curImgName = infoForEdit.image
-        //이미지 적용
-        curImgName?.let {
-            binding.ivImage.load(File("${filesDir}/$it")) {
-                crossfade(true)
-                placeholder(R.drawable.loading_food)
-            }
-        }
-    }
-
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
-    private fun saveCurrentItemProcess(isEdit:Boolean){
+    private fun saveCurrentItemProcess(){
         fun getNewID(): String
             = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
@@ -263,36 +206,20 @@ class AddActivity : AppCompatActivity(){
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
-                val id = if (isEdit) infoForEdit.dbID else getNewID()
+                val id =  itemId ?: getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
                 val newItem = Info(image = curImgName, date = binding.tvDate.text.toString(),
                                 name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
-                                latitude = infoForEdit.latitude, longitude = infoForEdit.longitude, dbID = id)
+                                latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = id)
 
-                itemViewModel.insertItem(newItem, imgUri, infoForEdit.image)
+                itemViewModel.insertItem(newItem, imgUri, preImgPath)
             }
         }
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
-    }
-
-    /* 수정 취소 시 실행될 함수 */
-    private fun backToRecord(isEdit: Boolean){
-        if(isEdit) {
-            //기존에 백업했던 기존 정보들을 다시 record 화면으로 보냄
-            val back = Intent(this, RecordActivity::class.java)
-            back.putExtra("info", infoForEdit)
-            startActivity(back)
-            finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-        }
-        else {
-            finish()
-            overridePendingTransition(R.anim.slide_down_in, R.anim.slide_down_out)
-        }
     }
 
     //spinner 기본 이미지 고르기

@@ -117,7 +117,6 @@ class MainActivity : AppCompatActivity() {
                 val addIntent = Intent(this@MainActivity, AddActivity::class.java)
                 addIntent.putExtra("isEdit", false)
                 startActivity(addIntent)
-                overridePendingTransition(R.anim.slide_up_in, R.anim.slide_up_out) //전환 효과 (슬라이딩)
             }
         }
         return super.onOptionsItemSelected(item)

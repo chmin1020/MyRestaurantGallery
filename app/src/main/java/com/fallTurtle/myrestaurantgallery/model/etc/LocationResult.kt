@@ -8,5 +8,5 @@ data class LocationResult(
     val fullAddress:String,
     val name:String,
     val category: String,
-    val lp: LocationPair
+    val locationPair: LocationPair
 )

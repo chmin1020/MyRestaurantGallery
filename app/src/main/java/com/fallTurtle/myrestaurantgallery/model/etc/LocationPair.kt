@@ -5,6 +5,6 @@ package com.fallTurtle.myrestaurantgallery.model.etc
  * 각각 위도와 경도를 나타낸다.
  */
 data class LocationPair (
-    val latitude: Float,
-    val longitude: Float
+    var latitude: Double = -1.0,
+    var longitude: Double = -1.0
 )
