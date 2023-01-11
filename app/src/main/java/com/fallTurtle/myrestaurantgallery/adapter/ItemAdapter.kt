@@ -21,9 +21,6 @@ import java.util.ArrayList
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
 class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
-    //--------------------------------------------
-    // 해당 어댑터에서 사용할 뷰홀더
-    //
 
     class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         var ivImage:ImageView = itemView.findViewById(R.id.iv_image)
@@ -31,11 +28,6 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
         var tvGenre:TextView = itemView.findViewById(R.id.tv_genre)
         var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
     }
-
-
-    //--------------------------------------------
-    // 프로퍼티 영역
-    //
 
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
     private var infoList: List<Info> = ArrayList()

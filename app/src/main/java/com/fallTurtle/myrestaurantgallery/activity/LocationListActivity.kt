@@ -169,7 +169,7 @@ class LocationListActivity : AppCompatActivity(){
     private fun setData(searchInfo: LocationResponse) {
         // 검색 결과 데이터를 뷰 형식에 맞게 옮긴다.
         val dataList = searchInfo.documents.map {
-            LocationResult(it.address_name, it.place_name, it.category_name, LocationPair(it.y.toFloat(), it.x.toFloat()))
+            LocationResult(it.address_name, it.place_name, it.category_name, LocationPair(it.y.toDouble(), it.x.toDouble()))
         }
 
         //어댑터에 가져온 리스트 추가

@@ -62,8 +62,8 @@ class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapte
         holder.itemView.setOnClickListener {
             val activity:Activity = context as Activity
             val backTo = Intent(context, MapActivity::class.java).apply {
-                putExtra("x", resultList[position].lp.latitude.toDouble())
-                putExtra("y", resultList[position].lp.longitude.toDouble())
+                putExtra("x", resultList[position].locationPair.latitude.toDouble())
+                putExtra("y", resultList[position].locationPair.longitude.toDouble())
             }
             activity.setResult(AppCompatActivity.RESULT_OK, backTo)
             activity.finish()

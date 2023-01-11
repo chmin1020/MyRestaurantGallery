@@ -56,13 +56,17 @@ class RecordActivity : AppCompatActivity() {
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
         itemId = intent.getStringExtra("item_id")
-        itemId?.let { itemViewModel.setProperItem(it) }
-            ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
 
         //옵저버 설정
         itemViewModel.progressing.observe(this, progressObserver)
         itemViewModel.workFinishFlag.observe(this, finishObserver)
         itemViewModel.selectedItem.observe(this, itemObserver)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        itemId?.let { itemViewModel.setProperItem(it) }
+            ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
     }
 
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
@@ -102,16 +106,9 @@ class RecordActivity : AppCompatActivity() {
 
     /* 현재 가진 데이터를 모두 담아서 수정을 위해 AddActivity 화면으로 이동하는 함수  */
     private fun moveToEditActivity(){
-        //intent 만들고 데이터 모두 extra 내에 담기
         val edit = Intent(this, AddActivity::class.java)
-        edit.putExtra("isEdit", true)
-
-        //intent 통해서 AddActivity 요청
+        edit.putExtra("item_id", itemId)
         startActivity(edit)
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out) //페이드 효과와 함께 화면 전환
-
-        //현재 액티비티는 종료
-        finish()
     }
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
