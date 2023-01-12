@@ -1,15 +1,10 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.content.Intent
-import android.os.Build
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.clear
@@ -23,7 +18,11 @@ import java.util.ArrayList
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
-class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
+class ItemAdapter(private val localPath: String, windowWidth: Int)
+    : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
+    //각 아이템뷰의 길이
+    private val holderWidth = windowWidth / 7 * 3
+    private val holderHeight = holderWidth/6 * 5
 
     class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         var ivImage:ImageView = itemView.findViewById(R.id.iv_image)
@@ -57,13 +56,10 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
         return CustomViewHolder(v)
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         //그리드 뷰 크기 조정
-        val displayMetrics = DisplayMetrics()
-        holder.itemView.context.getSystemService(WindowManager::class.java).defaultDisplay.getMetrics(displayMetrics)
-        holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
-        holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
+        holder.itemView.layoutParams.width = holderWidth
+        holder.itemView.layoutParams.height = holderHeight
         holder.itemView.requestLayout()
 
         //뷰 항목 채우기

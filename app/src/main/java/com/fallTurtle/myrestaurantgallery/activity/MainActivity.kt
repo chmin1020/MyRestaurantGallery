@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //리사이클러뷰 어댑터
-    private val itemsAdapter by lazy { ItemAdapter(filesDir.toString())}
+    private val itemsAdapter by lazy { ItemAdapter(filesDir.toString(), resources.displayMetrics.widthPixels )}
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
