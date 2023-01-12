@@ -120,6 +120,7 @@ class AddActivity : AppCompatActivity(){
         val selectedItemObserver = Observer<Info> {
             binding.info = it
             binding.spCategory.setSelection(it.categoryNum)
+            itemLocation = LocationPair(it.latitude, it.longitude)
             curImgName = it.image
             preImgPath = it.image
         }
@@ -166,8 +167,8 @@ class AddActivity : AppCompatActivity(){
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", binding.info?.latitude ?: -1.0)
-            intent.putExtra("longitude", binding.info?.longitude ?: -1.0)
+            intent.putExtra("latitude", itemLocation.latitude)
+            intent.putExtra("longitude", itemLocation.longitude)
             getAddress.launch(intent)
         }
 
@@ -177,8 +178,7 @@ class AddActivity : AppCompatActivity(){
 
             //갤러리에서 사진 가져오는 것을 선택했다면
             imgDlg.setOnGalleryClickListener {
-                val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                getImg.launch(gallery)
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImg.launch(it) }
                 imgDlg.closeDialog()
             }
 

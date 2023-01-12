@@ -80,7 +80,7 @@ class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapte
     //
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(searchResultList: List<LocationResult>) {
+    fun addList(searchResultList: List<LocationResult>) {
         this.resultList = this.resultList + searchResultList
         notifyDataSetChanged()
     }

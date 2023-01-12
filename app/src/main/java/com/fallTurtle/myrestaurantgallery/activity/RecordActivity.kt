@@ -94,14 +94,15 @@ class RecordActivity : AppCompatActivity() {
     private fun makeDeleteDialog(){
         AlertDialog.Builder(this)
             .setMessage(R.string.delete_message)
-            .setPositiveButton(R.string.yes) {_,_ ->
-                //삭제를 원하면 reference 내에서 해당 이미지 삭제
-                itemId?.let{ itemViewModel.deleteItem(it) }
-                Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .setNegativeButton(R.string.no) {_,_ -> }
+            .setPositiveButton(R.string.yes) { _,_ -> deleteCurrentItem() }
+            .setNegativeButton(R.string.no) { _,_ -> }
             .show()
+    }
+
+    private fun deleteCurrentItem(){
+        //삭제를 원하면 reference 내에서 해당 이미지 삭제
+        itemId?.let{ itemViewModel.deleteItem(it) }
+        Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
     }
 
     /* 현재 가진 데이터를 모두 담아서 수정을 위해 AddActivity 화면으로 이동하는 함수  */

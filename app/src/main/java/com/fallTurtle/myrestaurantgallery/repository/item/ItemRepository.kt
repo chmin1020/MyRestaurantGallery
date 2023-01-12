@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.repository.item
 
 import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
@@ -13,9 +12,7 @@ class ItemRepository(application: Application) {
     private val imageRepository = ImageRepository(application.filesDir.toString(), application.contentResolver)
 
     /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
-    fun getItems(): LiveData<List<Info>> {
-        return dataRepository.getSavedData()
-    }
+    suspend fun getAllItems() = dataRepository.getAllItems()
 
     suspend fun getProperItem(id: String) = dataRepository.getProperData(id)
 

@@ -5,7 +5,6 @@ import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,12 +58,9 @@ class LocationListActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //리사이클러뷰 설정 및 몇몇 뷰의 리스너 지정
-        initRecyclerView()
-        initListeners()
-
-        //observer 관찰 대상 설정
-        initObservers()
+        initRecyclerView() //리사이클러뷰 설정
+        initListeners() //리스너 지정
+        initObservers() //observer 관찰 대상 설정
     }
 
     /* onResume()에서는 검색을 위해 키보드를 바로 올리는 작업을 수행해준다. */
@@ -73,8 +69,8 @@ class LocationListActivity : AppCompatActivity(){
 
         //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
         binding.etSearch.requestFocus()
-        binding.etSearch.postDelayed(
-            { inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
+        binding.etSearch
+            .postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
     }
 
 
@@ -173,7 +169,7 @@ class LocationListActivity : AppCompatActivity(){
         }
 
         //어댑터에 가져온 리스트 추가
-        adapter.setList(dataList)
+        adapter.addList(dataList)
 
         //검색 내용 끝 부분과 더불어 page 까지 적용
         adapter.isEnd = searchInfo.meta.is_end

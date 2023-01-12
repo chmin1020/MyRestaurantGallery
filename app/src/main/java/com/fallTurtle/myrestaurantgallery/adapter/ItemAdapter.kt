@@ -1,15 +1,18 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.clear
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
@@ -29,8 +32,20 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
         var tvRate:TextView = itemView.findViewById(R.id.tv_rate)
     }
 
+    class DiffUtilCallback(private val oldItems: List<Info>, private val newItems: List<Info>): DiffUtil.Callback(){
+        override fun getOldListSize() = oldItems.size
+
+        override fun getNewListSize() = newItems.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int)
+            = oldItems[oldItemPosition].dbID == newItems[newItemPosition].dbID
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
+            = oldItems[oldItemPosition] == newItems[newItemPosition]
+    }
+
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
-    private var infoList: List<Info> = ArrayList()
+    private val infoList: MutableList<Info> = ArrayList()
 
 
     //--------------------------------------------
@@ -46,7 +61,7 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         //그리드 뷰 크기 조정
         val displayMetrics = DisplayMetrics()
-        holder.itemView.context.display?.getRealMetrics(displayMetrics)
+        holder.itemView.context.getSystemService(WindowManager::class.java).defaultDisplay.getMetrics(displayMetrics)
         holder.itemView.layoutParams.width = (displayMetrics.widthPixels)/7 * 3
         holder.itemView.layoutParams.height = (holder.itemView.layoutParams.width)/6 * 5
         holder.itemView.requestLayout()
@@ -57,12 +72,14 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
         holder.tvRate.text = infoList[position].rate.toString()
         fillImageView(infoList[position].image, infoList[position].categoryNum, holder.ivImage)
 
+        val dbID = infoList[position].dbID
+
         //항목 세부 내용 이동
         holder.itemView.setOnClickListener { v ->
-            val record = Intent(v.context, RecordActivity::class.java)
-            record.putExtra("item_id", infoList[position].dbID)
-
-            v.context.startActivity(record)
+            Intent(v.context, RecordActivity::class.java).also {
+                it.putExtra("item_id", dbID)
+                v.context.startActivity(it)
+            }
         }
     }
 
@@ -73,15 +90,21 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
     // 내부 함수 영역
     //
 
-    @SuppressLint("NotifyDataSetChanged")
     fun update(items : List<Info>?){
         items?.let {
-            this.infoList = it
-            notifyDataSetChanged()
+            val diffCallback = DiffUtilCallback(this.infoList, it)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+            this.infoList.run {
+                diffResult.dispatchUpdatesTo(this@ItemAdapter)
+                clear()
+                addAll(it)
+            }
         }
     }
 
     private fun fillImageView(imagePath: String?, categoryNum: Int, imageView: ImageView){
+        imageView.clear()
         imagePath?.let {
             imageView.load(File("${localPath}/$it")){
                 crossfade(true)
@@ -99,6 +122,5 @@ class ItemAdapter(private val localPath: String) : RecyclerView.Adapter<ItemAdap
                 6 -> imageView.setImageResource(R.drawable.etc)
             }
         }
-
     }
 }

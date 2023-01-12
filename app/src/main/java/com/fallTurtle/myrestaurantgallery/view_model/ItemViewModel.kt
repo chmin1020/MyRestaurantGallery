@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.view_model
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +16,8 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     private val itemRepository = ItemRepository(application)
 
     //아이템 리스트 상태 live data -> 기본적으로 room 데이터 참조
-    val dataItems: LiveData<List<Info>> = itemRepository.getItems()
+    private val insideDataItems = MutableLiveData<List<Info>>()
+    val dataItems: LiveData<List<Info>> = insideDataItems
 
     //아이템 처리 진행 여부를 알려주는 boolean 프로퍼티
     private val insideProgressing = MutableLiveData(false)
@@ -54,6 +56,15 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
             itemRepository.localItemClear()
             insideProgressing.postValue(false)
             insideWorkFinishFlag.postValue(true)
+        }
+    }
+
+    /* 모든 로컬에 저장된 아이템 리스트를 받아오는 함수 */
+    fun getAllItems(){
+        viewModelScope.launch(Dispatchers.IO) {
+            insideProgressing.postValue(true)
+            insideDataItems.postValue(itemRepository.getAllItems())
+            insideProgressing.postValue(false)
         }
     }
 

@@ -54,6 +54,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var curLocation: Location
     private val geocoder:Geocoder by lazy { Geocoder(this)}
 
+    /* 시스템에서 위치 정보를 받음 */
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            // 시스템에서 받은 location 정보를 맵에 적용
+            curLocation = locationResult.lastLocation
+            moveCamera()
+        }
+    }
+
     //지역 검색 화면에서 선택 데이터를 가져와 적용하는 레지스터
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         locClient.removeLocationUpdates(locationCallback)
@@ -138,15 +147,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //back 버튼(이미지)을 눌렀을 때
         binding.ivBack.setOnClickListener {
             finish()
-        }
-    }
-
-    /* 시스템에서 위치 정보를 받음 */
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            // 시스템에서 받은 location 정보를 맵에 적용
-            curLocation = locationResult.lastLocation
-            moveCamera()
         }
     }
 
