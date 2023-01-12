@@ -1,6 +1,5 @@
 package com.fallTurtle.myrestaurantgallery.model.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
@@ -11,8 +10,8 @@ interface InfoRoomDao {
     @Delete
     suspend fun delete(item: Info)
 
-    @Query("SELECT * FROM Info")
-    fun getAllItems(): LiveData<List<Info>>
+    @Query("SELECT * FROM Info ORDER BY dbID")
+    suspend fun getAllItems(): List<Info>
 
     @Query("DELETE FROM Info")
     suspend fun clearAllItems()

@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
@@ -27,7 +28,7 @@ class LocalImageRepository(private val localPath: String, private val resolver: 
     }
 
     suspend fun deleteImage(imageName: String){
-        withContext(Dispatchers.Default){ File(imageName).delete() }
+        withContext(Dispatchers.Default){ File("$localPath/$imageName").delete() }
     }
 
     ///////

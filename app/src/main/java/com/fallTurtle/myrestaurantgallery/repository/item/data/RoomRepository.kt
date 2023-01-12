@@ -9,9 +9,8 @@ class RoomRepository(application: Application) {
     //room DB 관련 인스턴스 (DB, DAO, elements)
     private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)!!
     private val roomDao = database.infoRoomDao()
-    private val items: LiveData<List<Info>> = roomDao.getAllItems()
 
-    fun getSavedData() = items
+    suspend fun getAllItems() = roomDao.getAllItems()
 
     suspend fun getProperItem(id: String): Info = roomDao.getProperItem(id)
 

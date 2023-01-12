@@ -2,15 +2,12 @@ package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import android.app.Application
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.google.firebase.firestore.QuerySnapshot
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class DataRepository(application: Application) {
     private val fireStoreRepository = FireStoreRepository()
     private val roomRepository = RoomRepository(application)
 
-    fun getSavedData() = roomRepository.getSavedData()
+    suspend fun getAllItems() = roomRepository.getAllItems()
 
     suspend fun getProperData(id:String) = roomRepository.getProperItem(id)
 

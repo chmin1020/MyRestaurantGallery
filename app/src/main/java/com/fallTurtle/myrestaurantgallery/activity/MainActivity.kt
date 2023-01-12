@@ -3,6 +3,7 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -84,6 +85,11 @@ class MainActivity : AppCompatActivity() {
         //툴바와 메뉴 세팅
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        itemViewModel.getAllItems()
     }
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
