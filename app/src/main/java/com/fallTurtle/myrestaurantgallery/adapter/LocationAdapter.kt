@@ -1,91 +1,104 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
+import com.fallTurtle.myrestaurantgallery.databinding.MapListBinding
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 
 /**
  * 위치 정보 검색 결과에 대한 리스트를 위한 recylcerView 전용 어댑터
  **/
-class LocationAdapter(val context: Context): RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
-    //--------------------------------------------
-    // 해당 어댑터에서 사용할 뷰홀더
-    //
+class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
+    private val itemList: MutableList<LocationResult> = mutableListOf()
 
-    class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
-        var tvTitle: TextView = itemView.findViewById(R.id.tv_title)
-        var tvSubTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
-        var tvCategory: TextView = itemView.findViewById(R.id.tv_category)
-    }
-
-
-    //--------------------------------------------
-    // 프로퍼티 영역
-    //
-
-    private var resultList: List<LocationResult> = listOf()
     var currentPage = 1
     var isEnd = false
-    var currentSearchString = ""
+    var currentKeyword = ""
 
 
     //--------------------------------------------
     // 리사이클러뷰 필수 오버라이딩 함수 영역
-    //
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): CustomViewHolder {
-        val v : View = LayoutInflater.from(parent.context).inflate(R.layout.map_list, parent, false)
-        return CustomViewHolder(v)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
+        val binding = MapListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CustomViewHolder(binding)
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.tvTitle.text = resultList[position].name
-        holder.tvSubTitle.text = resultList[position].fullAddress
-        holder.tvCategory.text = resultList[position].category
-
-        holder.itemView.setOnClickListener {
-            val activity:Activity = context as Activity
-            val backTo = Intent(context, MapActivity::class.java).apply {
-                putExtra("x", resultList[position].locationPair.latitude.toDouble())
-                putExtra("y", resultList[position].locationPair.longitude.toDouble())
-            }
-            activity.setResult(AppCompatActivity.RESULT_OK, backTo)
-            activity.finish()
-        }
+        holder.bind(itemList[position])
     }
 
-    override fun getItemCount(): Int {
-        return resultList.size
-    }
+    override fun getItemCount() = itemList.size
 
 
     //--------------------------------------------
     // 내부 함수 영역
-    //
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun addList(searchResultList: List<LocationResult>) {
-        this.resultList = this.resultList + searchResultList
-        notifyDataSetChanged()
+    fun searchSettingReset(keyword: String){
+        currentPage = 1 //페이지 초기화
+        currentKeyword = keyword //현재 검색 키워드 백업
+        isEnd = false //리스트 검색 활동 초기화
     }
 
-    fun clearList(){
-        resultList = listOf()
+    fun update(items: List<LocationResult>?) {
+        if(items?.size == itemCount) isEnd = true
+
+        items?.let{
+            //기존 리스트와 새 리스트 차이점을 파악하기 위한 diff 연산
+            val diffResult = DiffUtil.calculateDiff(DiffUtilCallback(this.itemList, it))
+
+            //결과에 따라 아이템 리스트 새롭게 갱신
+            this.itemList.run {
+                diffResult.dispatchUpdatesTo(this@LocationAdapter)
+                clear()
+                addAll(it)
+            }
+        }
+    }
+
+
+    //--------------------------------------------
+    // 해당 어댑터에서 사용할 뷰홀더
+
+    class CustomViewHolder(private val binding: MapListBinding) : RecyclerView.ViewHolder(binding.root){
+        init {
+            itemView.setOnClickListener {
+                (itemView.context as Activity).apply {
+                    val backTo = Intent(this, MapActivity::class.java).apply {
+                        putExtra("x", binding.locationResult?.locationPair?.latitude ?: -1.0)
+                        putExtra("y", binding.locationResult?.locationPair?.longitude ?: -1.0)
+                    }
+                    this.setResult(AppCompatActivity.RESULT_OK, backTo)
+                    this.finish()
+                }
+            }
+        }
+
+        fun bind(result: LocationResult){
+            binding.locationResult = result
+        }
+    }
+
+    /* 내부 아이템 리스트 변경을 확인하고 적용할 callback 클래스 */
+    private class DiffUtilCallback
+        (private val oldItems: List<LocationResult>, private val newItems: List<LocationResult>): DiffUtil.Callback(){
+        //기존과 새 아이템 리스트 크기 구하는 함수들
+        override fun getOldListSize() = oldItems.size
+        override fun getNewListSize() = newItems.size
+
+        //각 인덱스에 맞는 아이템이 서로 같은 아이템인지 확인하는 함수
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int)
+                = oldItems[oldItemPosition].locationPair == newItems[newItemPosition].locationPair
+
+        //areItemsTheSame -> true 나올 시 내부 내용도 같은지 확인하는 함수
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
+                = oldItems[oldItemPosition] == newItems[newItemPosition]
     }
 }
