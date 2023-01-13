@@ -46,6 +46,10 @@
     <string name="search_location">위치 검색</string>
     <string name="current_location">현위치 선택</string>
 
+    <!--이미지 설명-->
+    <string name="item_image_description">Each Image about the restaurant</string>
+    <string name="rating_star_description">rating star symbol for each item</string>
+
     <!--firebase auth value-->
     <string name="firebase_client_id" translatable="false">63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com</string>
 </resources>

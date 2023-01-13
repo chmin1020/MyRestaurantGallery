@@ -1,6 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
@@ -28,5 +30,11 @@ object DataBindingAdapter {
                 6 -> imageView.setImageResource(R.drawable.etc)
             }
         }
+    }
+
+    @BindingAdapter(value = ["intNumberForText"])
+    @JvmStatic
+    fun setTextWithInt(textView: TextView, number: Int){
+        textView.text = number.toString()
     }
 }

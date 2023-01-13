@@ -44,6 +44,10 @@
     <string name="search_location">location searching</string>
     <string name="current_location">set current location</string>
 
+    <!--image description-->
+    <string name="item_image_description">Each Image about the restaurant</string>
+    <string name="rating_star_description">rating star symbol for each item</string>
+
     <!--firebase auth value-->
     <string name="firebase_client_id" translatable="false">63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com</string>
 

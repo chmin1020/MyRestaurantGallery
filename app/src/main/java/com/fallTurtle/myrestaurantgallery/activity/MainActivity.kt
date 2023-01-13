@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //리사이클러뷰 어댑터
-    private val itemsAdapter by lazy { ItemAdapter(filesDir.toString(), resources.displayMetrics.widthPixels )}
+    private val itemsAdapter by lazy { ItemAdapter(resources.displayMetrics.widthPixels )}
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
