@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +12,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.MapListBinding
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 
 /**
- * 위치 정보 검색 결과에 대한 리스트를 위한 recylcerView 전용 어댑터
+ * 위치 정보 검색 결과에 대한 리스트를 위한 recyclerView 전용 어댑터
  **/
 class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     private val itemList: MutableList<LocationResult> = mutableListOf()

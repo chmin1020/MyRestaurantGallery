@@ -1,7 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast

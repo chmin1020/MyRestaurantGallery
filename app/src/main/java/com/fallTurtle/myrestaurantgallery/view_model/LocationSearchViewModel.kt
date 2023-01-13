@@ -7,10 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.repository.LocationRepository
-import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class LocationSearchViewModel(application: Application) : AndroidViewModel(application) {
     //지역 검색 비즈니스 로직 리포지토리
