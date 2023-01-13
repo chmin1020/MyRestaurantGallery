@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="info"
+            type="com.fallTurtle.myrestaurantgallery.model.room.Info" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="180dp"
+    android:layout_height="150dp"
+    android:orientation="vertical"
+    android:layout_margin="5dp"
+    android:weightSum="7">
+
+    <LinearLayout
+        android:id="@+id/layout_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_border"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.7">
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/etc"
+            android:contentDescription="@string/item_image_description"
+            app:imagePath="@{info.image}"
+            app:categoryNum="@{info.categoryNum}" />
+
+    </LinearLayout>
+
+
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/panel_border1"
+        android:layout_marginTop= "2dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        android:text="@{info.name}"
+        android:textAlignment="center"
+        android:textColor="@color/regularText"
+        app:layout_constraintTop_toBottomOf="@id/layout_image"
+        app:layout_constraintBottom_toTopOf="@id/contents_layout"
+        app:layout_constraintStart_toStartOf="@id/layout_image"
+        app:layout_constraintEnd_toEndOf="@id/layout_image"
+        app:layout_constraintHeight_percent="0.15"/>
+
+    <LinearLayout
+        android:id="@+id/contents_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:background="@drawable/panel_border2"
+        android:layout_marginBottom = "2dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        android:weightSum="10"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tv_name"
+        app:layout_constraintEnd_toEndOf="@id/tv_name"
+        app:layout_constraintHeight_percent="0.15">
+
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:text="@{info.category}"
+            android:textAlignment="center"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/star"
+            android:contentDescription="@string/rating_star_description"/>
+
+        <TextView
+            android:id="@+id/tv_rate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:intNumberForText="@{info.rate}"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

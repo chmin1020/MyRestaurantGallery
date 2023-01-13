@@ -87,6 +87,8 @@ class AddActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding.info = Info()
+
         //각 뷰의 리스너들 설정
         initListeners()
 
@@ -95,7 +97,6 @@ class AddActivity : AppCompatActivity(){
             ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
-        binding.info = Info() //디폴트
         itemId = intent.getStringExtra("item_id")
         itemId?.let { itemViewModel.setProperItem(it) }
 
