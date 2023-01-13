@@ -1,6 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -14,10 +15,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
-import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
-import retrofit2.Response
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
@@ -39,19 +37,18 @@ class LocationListActivity : AppCompatActivity(){
     private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
 
     //옵저버들
-    private val listObserver = Observer<Array<Response<LocationResponse>>> { taskWithResponses(it) }
+    private val searchObserver = Observer<List<LocationResult>> { taskWithResults(it) }
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
 
     //리사이클러뷰
-    private val adapter: LocationAdapter by lazy { LocationAdapter(this) }
+    private val adapter =  LocationAdapter()
 
     //뷰 바인딩
     private val binding:ActivityLocationListBinding by lazy{ ActivityLocationListBinding.inflate(layoutInflater)}
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 및 오버라이딩 영역
-    //
+    // 액티비티 생명주기 영역
 
     /* onCreate()에서는 리스너와 리사이클러뷰를 설정하고 이외 사전 작업을 수행한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,22 +58,15 @@ class LocationListActivity : AppCompatActivity(){
         initRecyclerView() //리사이클러뷰 설정
         initListeners() //리스너 지정
         initObservers() //observer 관찰 대상 설정
-    }
 
-    /* onResume()에서는 검색을 위해 키보드를 바로 올리는 작업을 수행해준다. */
-    override fun onResume() {
-        super.onResume()
-
-        //키보드 바로 올리기(activity 화면 출력 후 설정해야 오류 없음)
+        //키보드 자동 올림 설정
         binding.etSearch.requestFocus()
-        binding.etSearch
-            .postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
+        binding.etSearch.postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
     }
 
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
-    //
 
     /* 어댑터와 레이아웃 매니저 지정, 추가 리스너 구현 등 리사이클러뷰와 관련된 초기 설정을 하는 함수 */
     private fun initRecyclerView(){
@@ -91,8 +81,7 @@ class LocationListActivity : AppCompatActivity(){
                 recyclerView.adapter ?: return //어댑터가 null -> 동작을 수행하지 않음
 
                 // 페이지 끝에 도달한 경우(위에서 구한 인덱스도 비교)
-                if (!recyclerView.canScrollVertically(1) && !adapter.isEnd)
-                    loadNext()
+                if (!recyclerView.canScrollVertically(1)) loadNext()
             }
         })
     }
@@ -100,7 +89,7 @@ class LocationListActivity : AppCompatActivity(){
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
         //뒤로 가기 버튼 클릭
-        binding.ivBack.setOnClickListener { finish()}
+        binding.ivBack.setOnClickListener { finish() }
 
         //키보드에서 엔터를 클릭
         binding.etSearch.setOnKeyListener{ _, keyCode, event ->
@@ -115,69 +104,35 @@ class LocationListActivity : AppCompatActivity(){
 
     /*각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
     private fun initObservers(){
-        locationViewModel.finalResponse.observe(this, listObserver)
+        locationViewModel.searchResults.observe(this, searchObserver)
         locationViewModel.progressing.observe(this, progressObserver)
     }
 
 
     //--------------------------------------------
     // 내부 함수 영역 (검색)
-    //
 
     /* 키워드를 가지고 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String){
-        adapter.currentSearchString = keyword //현재 검색 키워드 백업
+        adapter.searchSettingReset(keyword)
+        inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, 0) //키보드는 숨긴다.
 
         //네트워크 상태에 따른 검색 작업 실시
-        if(networkManager.checkNetworkState()) {
-            searchWithPage(keyword, 1) //첫 페이지부터 검색
-            inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, 0) //키보드는 숨긴다.
-        }
+        if(networkManager.checkNetworkState())
+            locationViewModel.searchLocationWithQuery(keyword, 1) //첫 페이지부터 검색
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
     }
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
     private fun loadNext() {
-        if (binding.recyclerView.adapter?.itemCount == 0) return
-        searchWithPage(adapter.currentSearchString, adapter.currentPage + 1)
+        if (adapter.isEnd) return
+        locationViewModel.searchLocationWithQuery(adapter.currentKeyword, adapter.currentPage)
     }
 
-    /* 키워드에 따라 검색을 하되, 페이지를 고려하는 함수 */
-    private fun searchWithPage(keywordString: String, page: Int) {
-        // 뷰모델을 통한 retrofit 응답 값 get
-        if (page == 1) adapter.clearList() //새로운 검색 시작
-        locationViewModel.searchLocationWithQuery(keywordString, page)
-    }
-
-    /* 받은 응답 값들을 통해 적절한 작업을 수행하는 함수 */
-    private fun taskWithResponses(responses: Array<Response<LocationResponse>>){
-        // 음식점, 카페 검색에 대한 결과들로 각각 데이터 만들기 시도
-        responses.forEach { response ->
-            if (response.isSuccessful) //응답을 성공적으로 받음 -> 적절한 데이터 생성
-                response.body()?.let { setData(it) }
-            else //응답 실패 -> 토스트 메시지로 에러 알림
-                Toast.makeText(this@LocationListActivity, "결과를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    /* 다음 페이지 내용을 검색해서 가져오는 함수 */
-    private fun setData(searchInfo: LocationResponse) {
-        // 검색 결과 데이터를 뷰 형식에 맞게 옮긴다.
-        val dataList = searchInfo.documents.map {
-            LocationResult(it.address_name, it.place_name, it.category_name, LocationPair(it.y.toDouble(), it.x.toDouble()))
-        }
-
-        //어댑터에 가져온 리스트 추가
-        adapter.addList(dataList)
-
-        //검색 내용 끝 부분과 더불어 page 까지 적용
-        adapter.isEnd = searchInfo.meta.is_end
-        if(!adapter.isEnd)
-            adapter.currentPage = adapter.currentPage + 1
-
-        //검색 결과가 없을 시
-        if(adapter.itemCount == 0)
-            Toast.makeText(this, "검색 결과가 없습니다...", Toast.LENGTH_SHORT).show()
+    /* 받은 응답 값들(뷰모델 데이터)을 통해 적절한 작업을 수행하는 함수 */
+    private fun taskWithResults(results: List<LocationResult>){
+        adapter.update(results)
+        adapter.currentPage++
     }
 }

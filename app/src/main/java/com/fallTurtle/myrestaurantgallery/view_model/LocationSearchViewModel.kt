@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.repository.LocationRepository
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ class LocationSearchViewModel(application: Application) : AndroidViewModel(appli
     private val searchRepository = LocationRepository()
 
     //model 변화를 적용할 livedata. auto 변경하여 final 최종 적용
-    val finalResponse: LiveData<Array<Response<LocationResponse>>> = searchRepository.getSearchResponse()
+    private val insideSearchResults = MutableLiveData<List<LocationResult>>()
+    val searchResults: LiveData<List<LocationResult>> = insideSearchResults
 
     //아이템 처리 진행 여부를 알려주는 boolean 프로퍼티
     private val insideProgressing = MutableLiveData(false)
@@ -26,7 +28,7 @@ class LocationSearchViewModel(application: Application) : AndroidViewModel(appli
     fun searchLocationWithQuery(query: String, page: Int){
         viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
-            searchRepository.searchTotalInfo(query, page)
+            insideSearchResults.postValue(searchRepository.searchTotalInfo(query, page))
             insideProgressing.postValue(false)
         }
     }
