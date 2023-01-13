@@ -1,10 +1,9 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
-import android.util.Log
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
-import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
+import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -67,13 +66,13 @@ class LocationRepository {
     }
 
     /* 검색할 수 있는 상황인지 체크하는 함수 */
-    private fun isSearchFinish(response: Response<LocationResponse>, searchEnd: Boolean)
+    private fun isSearchFinish(response: Response<LocationSearch>, searchEnd: Boolean)
         = response.isSuccessful && (searchEnd || (response.body()?.meta?.is_end ?: true))
 
     /* 검색 결과를 response 내에서 추출하여 리스트에 추가하는 함수 */
-    private fun extractResultsFromResponse(response: Response<LocationResponse>){
-        response.body()?.let { content->
-            content.documents.forEach {
+    private fun extractResultsFromResponse(response: Response<LocationSearch>){
+        response.body()?.let { searchContent ->
+            searchContent.documents.forEach {
                 val locationPair = LocationPair(it.y.toDouble(), it.x.toDouble())
                 searchTotalResults.add(LocationResult(it.address_name, it.place_name, it.category_name, locationPair))
             }

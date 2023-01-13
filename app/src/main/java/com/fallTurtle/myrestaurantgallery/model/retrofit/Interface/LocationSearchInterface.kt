@@ -1,6 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.model.retrofit.Interface
 
-import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationResponse
+import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Key
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
 import retrofit2.Response
@@ -22,7 +22,7 @@ interface LocationSearchInterface {
         @Query("query") query: String,
         @Query("page") page: Int,
         @Query("category_group_code") code: String = "FD6"
-        ): Response<LocationResponse>
+        ): Response<LocationSearch>
 
     //두번째 GET 명령 : 키워드에 맞는 카페 검색
     @GET(Url.GET_KAKAOMAP_LOCATION)
@@ -31,5 +31,5 @@ interface LocationSearchInterface {
         @Query("query") query: String,
         @Query("page") page: Int,
         @Query("category_group_code") code: String = "CE7"
-    ): Response<LocationResponse>
+    ): Response<LocationSearch>
 }
