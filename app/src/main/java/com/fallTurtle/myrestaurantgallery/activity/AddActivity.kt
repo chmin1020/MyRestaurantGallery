@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -58,7 +57,7 @@ class AddActivity : AppCompatActivity(){
     //선택된 아이템 관련 변수들
     private var itemId: String? = null
     private var itemLocation = LocationPair()
-    private var preImgPath: String? = null
+    private var preImgName: String? = null
 
     //이미지 이름, 기기 내 이미지 실제 uri
     private var curImgName: String? = null
@@ -95,19 +94,16 @@ class AddActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //데이터 바인딩
+        //데이터 바인딩 (default)
         binding.info = Info()
-
-        //각 뷰의 리스너들 설정
-        initListeners()
-
-        //spinner
-        binding.spCategory.adapter =
-            ArrayAdapter.createFromResource(this, R.array.category_spinner, android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
         itemId = intent.getStringExtra("item_id")
         itemId?.let { itemViewModel.setProperItem(it) }
+
+        //각 뷰의 리스너들 설정
+        initListeners()
 
         //toolbar
         setSupportActionBar(binding.toolbar)
@@ -120,8 +116,7 @@ class AddActivity : AppCompatActivity(){
             }
         }
 
-        //옵저버와 뷰모델 연결
-        setObservers()
+        setObservers() //옵저버와 뷰모델 연결
     }
 
 
@@ -207,7 +202,7 @@ class AddActivity : AppCompatActivity(){
         binding.spCategory.setSelection(item.categoryNum)
         itemLocation = LocationPair(item.latitude, item.longitude)
         curImgName = item.image
-        preImgPath = item.image
+        preImgName = item.image
     }
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
@@ -230,7 +225,7 @@ class AddActivity : AppCompatActivity(){
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
                                 latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = id)
 
-                itemViewModel.insertItem(newItem, imgUri, preImgPath)
+                itemViewModel.insertItem(newItem, imgUri, preImgName)
             }
         }
         else
