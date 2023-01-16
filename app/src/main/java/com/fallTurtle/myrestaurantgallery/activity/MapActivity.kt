@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.view_model.MapViewModel
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
