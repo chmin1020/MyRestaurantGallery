@@ -11,6 +11,10 @@
         <variable
             name="info"
             type="com.fallTurtle.myrestaurantgallery.model.room.Info" />
+
+        <variable
+            name="spinnerEntries"
+            type="String[]" />
     </data>
 
     <LinearLayout
@@ -115,8 +119,8 @@
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:entries="@array/category_spinner"
-            android:spinnerMode="dialog"/>
+            android:spinnerMode="dialog"
+            tools:entries="@{spinnerEntries}"/>
 
         <LinearLayout
             android:layout_width="match_parent"
