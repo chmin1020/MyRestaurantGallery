@@ -1,7 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.repository
 
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult
 import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url

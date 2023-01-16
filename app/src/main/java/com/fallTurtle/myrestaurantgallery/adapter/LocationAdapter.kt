@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
 import com.fallTurtle.myrestaurantgallery.databinding.MapListBinding
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult
 
 /**
  * 위치 정보 검색 결과에 대한 리스트를 위한 recyclerView 전용 어댑터

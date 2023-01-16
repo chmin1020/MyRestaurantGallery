@@ -20,7 +20,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.text.SimpleDateFormat
@@ -31,8 +31,7 @@ import java.util.Date
 
 /**
  * 항목 추가 화면을 담당하는 액티비티.
- * 이 액티비티에서는 새로운 맛집 정보를 저장할 수 있는 기능을 제공한다.
- * 새 항목 추가와 수정 모두 이 액티비티를 사용하므로, isEdit 값을 인텐트로 받아서 이 여부를 체크한다.
+ * 이 액티비티에서는 새로운 맛집 정보를 저장하거나 기존 내용을 수정하게 해준다.
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
 class AddActivity : AppCompatActivity(){
@@ -167,7 +166,7 @@ class AddActivity : AppCompatActivity(){
             getAddress.launch(intent)
         }
 
-        //이미지 가져오기
+        //이미지뷰 클릭 시
         binding.ivImage.setOnClickListener{
             val imgDlg = ImgDialog(this)
 
@@ -196,6 +195,10 @@ class AddActivity : AppCompatActivity(){
         itemViewModel.selectedItem.observe(this, selectedItemObserver)
     }
 
+
+    //--------------------------------------------
+    // 내부 함수 영역 (옵저버 후속 작업)
+
     /* 들어온 아이템 정보에 따라 화면을 세팅하는 함수 */
     private fun setContentsWithItem(item: Info){
         binding.info = item
@@ -204,6 +207,10 @@ class AddActivity : AppCompatActivity(){
         curImgName = item.image
         preImgName = item.image
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (데이터 저장)
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
@@ -231,6 +238,10 @@ class AddActivity : AppCompatActivity(){
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (이미지 설정)
 
     //spinner 기본 이미지 고르기
     private fun selectFoodDefaultImage(position : Int){

@@ -14,7 +14,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.etc.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
