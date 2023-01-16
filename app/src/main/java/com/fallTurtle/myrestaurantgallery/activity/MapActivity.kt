@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -24,7 +23,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import java.io.IOException
 
 /**
  * 구글 맵을 통해 지도를 보여주는 액티비티.
@@ -32,10 +30,6 @@ import java.io.IOException
  * 이를 위해 구글 맵 API 사용 및 GPS 기능 사용이 있었다.
  **/
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    //--------------------------------------------
-    // 인스턴스 영역
-    //
-
     //네트워크 연결 체크 매니저
     private val networkManager: NetworkManager by lazy { NetworkManager(this) }
 
@@ -43,16 +37,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val binding:ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
 
     //지도 관련 객체
-    private lateinit var mMap: GoogleMap
+    private lateinit var googleMap: GoogleMap
     private val markerOps: MarkerOptions by lazy { MarkerOptions() }
     private var marker: Marker? = null
 
-    //location info
+    //위치 관련 객체
     private val locClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
     private val locationRequest: LocationRequest
             by lazy { LocationRequest.create().apply { priority = LocationRequest.PRIORITY_HIGH_ACCURACY }}
     private lateinit var curLocation: Location
     private val geocoder:Geocoder by lazy { Geocoder(this)}
+
 
     /* 시스템에서 위치 정보를 받음 */
     private val locationCallback = object : LocationCallback() {
@@ -79,7 +74,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //--------------------------------------------
     // 액티비티 생명주기 및 오버라이딩 영역
-    //
 
     /* onCreate()에서는 맵 관련 프로퍼티와 뷰 리스너를 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,15 +96,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* onMapReady()에서는 지도가 준비되었을 때, 그 지도의 설정을 진행한다. */
     override fun onMapReady(p0: GoogleMap) {
-        mMap = p0
-        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        googleMap = p0
+        googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         setMapCamera()
     }
 
 
     //--------------------------------------------
-    // 내부 함수 영역
-    //
+    // 내부 함수 영역 (초기화)
 
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
@@ -185,32 +178,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val now = LatLng(curLocation.latitude, curLocation.longitude)
         val position = CameraPosition.Builder().target(now).zoom(16f).build()
         markerOps.position(now)
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
 
         //기존 마커가 있다면 지우고, 새 위치에 마커를 추가한다.
         marker?.remove()
-        marker = mMap.addMarker(markerOps)
+        marker = googleMap.addMarker(markerOps)
     }
 
     /* 좌표를 주소로 변환하는 함수 */
     private fun getAddress() : String{
-        var list: List<Address>? = null
         var address = ""
 
         //geocoder 객체를 통해 현재 위도와 경도로 주소 받아오기 시도
-        try {
-            list = geocoder.getFromLocation(curLocation.latitude, curLocation.longitude, 10)
-        }
-        catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        //받은 주소가 성공적이라면, 받은 리스트를 String 형식으로 변환
-        if (list != null) {
-            if (list.isEmpty())
+        geocoder.getFromLocation(curLocation.latitude, curLocation.longitude, 10)?.let{
+            if(it.isEmpty())
                 address = "주소 찾을 수 없음"
-            else {
-                address = list[0].getAddressLine(0)
+            else{ //받은 주소가 성공적이라면, 받은 리스트를 String 형식으로 변환
+                address = it[0].getAddressLine(0)
                 val str = address.split(" ")
                 address = str[1]
                 for(num in 2 until str.size) {
@@ -220,7 +204,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        //변환한 주소 반환
         return address
     }
 }

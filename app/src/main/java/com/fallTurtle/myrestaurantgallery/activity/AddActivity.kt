@@ -47,6 +47,11 @@ class AddActivity : AppCompatActivity(){
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
+    //옵저버
+    private val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+    private val finishObserver = Observer<Boolean> { if(it) finish() }
+    private val selectedItemObserver = Observer<Info> { setContentsWithItem(it) }
+
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }
 
@@ -55,10 +60,15 @@ class AddActivity : AppCompatActivity(){
     private var itemLocation = LocationPair()
     private var preImgPath: String? = null
 
-    //이미지를 갤러리에서 받아오기 위한 요소들
+    //이미지 이름, 기기 내 이미지 실제 uri
     private var curImgName: String? = null
-
     private var imgUri: Uri? = null
+
+
+    //--------------------------------------------
+    // 액티비티 결과 런처
+
+    /* 갤러리에서 가지고 온 이미지 결과를 처리하는 런처 */
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
@@ -67,11 +77,10 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
-    //맵에서 주소를 받아오기 위한 요소들
-    private var address: String? = null
+    /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
-            address = it.data?.getStringExtra("address")
+            val address = it.data?.getStringExtra("address")
             itemLocation.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
             itemLocation.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
             binding.etLocation.setText(address)
@@ -80,13 +89,13 @@ class AddActivity : AppCompatActivity(){
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 및 오버라이딩 영역
-    //
+    // 액티비티 생명주기 영역
 
     /* onCreate()에서는 뷰와 퍼미션 체크, 리사이클러뷰, 툴바, 이벤트 등의 기본적인 것들을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //데이터 바인딩
         binding.info = Info()
 
         //각 뷰의 리스너들 설정
@@ -111,22 +120,13 @@ class AddActivity : AppCompatActivity(){
             }
         }
 
-        //LiveData, observer 기능을 통해 실시간 검색 결과 변화 감지 및 출력
-        val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
-        itemViewModel.progressing.observe(this, progressObserver)
-
-        val finishObserver = Observer<Boolean> { if(it) finish() }
-        itemViewModel.workFinishFlag.observe(this, finishObserver)
-
-        val selectedItemObserver = Observer<Info> {
-            binding.info = it
-            binding.spCategory.setSelection(it.categoryNum)
-            itemLocation = LocationPair(it.latitude, it.longitude)
-            curImgName = it.image
-            preImgPath = it.image
-        }
-        itemViewModel.selectedItem.observe(this, selectedItemObserver)
+        //옵저버와 뷰모델 연결
+        setObservers()
     }
+
+
+    //--------------------------------------------
+    // 오버라이딩 영역
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -142,8 +142,7 @@ class AddActivity : AppCompatActivity(){
 
 
     //--------------------------------------------
-    // 내부 함수 영역
-    //
+    // 내부 함수 영역 (초기화)
 
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
@@ -195,14 +194,29 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
+    /* 각 옵저버를 적절한 뷰모델 내 데이터와 연결하는 함수 */
+    private fun setObservers(){
+        itemViewModel.progressing.observe(this, progressObserver)
+        itemViewModel.workFinishFlag.observe(this, finishObserver)
+        itemViewModel.selectedItem.observe(this, selectedItemObserver)
+    }
+
+    /* 들어온 아이템 정보에 따라 화면을 세팅하는 함수 */
+    private fun setContentsWithItem(item: Info){
+        binding.info = item
+        binding.spCategory.setSelection(item.categoryNum)
+        itemLocation = LocationPair(item.latitude, item.longitude)
+        curImgName = item.image
+        preImgPath = item.image
+    }
+
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
         fun getNewID(): String
             = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
-        //네트워크 연결 상태라면
+        //네트워크 연결 상태라면 저장과정 실행
         if(networkManager.checkNetworkState()) {
-            //저장 과정 (이름과 장소는 필수!)
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {

@@ -31,8 +31,6 @@ class LocalImageRepository(private val localPath: String, private val resolver: 
         withContext(Dispatchers.Default){ File("$localPath/$imageName").delete() }
     }
 
-    ///////
-
     private suspend fun downloadFile(downloadRef: StorageReference){
         suspendCoroutine<Any?> { continuation ->
             downloadRef.getFile(File("$localPath/${downloadRef.name}")).addOnCompleteListener{

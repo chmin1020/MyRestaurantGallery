@@ -34,7 +34,7 @@ class RecordActivity : AppCompatActivity() {
 
     //옵저버들
     private val progressObserver = Observer<Boolean> { decideShowLoading(it)}
-    private val finishObserver = Observer<Boolean> { if(it) finish() }
+    private val finishObserver = Observer<Boolean> { if(it) deleteWorkComplete() }
     private val itemObserver = Observer<Info> { binding.info = it }
 
     //로딩 다이얼로그
@@ -42,8 +42,7 @@ class RecordActivity : AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 및 오버라이딩 영역
-    //
+    // 액티비티 생명주기 영역
 
     /* onCreate()에서는 툴바를 설정하고 뷰에 내용을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,16 +57,19 @@ class RecordActivity : AppCompatActivity() {
         itemId = intent.getStringExtra("item_id")
 
         //옵저버 설정
-        itemViewModel.progressing.observe(this, progressObserver)
-        itemViewModel.workFinishFlag.observe(this, finishObserver)
-        itemViewModel.selectedItem.observe(this, itemObserver)
+        setObservers()
     }
 
+    /* onStart()마다 뷰모델에게 적절한 아이템 정보 갱신 요구 */
     override fun onStart() {
         super.onStart()
         itemId?.let { itemViewModel.setProperItem(it) }
             ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
     }
+
+
+    //--------------------------------------------
+    // 오버라이딩 영역
 
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -87,10 +89,20 @@ class RecordActivity : AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 내부 함수 영역
-    //
+    // 내부 함수 영역 (초기화)
 
-    /* 이전 액티비티에서 받은 정보를 가지고 와서 뷰에 적용하는 함수 */
+    /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
+    private fun setObservers(){
+        itemViewModel.progressing.observe(this, progressObserver)
+        itemViewModel.workFinishFlag.observe(this, finishObserver)
+        itemViewModel.selectedItem.observe(this, itemObserver)
+    }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (툴바 리스너 반응)
+
+    /* 삭제 버튼 클릭시 재확인 다이얼로그를 만드는 함수 */
     private fun makeDeleteDialog(){
         AlertDialog.Builder(this)
             .setMessage(R.string.delete_message)
@@ -99,22 +111,31 @@ class RecordActivity : AppCompatActivity() {
             .show()
     }
 
+    /* 삭제를 원하는 것이 확실할 시 해당 이미지 삭제 작업을 진행하는 함수 */
     private fun deleteCurrentItem(){
-        //삭제를 원하면 reference 내에서 해당 이미지 삭제
         itemId?.let{ itemViewModel.deleteItem(it) }
-        Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
     }
 
-    /* 현재 가진 데이터를 모두 담아서 수정을 위해 AddActivity 화면으로 이동하는 함수  */
+    /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 화면으로 이동하는 함수  */
     private fun moveToEditActivity(){
-        val edit = Intent(this, AddActivity::class.java)
-        edit.putExtra("item_id", itemId)
-        startActivity(edit)
+        Intent(this, AddActivity::class.java).also{
+            it.putExtra("item_id", itemId); startActivity(it)
+        }
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (옵저버 후속 작업)
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(yes: Boolean){
         if(yes) progressDialog.show()
         else progressDialog.close()
+    }
+
+    /* 삭제 작업이 끝난 것을 확인 후 현재 화면을 종료하는 함수 */
+    private fun deleteWorkComplete(){
+        Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
+        finish()
     }
 }

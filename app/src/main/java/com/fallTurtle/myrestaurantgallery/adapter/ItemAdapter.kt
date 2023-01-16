@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.databinding.EachItemBinding
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import java.util.ArrayList
 
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
@@ -18,8 +17,8 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
     private val holderWidth = windowWidth / 7 * 3
     private val holderHeight = holderWidth/6 * 5
 
-    //리사이클러뷰를 이루는 리스트 데이터를 저장하는 곳
-    private val itemList: MutableList<Info> = ArrayList()
+    //리사이클러뷰를 이루는 리스트 데이터를 저장하는 컬렉션
+    private val itemList = mutableListOf<Info>()
 
 
     //--------------------------------------------
