@@ -22,7 +22,7 @@ import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
  * 메뉴를 통해 아이템을 삭제하거나 수정을 위한 AddActivity 제공 화면으로 이동할 수 있다.
  **/
 class RecordActivity : AppCompatActivity() {
-    //뷰 바인딩
+    //데이터 바인딩
     private val binding: ActivityRecordBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_record)}
 
     //선택된 아이템 id

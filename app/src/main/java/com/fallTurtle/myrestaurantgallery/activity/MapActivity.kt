@@ -1,20 +1,17 @@
 package com.fallTurtle.myrestaurantgallery.activity
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
-import android.os.Looper
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
 import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.google.android.gms.location.*
+import com.fallTurtle.myrestaurantgallery.model.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.view_model.MapViewModel
+import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,9 +22,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 /**
- * 구글 맵을 통해 지도를 보여주는 액티비티.
+ * 구글 맵 API 기능을 통해 지도를 보여주는 액티비티.
  * 이 지도를 통해 검색으로 선택한 식당의 위치를 확인하거나, 현재 위치로 값을 지정할 수 있다.
- * 이를 위해 구글 맵 API 사용 및 GPS 기능 사용이 있었다.
  **/
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //네트워크 연결 체크 매니저
@@ -36,44 +32,37 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //뷰 바인딩
     private val binding:ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
 
-    //지도 관련 객체
+    //뷰모델
+    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val mapViewModel by lazy { ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java] }
+
+    //옵저버
+    private val locationObserver = Observer<LocationPair?>{ moveCamera(it) }
+    private val addressObserver = Observer<String> { sendAddressInfoToPreviousPage(it) }
+
+    //지도 객체
     private lateinit var googleMap: GoogleMap
-    private val markerOps: MarkerOptions by lazy { MarkerOptions() }
+
+    //지도에 위치를 표시하기 위한 마커 객체 및 옵션
     private var marker: Marker? = null
-
-    //위치 관련 객체
-    private val locClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
-    private val locationRequest: LocationRequest
-            by lazy { LocationRequest.create().apply { priority = LocationRequest.PRIORITY_HIGH_ACCURACY }}
-    private lateinit var curLocation: Location
-    private val geocoder:Geocoder by lazy { Geocoder(this)}
-
-
-    /* 시스템에서 위치 정보를 받음 */
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            // 시스템에서 받은 location 정보를 맵에 적용
-            curLocation = locationResult.lastLocation
-            moveCamera()
-        }
-    }
-
-    //지역 검색 화면에서 선택 데이터를 가져와 적용하는 레지스터
-    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        locClient.removeLocationUpdates(locationCallback)
-        it.data?.let{ intent->
-            curLocation.latitude = intent.getDoubleExtra("x", 0.0)
-            curLocation.longitude = intent.getDoubleExtra("y", 0.0)
-        }
-        moveCamera()
-    }
-
-    //지도 활용 시 필요한 looper
-    private val looperForUse = Looper.myLooper() ?: Looper.getMainLooper()
+    private val markerOps: MarkerOptions by lazy { MarkerOptions() }
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 및 오버라이딩 영역
+    // 액티비티 결과 런처
+
+    //지역 검색 화면에서 선택 데이터를 가져와 적용하는 런처
+    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        it.data?.let{ intent->
+            mapViewModel.updateLocationFromUser(
+                intent.getDoubleExtra("x", -1.0), intent.getDoubleExtra("y", -1.0)
+            )
+        }
+    }
+
+
+    //--------------------------------------------
+    // 액티비티 생명주기 영역
 
     /* onCreate()에서는 맵 관련 프로퍼티와 뷰 리스너를 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,15 +79,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //뷰의 리스너들 세팅
-        initListeners()
+        initListeners() //뷰의 리스너들 세팅
+        setObservers() //옵저버 세팅
     }
 
+
+    //--------------------------------------------
+    // 오버라이딩 영역
+
     /* onMapReady()에서는 지도가 준비되었을 때, 그 지도의 설정을 진행한다. */
-    override fun onMapReady(p0: GoogleMap) {
-        googleMap = p0
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        setMapCamera()
+        initCamera()
     }
 
 
@@ -107,103 +100,69 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
     private fun initListeners(){
-        //search 버튼을 눌렀을 때 (getAddress 레지스터 실행)
+        //search 버튼을 눌렀을 때
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
             getAddress.launch(intent)
         }
 
         //current 버튼을 눌렀을 때
-        binding.btnCur.setOnClickListener {
-            val backTo = Intent(this, AddActivity::class.java).apply {
-                putExtra("isChanged", true)
-                putExtra("latitude", curLocation.latitude)
-                putExtra("longitude", curLocation.longitude)
-                putExtra("address", getAddress())
-            }
-            setResult(RESULT_OK, backTo)
-            finish()
-        }
+        binding.btnCur.setOnClickListener { mapViewModel.requestCurrentAddress() }
 
         //gps fab 버튼을 눌렀을 때
-        binding.fabMyLocation.setOnClickListener{
-            //맵 관련 권한을 사용할 수 있다면 gps 기능을 통해 위치 이동
-            if(checkMapPermission()) {
-                locClient.requestLocationUpdates(locationRequest, locationCallback, looperForUse)
-                moveCamera()
-                Toast.makeText(this,"현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
-            }
-            else
-                Toast.makeText(this,"오류 발생...", Toast.LENGTH_SHORT).show()
-        }
+        binding.fabMyLocation.setOnClickListener{ mapViewModel.requestCurrentLocation() }
 
         //back 버튼(이미지)을 눌렀을 때
-        binding.ivBack.setOnClickListener {
-            finish()
-        }
+        binding.ivBack.setOnClickListener { finish() }
     }
 
-    /* 지도 관련 권한을 확인하는 함수 */
-    private fun checkMapPermission() : Boolean {
-        //두 개의 지도 권한이 granted 상태인지?
-        return (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    /* 초기 카메라를 세팅하는 함수 */
+    private fun initCamera(){
+        val latitude = intent.getDoubleExtra("latitude", -1.0)
+        val longitude = intent.getDoubleExtra("longitude", -1.0)
+
+        //위치 저장 내용이 있으면 거기로, 아니면 현재 위치로
+        if(latitude == -1.0 || longitude == -1.0)
+            mapViewModel.requestCurrentLocation()
+        else
+            mapViewModel.updateLocationFromUser(latitude, longitude)
     }
 
-    /* 현재 위치를 받아올 준비를 하는 함수 */
-    private fun setMapCamera(){
-        //현재 위치를 받아온다.
-        curLocation = Location("now")
-        curLocation.latitude = intent.getDoubleExtra("latitude", -1.0)
-        curLocation.longitude = intent.getDoubleExtra("longitude", -1.0)
-
-        //받아온 위치 데이터가 없다면 현재 위치로 카메라 설정
-        if(curLocation.latitude == -1.0 || curLocation.longitude == -1.0) {
-            if (checkMapPermission()) {
-                Toast.makeText(this, "지정 위치가 없어 현재 위치가 표시됩니다.", Toast.LENGTH_SHORT).show()
-                locClient.requestLocationUpdates(locationRequest, locationCallback, looperForUse)
-            }
-            else {
-                Toast.makeText(this, "권한 오류입니다.", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
-        else //데이터가 있다면 그 위치로 카메라를 이동
-            moveCamera()
+    /* 뷰모델 데이터와 옵저버를 연결하는 함수 */
+    private fun setObservers(){
+        mapViewModel.location.observe(this, locationObserver)
+        mapViewModel.address.observe(this, addressObserver)
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (옵저버 후속 작업)
 
     /* 맵 카메라를 현재 위치로 이동시키고 맵 마커도 옮기는 함수 */
-    private fun moveCamera(){
-        //현재 위치대로 이동
-        val now = LatLng(curLocation.latitude, curLocation.longitude)
-        val position = CameraPosition.Builder().target(now).zoom(16f).build()
-        markerOps.position(now)
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+    private fun moveCamera(location: LocationPair?){
+        location?.let {
+            //현재 설정 위치대로 이동
+            val now = LatLng(it.latitude, it.longitude)
+            val position = CameraPosition.Builder().target(now).zoom(16f).build()
+            markerOps.position(now)
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
 
-        //기존 마커가 있다면 지우고, 새 위치에 마커를 추가한다.
-        marker?.remove()
-        marker = googleMap.addMarker(markerOps)
+            //기존 마커가 있다면 지우고, 새 위치에 마커를 추가한다.
+            marker?.remove()
+            marker = googleMap.addMarker(markerOps)
+
+        } ?: Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
     }
 
-    /* 좌표를 주소로 변환하는 함수 */
-    private fun getAddress() : String{
-        var address = ""
-
-        //geocoder 객체를 통해 현재 위도와 경도로 주소 받아오기 시도
-        geocoder.getFromLocation(curLocation.latitude, curLocation.longitude, 10)?.let{
-            if(it.isEmpty())
-                address = "주소 찾을 수 없음"
-            else{ //받은 주소가 성공적이라면, 받은 리스트를 String 형식으로 변환
-                address = it[0].getAddressLine(0)
-                val str = address.split(" ")
-                address = str[1]
-                for(num in 2 until str.size) {
-                    address = "$address "
-                    address += str[num]
-                }
-            }
+    /* 주소를 포함한 모든 위치 정보를 이전 화면으로 보내는 함수 */
+    private fun sendAddressInfoToPreviousPage(address: String){
+        val backTo = Intent(this, AddActivity::class.java).apply {
+            putExtra("isChanged", true)
+            putExtra("latitude", mapViewModel.location.value?.latitude)
+            putExtra("longitude", mapViewModel.location.value?.longitude)
+            putExtra("address", address)
         }
-
-        return address
+        setResult(RESULT_OK, backTo)
+        finish()
     }
 }
