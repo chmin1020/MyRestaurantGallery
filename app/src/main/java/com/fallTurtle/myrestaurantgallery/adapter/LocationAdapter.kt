@@ -18,22 +18,27 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     private val itemList: MutableList<LocationResult> = mutableListOf()
 
     var currentPage = 1
+        private set
     var isEnd = false
+        private set
     var currentKeyword = ""
-
+        private set
 
     //--------------------------------------------
     // 리사이클러뷰 필수 오버라이딩 함수 영역
 
+    /* 새로운 뷰홀더 만들어질 때 실행되는 callback 함수 */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = MapListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
+    /* 뷰홀더와 새 항목(position 확인)을 연결할 때 실행되는 callback 함수 */
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         holder.bind(itemList[position])
     }
 
+    /* 리스트 생성을 위해 아이템 개수를 파악할 때 실행되는 callback 함수 */
     override fun getItemCount() = itemList.size
 
 
@@ -44,6 +49,10 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
         currentPage = 1 //페이지 초기화
         currentKeyword = keyword //현재 검색 키워드 백업
         isEnd = false //리스트 검색 활동 초기화
+    }
+
+    fun readyToNextPage(){
+        currentPage++
     }
 
     fun update(items: List<LocationResult>?) {
@@ -63,12 +72,16 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     }
 
 
-    //--------------------------------------------
-    // 해당 어댑터에서 사용할 뷰홀더
+    //----------------------------
+    //관련 클래스
 
+
+    /* 해당 리사이클러뷰에서 사용하는 뷰홀더 클래스 */
     class CustomViewHolder(private val binding: MapListBinding) : RecyclerView.ViewHolder(binding.root){
+        //초기화 블록 (리스너 설정)
         init {
             itemView.setOnClickListener {
+                //뷰홀더가 가진 데이터를 인텐트로 보내며 해당 액티비티 종료
                 (itemView.context as Activity).apply {
                     val backTo = Intent(this, MapActivity::class.java).apply {
                         putExtra("x", binding.locationResult?.locationPair?.latitude ?: -1.0)
@@ -80,6 +93,7 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
             }
         }
 
+        //새로운 아이템 데이터와 뷰홀더를 바인드하는 함수
         fun bind(result: LocationResult){
             binding.locationResult = result
         }

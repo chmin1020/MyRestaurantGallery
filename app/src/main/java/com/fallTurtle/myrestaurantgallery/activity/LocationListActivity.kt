@@ -58,9 +58,7 @@ class LocationListActivity : AppCompatActivity(){
         initListeners() //리스너 지정
         initObservers() //observer 관찰 대상 설정
 
-        //키보드 자동 올림 설정
-        binding.etSearch.requestFocus()
-        binding.etSearch.postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
+        showKeyboard() //최초 생성 시 키보드 자동 올림
     }
 
 
@@ -101,7 +99,7 @@ class LocationListActivity : AppCompatActivity(){
         binding.ivSearch.setOnClickListener { doSearch(binding.etSearch.text.toString()) }
     }
 
-    /*각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
+    /* 각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
     private fun initObservers(){
         locationViewModel.searchResults.observe(this, searchObserver)
         locationViewModel.progressing.observe(this, progressObserver)
@@ -114,7 +112,7 @@ class LocationListActivity : AppCompatActivity(){
     /* 키워드를 가지고 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String){
         adapter.searchSettingReset(keyword)
-        inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, 0) //키보드는 숨긴다.
+        hideKeyboard()
 
         //네트워크 상태에 따른 검색 작업 실시
         if(networkManager.checkNetworkState())
@@ -132,6 +130,22 @@ class LocationListActivity : AppCompatActivity(){
     /* 받은 응답 값들(뷰모델 데이터)을 통해 적절한 작업을 수행하는 함수 */
     private fun taskWithResults(results: List<LocationResult>){
         adapter.update(results)
-        adapter.currentPage++
+        adapter.readyToNextPage()
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (키보드 조정)
+
+    /* 키보드를 드러내기 위해 사용하는 함수 */
+    private fun showKeyboard(){
+        binding.etSearch.requestFocus()
+        binding.etSearch.postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
+    }
+
+    /* 키보드를 숨기기 위해 사용하는 함수 */
+    private fun hideKeyboard(){
+        inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
+
 }

@@ -2,10 +2,7 @@ package com.fallTurtle.myrestaurantgallery.repository.item.image
 
 import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.ListResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

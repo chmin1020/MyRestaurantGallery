@@ -20,7 +20,7 @@ class FirebaseUserViewModel(application: Application) : AndroidViewModel(applica
 
     //아이템 처리를 한 이후 해당 화면은 종료됨
     private val insideFinish = MutableLiveData(false)
-    val finish: LiveData<Boolean> = insideFinish
+    val workFinishFlag: LiveData<Boolean> = insideFinish
 
     //유저 상태 live data -> null 아니라면 로그인 상태로 판단
     val userState:LiveData<Boolean> = userRepository.getUserState()

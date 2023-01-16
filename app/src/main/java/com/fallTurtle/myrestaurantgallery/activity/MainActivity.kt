@@ -63,8 +63,7 @@ class MainActivity : AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 및 오버라이딩 영역
-    //
+    // 액티비티 생명주기 영역
 
     /* onCreate()에서는 뷰와 퍼미션 체크, 리사이클러뷰, 툴바, 이벤트 등의 기본적인 것들을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,10 +85,15 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
+    /* onStart()가 실행될 때마다 아이템 리스트 갱신을 새롭게 해준다. */
     override fun onStart() {
         super.onStart()
         itemViewModel.getAllItems()
     }
+
+
+    //--------------------------------------------
+    // 오버라이딩 영역
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -129,8 +133,7 @@ class MainActivity : AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 내부 함수 영역
-    //
+    // 내부 함수 영역 (초기화)
 
     /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
     private fun setObservers(){
@@ -143,12 +146,12 @@ class MainActivity : AppCompatActivity() {
 
         //각 뷰모델 속 작업 종료 여부 변화 관찰
         itemViewModel.workFinishFlag.observe(this, itemFinishObserver)
-        userViewModel.finish.observe(this, userFinishObserver)
+        userViewModel.workFinishFlag.observe(this, userFinishObserver)
     }
 
     /* 앱 실행 전 권한을 받기 위한 다이얼로그 (TedPermission 사용) */
     private fun showPermissionDialog() {
-        //권한 허가 질문에 대한 응답 리스너
+        //권한 허가 질문에 대한 응답 리스너 생성
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() { }
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
@@ -165,6 +168,10 @@ class MainActivity : AppCompatActivity() {
             .setPermissionListener(permissionListener)
             .check()
     }
+
+
+    //--------------------------------------------
+    // 내부 함수 영역 (옵저버 후속 작업)
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(){

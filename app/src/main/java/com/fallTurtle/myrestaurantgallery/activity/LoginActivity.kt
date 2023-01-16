@@ -32,7 +32,7 @@ class LoginActivity: AppCompatActivity() {
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java]}
 
     //옵저버들
-    private val userExistObserver = Observer<Boolean> { if(it) setUserData() }
+    private val userExistObserver = Observer<Boolean> { if(it) doProperWorkAccordingToLoginState() }
     private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading() }
     private val itemRestoreFinishObserver = Observer<Boolean> { if(it) showMain(true) }
     private val itemRestoreProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
@@ -46,10 +46,9 @@ class LoginActivity: AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 활동 결과를 받기 위한 launcher
-    //
+    // 액티비티 결과 런처
 
-    //로그인 요청에 대한 결과를 가져오는 launcher
+    //로그인 요청에 대한 결과를 가져오는 런처
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         userViewModel.getTokenForLogin(it.data)
             ?.let { token-> userViewModel.loginUser(token) } //성공 시 로그인
@@ -59,28 +58,29 @@ class LoginActivity: AppCompatActivity() {
 
     //--------------------------------------------
     // 액티비티 생명주기 영역
-    //
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //login 버튼을 누르면 구글 계정으로 로그인을 시도하는 이벤트 발생
-        binding.signInButton.setOnClickListener{ signIn() }
-
-        //유저가 아직 정해지지 않았을 수 있으므로 유저 옵저버부터 설정
-        setUserObserver()
+        initListeners() //리스너 설정
+        setUserObserver() //유저 옵저버부터 설정
     }
 
 
     //--------------------------------------------
-    // 내부 함수 영역
-    //
+    // 내부 함수 영역 (초기화)
+
+    /* 화면 내 사용자 입력 관련 뷰의 이벤트 리스너를 등록하는 함수 */
+    private fun initListeners(){
+        //로그인 버튼 누를 시
+        binding.signInButton.setOnClickListener{ trySignIn() }
+    }
 
     /* 유저 뷰모델 옵저버를 설정하는 함수 */
     private fun setUserObserver(){
         userViewModel.userState.observe(this, userExistObserver)
-        userViewModel.finish.observe(this, userProgressObserver)
+        userViewModel.workFinishFlag.observe(this, userProgressObserver)
     }
 
     /* 아이템 뷰모델 옵저버를 설정하는 함수 (유저가 정해진 후 뷰모델이 생성되어야 하므로 따로 분리) */
@@ -89,17 +89,25 @@ class LoginActivity: AppCompatActivity() {
         itemViewModel.progressing.observe(this, itemRestoreProgressObserver)
     }
 
-    /* (구글)로그인을 시도하는 함수 */
-    private fun signIn(){
+
+    //--------------------------------------------
+    // 내부 함수 영역 (로그인)
+
+    /* (구글)로그인을 위해 런처로 인텐트를 실행하는 함수 */
+    private fun trySignIn(){
         val signInIntent = GoogleSignIn
                             .getClient(this, userViewModel.getOptionForLogin(getString(R.string.firebase_client_id)))
                             .signInIntent
         getSignLauncher.launch(signInIntent)
     }
 
-    /* 파이어베이스 인증에도 성공했다면, 메인 화면으로 이동할 수 있게 하는 함수 */
-    private fun setUserData() {
-        if(sharedPreferences.getBoolean("isLogin", false))
+
+    //--------------------------------------------
+    // 내부 함수 영역 (옵저버 후속 작업)
+
+    /* 유저가 존재한다는 걸 확인한 뒤 후속 작업을 진행하는 함수 */
+    private fun doProperWorkAccordingToLoginState() {
+        if(sharedPreferences.getBoolean("isLogin", false)) //이전에 로그인 했으므로 그냥 메인 실행
             showMain(false)
         else { //새 로그인이므로 상태 저장 및 데이터 복원 실시
             sharedPreferences.edit().putBoolean("isLogin", true).apply()
@@ -107,18 +115,16 @@ class LoginActivity: AppCompatActivity() {
         }
     }
 
-    /* 로그인이 완료된 것을 확인했을 때 메인 화면을 실행하는 함수 */
+    /* 로그인이 완료된 것을 확인한 뒤 메인 화면을 실행하는 함수 */
     private fun showMain(newLogin: Boolean){
         //새 로그인
         if(newLogin) Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
 
         //메인화면 실행 및 현재 화면 종료
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        Intent(this, MainActivity::class.java).also{ startActivity(it); finish() }
     }
 
-    /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
+    /* 유저와 아이템 작업 진행 여부를 확인한 뒤 이에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(){
         if(userProgress || itemProgress) progressDialog.show() //둘 중 하나라도 진행 중
         else progressDialog.close()

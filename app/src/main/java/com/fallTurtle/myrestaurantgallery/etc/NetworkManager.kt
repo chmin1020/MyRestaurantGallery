@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.etc
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 
 /**
  * 네트워크 연결이 필요한 작업 시, 연결 상태를 확인하기 위한 객체
@@ -14,21 +13,15 @@ class NetworkManager(private val context: Context) {
         //인터넷 연결에 대한 속성을 관리하는 매니저 객체
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //최신버전
-            //현재 네트워크 연결 중이 아니거나, 네트워크가 인터넷 연결이 안되어 있으면 false
-            val currentActiveNet = connectivityManager.activeNetwork ?: return false
-            val netAbility = connectivityManager.getNetworkCapabilities(currentActiveNet) ?: return false
+        //현재 네트워크 연결 중이 아니거나, 네트워크가 인터넷 연결이 안되어 있으면 false
+        val currentActiveNet = connectivityManager.activeNetwork ?: return false
+        val netAbility = connectivityManager.getNetworkCapabilities(currentActiveNet) ?: return false
 
-            //와이파이 또는 셀룰러 네트워크를 통해 연결 중이라면 true
-            return when {
-                netAbility.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                netAbility.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
-
-        } else { //구버전 (deprecated)
-            val nwInfo = connectivityManager.activeNetworkInfo ?: return false
-            return nwInfo.isConnected
+        //와이파이 또는 셀룰러 네트워크를 통해 연결 중이라면 true
+        return when {
+            netAbility.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            netAbility.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
         }
     }
 }
