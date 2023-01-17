@@ -175,8 +175,8 @@ class MainActivity : AppCompatActivity() {
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(){
-        if(userProgress && itemProgress) progressDialog.show()
-        else progressDialog.close()
+        if(userProgress && itemProgress) progressDialog.create()
+        else progressDialog.destroy()
     }
 
     /* 유저와 아이템 작업 종료 시 액티비티를 종료하는 함수 */

@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.repository.GoogleMapRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

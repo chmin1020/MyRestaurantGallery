@@ -13,8 +13,8 @@ import com.fallTurtle.myrestaurantgallery.view_model.LocationSearchViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult
+import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
@@ -25,9 +25,6 @@ class LocationListActivity : AppCompatActivity(){
     //editText 키보드 관리자
     private val inputManager: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
-    //네트워크 연결 체크 관리자
-    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
-
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }
 
@@ -37,7 +34,7 @@ class LocationListActivity : AppCompatActivity(){
 
     //옵저버들
     private val searchObserver = Observer<List<LocationResult>> { taskWithResults(it) }
-    private val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+    private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
 
     //리사이클러뷰
     private val adapter =  LocationAdapter()
@@ -115,7 +112,7 @@ class LocationListActivity : AppCompatActivity(){
         hideKeyboard()
 
         //네트워크 상태에 따른 검색 작업 실시
-        if(networkManager.checkNetworkState())
+        if(NetworkWatcher.checkNetworkState(this))
             locationViewModel.searchLocationWithQuery(keyword, 1) //첫 페이지부터 검색
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()

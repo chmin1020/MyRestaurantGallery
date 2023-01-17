@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
-import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.view_model.MapViewModel
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,9 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions
  * 이 지도를 통해 검색으로 선택한 식당의 위치를 확인하거나, 현재 위치로 값을 지정할 수 있다.
  **/
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    //네트워크 연결 체크 매니저
-    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
-
     //뷰 바인딩
     private val binding:ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
 
@@ -70,7 +67,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         //지도를 불러오기 위해서는 네트워크 연결 필요함
-        if(!networkManager.checkNetworkState()){
+        if(!NetworkWatcher.checkNetworkState(this)){
             Toast.makeText(this, "네트워크를 연결해 주세요.", Toast.LENGTH_SHORT).show()
             finish()
         }
