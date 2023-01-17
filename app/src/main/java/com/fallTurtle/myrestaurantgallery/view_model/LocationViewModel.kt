@@ -6,21 +6,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
-import com.fallTurtle.myrestaurantgallery.repository.LocationRepository
+import com.fallTurtle.myrestaurantgallery.repository.location.LocationRepository
+import com.fallTurtle.myrestaurantgallery.repository.location.RetrofitLocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class LocationSearchViewModel(application: Application) : AndroidViewModel(application) {
+class LocationViewModel(application: Application) : AndroidViewModel(application) {
     //지역 검색 비즈니스 로직 리포지토리
-    private val searchRepository = LocationRepository()
+    private val searchRepository: LocationRepository = RetrofitLocationRepository()
 
-    //model 변화를 적용할 livedata. auto 변경하여 final 최종 적용
+
+    //----------------------------------------------------
+    // 라이브 데이터 프로퍼티 영역
+
+    //위치 검색 결과
     private val insideSearchResults = MutableLiveData<List<LocationResult>>()
     val searchResults: LiveData<List<LocationResult>> = insideSearchResults
 
-    //아이템 처리 진행 여부를 알려주는 boolean 프로퍼티
+    //진행 과정 여부
     private val insideProgressing = MutableLiveData(false)
     val progressing: LiveData<Boolean> = insideProgressing
+
+
+    //----------------------------------------------------
+    // 함수 영역 (위치 검색 작업)
 
     /* 인자대로 검색하여 결과를 livedata 내에 적용하는 함수 */
     fun searchLocationWithQuery(query: String, page: Int){

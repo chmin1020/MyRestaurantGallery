@@ -40,7 +40,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
 
 
     //--------------------------------------------
-    // 내부 함수 영역
+    // 함수 영역
 
     /* 리스트 내역을 새롭게 갱신하는 함수 */
     fun update(items : List<Info>?){

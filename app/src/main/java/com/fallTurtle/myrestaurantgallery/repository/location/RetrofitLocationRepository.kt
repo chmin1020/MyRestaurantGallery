@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.repository
+package com.fallTurtle.myrestaurantgallery.repository.location
 
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
@@ -9,7 +9,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class LocationRepository {
+/**
+ * Retrofit 통신을 통해 위치 검색을 수행하는 리포지토리.
+ * 통신 대상은 카카오 위치 검색 api.
+ **/
+class RetrofitLocationRepository: LocationRepository {
     /* Retrofit 객체는 singleton 유지 */
     companion object {
         private val retrofit by lazy {
@@ -21,8 +25,7 @@ class LocationRepository {
     }
 
     // 후에 http GET 요청을 보내기 위해 사용할 서비스 인터페이스 실현 객체
-    private val locationSearchAPI: LocationSearchInterface
-        by lazy { retrofit.create(LocationSearchInterface::class.java) }
+    private val locationSearchAPI by lazy { retrofit.create(LocationSearchInterface::class.java) }
 
     // 검색을 위한 설정 변수, 컬렉션
     private val searchTotalResults = mutableListOf<LocationResult>()
@@ -30,8 +33,11 @@ class LocationRepository {
     private var cafeFinish = false
 
 
+    //---------------------------------------------
+    // 오버라이딩 영역
+
     /* 식당과 카페를 포함한 전체 검색 결과를 반환하는 함수 */
-    suspend fun searchTotalInfo(query: String, page: Int):List<LocationResult> {
+    override suspend fun searchTotalInfo(query: String, page: Int):List<LocationResult> {
         if(page == 1)
             resetSearchSetting()
 
@@ -50,13 +56,31 @@ class LocationRepository {
         return searchTotalResults
     }
 
-    /* 쿼리에 해당하는 식당 리스트를 get */
+
+    //---------------------------------------------
+    // 내부 함수 영역 (검색 결과 저장 수행 관련)
+
+    /* 쿼리에 해당하는 식당 리스트를 얻는 함수 */
     private suspend fun searchRestaurantInfo(query: String, page: Int)
     = locationSearchAPI.getSearchLocationOfRestaurants(query = query, page = page)
 
-    /* 쿼리에 해당하는 카페 리스트를 get */
+    /* 쿼리에 해당하는 카페 리스트를 얻는 함수 */
     private suspend fun searchCafeInfo(query: String, page: Int)
     = locationSearchAPI.getSearchLocationOfCafe(query = query, page = page)
+
+    /* 검색 결과를 response 내에서 추출하여 리스트에 추가하는 함수 */
+    private fun extractResultsFromResponse(response: Response<LocationSearch>){
+        response.body()?.let { searchContent ->
+            searchContent.documents.forEach {
+                val locationPair = LocationPair(it.y.toDouble(), it.x.toDouble())
+                searchTotalResults.add(LocationResult(it.address_name, it.place_name, it.category_name, locationPair))
+            }
+        }
+    }
+
+
+    //---------------------------------------------
+    // 내부 함수 영역 (설정 관련)
 
     /* 검색 설정 초기화하는 함수 */
     private fun resetSearchSetting(){
@@ -69,13 +93,4 @@ class LocationRepository {
     private fun isSearchFinish(response: Response<LocationSearch>, searchEnd: Boolean)
         = response.isSuccessful && (searchEnd || (response.body()?.meta?.is_end ?: true))
 
-    /* 검색 결과를 response 내에서 추출하여 리스트에 추가하는 함수 */
-    private fun extractResultsFromResponse(response: Response<LocationSearch>){
-        response.body()?.let { searchContent ->
-            searchContent.documents.forEach {
-                val locationPair = LocationPair(it.y.toDouble(), it.x.toDouble())
-                searchTotalResults.add(LocationResult(it.address_name, it.place_name, it.category_name, locationPair))
-            }
-        }
-    }
 }

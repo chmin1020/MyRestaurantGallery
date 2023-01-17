@@ -18,6 +18,10 @@ class StorageRepository{
         }
     }
 
+    suspend fun clearAllImagesInStorage(deletingImageNames: List<String?>){
+        deletingImageNames.forEach { it?.let { name-> FirebaseUtils.getStorageRef().child(name).delete() }}
+    }
+
     suspend fun insertImage(imageName: String, uri: Uri){
         suspendCoroutine<Any?> { continuation ->
             storageRef.child(imageName).putFile(uri).addOnCompleteListener{ continuation.resume(null)}

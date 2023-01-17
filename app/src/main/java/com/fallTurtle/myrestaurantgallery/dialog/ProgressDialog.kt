@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.dialog
 
 import android.app.Dialog
 import android.content.Context
-import android.view.Window
 import com.fallTurtle.myrestaurantgallery.databinding.ProgressDialogBinding
 
 /**
@@ -17,12 +16,11 @@ class ProgressDialog(context: Context) {
 
 
     //-----------------------------------------
-    //내부 함수 영역 (대화 상자)
+    // 함수 영역 (대화 상자)
 
     fun create(){
+        //설정
         dialog.setContentView(binding.root)
-
-        //다이얼로그 크기 및 취소 설정
         dialog.setCancelable(false)
 
         dialog.show()
