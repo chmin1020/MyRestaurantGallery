@@ -7,7 +7,7 @@
 
         <variable
             name="locationResult"
-            type="com.fallTurtle.myrestaurantgallery.model.etc.LocationResult" />
+            type="com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult" />
     </data>
 
     <LinearLayout
