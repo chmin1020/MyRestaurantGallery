@@ -10,14 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 /**
  * 앱의 로그인 화면을 담당하는 액티비티.
- * 이 앱에서는 파이어베이스의 기능 중 하나인 구글 계정 연동을 사용한다.
- * 따라서 FirebaseAuth, 그 밖에 다른 연관된 작업을 통해 로그인 확인 및 통과 등을 수행한다.
+ * 로그인 작업을 수행할 수 있으며, 그 기능을 위한 수행은 최대한 뷰모델로 위임한다.
  **/
 class LoginActivity: AppCompatActivity() {
     //뷰 바인딩
@@ -28,7 +28,7 @@ class LoginActivity: AppCompatActivity() {
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
+    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java]}
 
     //옵저버들
@@ -50,9 +50,9 @@ class LoginActivity: AppCompatActivity() {
 
     //로그인 요청에 대한 결과를 가져오는 런처
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        userViewModel.getTokenForLogin(it.data)
+        getTokenForLogin(it.data)
             ?.let { token-> userViewModel.loginUser(token) } //성공 시 로그인
-            ?: run{ Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show() } //실패 시 메시지 출력
+            ?: run{ Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show()} //실패 시 메시지 출력
     }
 
 
@@ -79,7 +79,7 @@ class LoginActivity: AppCompatActivity() {
 
     /* 유저 뷰모델 옵저버를 설정하는 함수 */
     private fun setUserObserver(){
-        userViewModel.userState.observe(this, userExistObserver)
+        userViewModel.loginCompleteAnswer.observe(this, userExistObserver)
         userViewModel.workFinishFlag.observe(this, userProgressObserver)
     }
 
@@ -91,14 +91,35 @@ class LoginActivity: AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 내부 함수 영역 (로그인)
+    // 내부 함수 영역 (구글 로그인)
+    // <<뷰 영역에 맞지 않으나 인텐트 작업의 존재로 분리가 어려움>>
 
     /* (구글)로그인을 위해 런처로 인텐트를 실행하는 함수 */
     private fun trySignIn(){
+        //구글 로그인을 위한 인텐트 생성
         val signInIntent = GoogleSignIn
-                            .getClient(this, userViewModel.getOptionForLogin(getString(R.string.firebase_client_id)))
+                            .getClient(this, getOptionForLogin(getString(R.string.firebase_client_id)))
                             .signInIntent
+
+        //인텐트 결과에 따른 후속 동작을 하는 런처를 통해 실행
         getSignLauncher.launch(signInIntent)
+    }
+
+    /* (구글)로그인을 위해 요청에 대응되는 로그인 옵션을 반환하는 함수 */
+    private fun getOptionForLogin(request: String): GoogleSignInOptions{
+        return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(request).requestEmail().build()
+    }
+
+    /* (구글)로그인을 위해 요청에 대응되는 로그인 토큰을 반환하는 함수 */
+    private fun getTokenForLogin(result: Intent?): String?{
+        return try {
+            //받은 결과의 아이디 토큰을 통해 파이어베이스 인증 시도
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result)
+            val account = task.result ?: throw NullPointerException()
+            account.idToken ?: throw NullPointerException()
+        }
+        catch (e: Exception) { null }
     }
 
 

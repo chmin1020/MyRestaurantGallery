@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fallTurtle.myrestaurantgallery.view_model.LocationSearchViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.LocationViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
@@ -30,7 +30,7 @@ class LocationListActivity : AppCompatActivity(){
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationSearchViewModel::class.java] }
+    private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationViewModel::class.java] }
 
     //옵저버들
     private val searchObserver = Observer<List<LocationResult>> { taskWithResults(it) }

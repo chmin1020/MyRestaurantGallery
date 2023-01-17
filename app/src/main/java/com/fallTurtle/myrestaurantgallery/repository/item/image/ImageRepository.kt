@@ -11,6 +11,10 @@ class ImageRepository(localPath: String, resolver: ContentResolver) {
         localImageRepository.clearSavedImages()
     }
 
+    suspend fun clearRemoteImages(deletingImages: List<String?>){
+        storageRepository.clearAllImagesInStorage(deletingImages)
+    }
+
     suspend fun restoreLocalImages(){
         val loadResult = storageRepository.getAllImagesInStorage()
         loadResult?.let { localImageRepository.restoreImages(it) }

@@ -23,7 +23,7 @@ class ImgDialog(context: Context) {
 
 
     //-----------------------------------------
-    //내부 함수 영역 (대화 상자)
+    // 함수 영역 (대화 상자)
 
     /* 이미지 다이얼로그를 보여주는 함수 */
     fun create(){
@@ -48,7 +48,7 @@ class ImgDialog(context: Context) {
 
 
     //-------------------------------
-    // 내부 함수 영역 (선택 리스너 설정)
+    // 함수 영역 (선택 리스너 설정)
 
     /* 다이얼로그의 첫번째 선택지 (갤러리에서 가져오기) 리스너를 설정하는 함수 */
     fun setOnGalleryClickListener(listener: View.OnClickListener){

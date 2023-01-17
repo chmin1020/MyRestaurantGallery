@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.repository
+package com.fallTurtle.myrestaurantgallery.repository.map
 
 import android.Manifest
 import android.app.Application
@@ -15,15 +15,24 @@ import com.google.android.gms.tasks.Task
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class GoogleMapRepository(application: Application) {
+/**
+ * Google 맵 관련 기능을 수행하는 리포지토리.
+ * 구글 맵 api 방식으로 맵 관련 기능을 구현한다.
+ **/
+class GoogleMapRepository(application: Application): MapRepository {
+    //객체 생성 및 권한 체크 시 필요한 콘텍스트
     private val context = application.baseContext
 
+    //위치를 얻게 도와주는 클라이언트 객체
     private val locationClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(context) }
     private val geocoder: Geocoder by lazy { Geocoder(context) }
 
 
+    //----------------------------------------------
+    // 오버라이딩 영역
+
     /* 현재 위치를 가지고 오는 함수 */
-    suspend fun requestCurrentLocation(): LocationPair? {
+    override suspend fun requestCurrentLocation(): LocationPair? {
         return suspendCoroutine { continuation->
             if (checkMapPermission()) {
                 val locationTask = locationClient.getCurrentLocation(PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token)
@@ -39,7 +48,7 @@ class GoogleMapRepository(application: Application) {
     }
 
     /* 좌표를 주소로 변환하는 함수 */
-    fun requestCurrentAddress(location: LocationPair) : String{
+    override fun requestCurrentAddress(location: LocationPair) : String{
         val addressMaker = StringBuilder()
 
         //geocoder 객체를 통해 현재 위도와 경도로 주소 받아오기 시도
@@ -57,6 +66,9 @@ class GoogleMapRepository(application: Application) {
         return addressMaker.toString()
     }
 
+
+    //----------------------------------------------
+    // 내부 함수 영역
 
     /* 지도 관련 권한을 확인하는 함수 */
     private fun checkMapPermission() : Boolean {

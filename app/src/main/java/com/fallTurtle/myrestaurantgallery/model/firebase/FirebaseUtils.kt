@@ -15,7 +15,7 @@ object FirebaseUtils {
     private lateinit var storageRef: StorageReference
 
     /* 현재 유저 정보를 새롭게 갱신하는 함수 */
-    fun updateUser(){
+    fun updateUserState(){
         curUser = mAuth.currentUser
         val id = curUser?.email.toString()
         storeRef = Firebase.firestore.collection("users").document(id)

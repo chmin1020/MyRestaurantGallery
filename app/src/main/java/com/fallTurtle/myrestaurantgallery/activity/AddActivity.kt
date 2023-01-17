@@ -34,7 +34,7 @@ import java.util.Date
  * 이 액티비티에서는 새로운 맛집 정보를 저장하거나 기존 내용을 수정하게 해준다.
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
-class AddActivity : AppCompatActivity(){
+class  AddActivity : AppCompatActivity(){
     //바인딩
     private val binding:ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 

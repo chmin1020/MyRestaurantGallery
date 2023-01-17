@@ -28,6 +28,12 @@ class ItemRepository(application: Application) {
         imageRepository.clearLocalImages()
     }
 
+    suspend fun remoteItemClear(){
+        val deletingItems = dataRepository.getAllItems()
+        dataRepository.clearRemoteData(deletingItems.map { it.dbID })
+        imageRepository.clearRemoteImages(deletingItems.map { it.image })
+    }
+
     /* 아이템 삽입 이벤트를 정의한 함수 */
     suspend fun itemInsert(item: Info, uri: Uri?, preImageName: String?) {
         dataRepository.insertData(item)

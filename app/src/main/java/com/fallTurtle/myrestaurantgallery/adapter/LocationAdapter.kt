@@ -48,7 +48,7 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
 
 
     //--------------------------------------------
-    // 내부 함수 영역
+    // 함수 영역
 
     /* 새로운 검색을 하기 위한 설정 초기화 함수 */
     fun searchSettingReset(keyword: String){

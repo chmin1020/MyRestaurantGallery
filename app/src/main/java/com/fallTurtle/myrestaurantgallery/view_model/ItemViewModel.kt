@@ -15,20 +15,29 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     //데이터 비즈니스 로직 리포지토리
     private val itemRepository = ItemRepository(application)
 
-    //아이템 리스트 상태 live data -> 기본적으로 room 데이터 참조
+
+    //----------------------------------------------------
+    // 라이브 데이터 프로퍼티 영역
+
+    //아이템 리스트 상태 live data -> 로컬 데이터 참조
     private val insideDataItems = MutableLiveData<List<Info>>()
     val dataItems: LiveData<List<Info>> = insideDataItems
 
-    //아이템 처리 진행 여부를 알려주는 boolean 프로퍼티
+    //아이템 처리 진행 여부를 알려주는 boolean live data
     private val insideProgressing = MutableLiveData(false)
     val progressing: LiveData<Boolean> = insideProgressing
 
-    //아이템 처리를 한 이후 해당 화면은 종료됨
+    //아이템 작업 완료를 알리는 플래그 boolean live data
     private val insideWorkFinishFlag = MutableLiveData(false)
     val workFinishFlag: LiveData<Boolean> = insideWorkFinishFlag
 
+    //하나의 아이템 정보를 필요로 할 때, 그것을 가지고 오는 item live data
     private val insideSelectedItem = MutableLiveData<Info>()
     val selectedItem: LiveData<Info> = insideSelectedItem
+
+
+    //----------------------------------------------------
+    // 내부 함수 영역 (아이템 작업)
 
     /* DB primary key(id)에 따른 적절한 아이템을 선택하는 함수 */
     fun setProperItem(id: String){
@@ -54,6 +63,15 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.localItemClear()
+            insideProgressing.postValue(false)
+            insideWorkFinishFlag.postValue(true)
+        }
+    }
+
+    fun clearAllRemoteItems(){
+        viewModelScope.launch(Dispatchers.IO){
+            insideProgressing.postValue(true)
+            itemRepository.remoteItemClear()
             insideProgressing.postValue(false)
             insideWorkFinishFlag.postValue(true)
         }

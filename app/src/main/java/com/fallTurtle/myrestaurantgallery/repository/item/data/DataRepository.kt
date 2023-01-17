@@ -15,6 +15,10 @@ class DataRepository(application: Application) {
         roomRepository.clearSavedData()
     }
 
+    suspend fun clearRemoteData(deletingItemIds: List<String>?){
+        fireStoreRepository.clearAllDataInStore(deletingItemIds)
+    }
+
     suspend fun restoreLocalData(){
         val loadResult = fireStoreRepository.getAllDataInStore()
         loadResult?.let { it.forEach { each -> roomRepository.insertData(each.toObject(Info::class.java)) } }

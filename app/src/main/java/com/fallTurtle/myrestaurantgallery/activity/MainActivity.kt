@@ -16,7 +16,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.model.room.Info
-import com.fallTurtle.myrestaurantgallery.view_model.FirebaseUserViewModel
+import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
-    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[FirebaseUserViewModel::class.java] }
+    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
 
     //옵저버들
     private val itemsObserver = Observer<List<Info>> { itemsAdapter.update(it) }
@@ -191,7 +191,8 @@ class MainActivity : AppCompatActivity() {
     private fun withdrawCurrentUser(){
         endToastMessage = R.string.withdrawal_success
         sharedPreferences.edit().putBoolean("isLogin", false).apply()
-        userViewModel.withdrawUser(itemViewModel.dataItems.value)
+        itemViewModel.clearAllRemoteItems()
         itemViewModel.clearAllLocalItems()
+        userViewModel.withdrawUser()
     }
 }
