@@ -15,7 +15,7 @@ class ProgressDialog(context: Context) {
     //다이얼로그 객체
     private val dialog = Dialog(context)
 
-    
+
     //-----------------------------------------
     //내부 함수 영역 (대화 상자)
 
