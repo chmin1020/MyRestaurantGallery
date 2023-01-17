@@ -9,20 +9,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
 import com.fallTurtle.myrestaurantgallery.databinding.MapListBinding
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
 
 /**
  * 위치 정보 검색 결과에 대한 리스트를 위한 recyclerView 전용 어댑터
  **/
 class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
+    //리사이클러뷰를 이루는 리스트 데이터를 저장하는 컬렉션
     private val itemList: MutableList<LocationResult> = mutableListOf()
 
+    //검색할 페이지와 키워드
     var currentPage = 1
-        private set
-    var isEnd = false
         private set
     var currentKeyword = ""
         private set
+
+    //검색해도 더 나오는 내용이 없는지 여부 (검색 끝)
+    var isEnd = false
+        private set
+
 
     //--------------------------------------------
     // 리사이클러뷰 필수 오버라이딩 함수 영역
@@ -45,16 +50,19 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     //--------------------------------------------
     // 내부 함수 영역
 
+    /* 새로운 검색을 하기 위한 설정 초기화 함수 */
     fun searchSettingReset(keyword: String){
         currentPage = 1 //페이지 초기화
         currentKeyword = keyword //현재 검색 키워드 백업
         isEnd = false //리스트 검색 활동 초기화
     }
 
+    /* 연속 검색을 위해 검색 페이지를 증가시키는 함수 */
     fun readyToNextPage(){
         currentPage++
     }
 
+    /* 리스트 내역을 새롭게 갱신하는 함수 */
     fun update(items: List<LocationResult>?) {
         if(items?.size == itemCount) isEnd = true
 

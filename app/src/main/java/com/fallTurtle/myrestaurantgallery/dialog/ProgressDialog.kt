@@ -7,25 +7,28 @@ import com.fallTurtle.myrestaurantgallery.databinding.ProgressDialogBinding
 
 /**
  * 무언가 진행 중 임을 나타내는 다이얼로그 클래스.
- * 프로그레스 원 표시만 하면 크게 더 할 것은 없다.
  **/
 class ProgressDialog(context: Context) {
-
-    //binding
-    private val dialog = Dialog(context)
+    //뷰 바인딩
     private val binding by lazy { ProgressDialogBinding.inflate(dialog.layoutInflater) }
 
-    init {
-        dialog.setCancelable(false) //사용자가 임의로 취소 x
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(binding.root)
-    }
+    //다이얼로그 객체
+    private val dialog = Dialog(context)
 
-    fun show(){
+    
+    //-----------------------------------------
+    //내부 함수 영역 (대화 상자)
+
+    fun create(){
+        dialog.setContentView(binding.root)
+
+        //다이얼로그 크기 및 취소 설정
+        dialog.setCancelable(false)
+
         dialog.show()
     }
 
-    fun close(){
-        dialog.cancel()
+    fun destroy(){
+        dialog.dismiss()
     }
 }

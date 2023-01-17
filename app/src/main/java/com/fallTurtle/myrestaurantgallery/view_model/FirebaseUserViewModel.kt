@@ -33,7 +33,7 @@ class FirebaseUserViewModel(application: Application) : AndroidViewModel(applica
     fun loginUser(idToken: String){
         viewModelScope.launch {
             insideProgressing.postValue(true)
-            userRepository.finalLoginWithCredential(idToken)
+            userRepository.loginUser(idToken)
             insideProgressing.postValue(false)
         }
     }

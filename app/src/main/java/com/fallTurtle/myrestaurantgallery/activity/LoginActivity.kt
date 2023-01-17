@@ -126,7 +126,7 @@ class LoginActivity: AppCompatActivity() {
 
     /* 유저와 아이템 작업 진행 여부를 확인한 뒤 이에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(){
-        if(userProgress || itemProgress) progressDialog.show() //둘 중 하나라도 진행 중
-        else progressDialog.close()
+        if(userProgress || itemProgress) progressDialog.create() //둘 중 하나라도 진행 중
+        else progressDialog.destroy()
     }
 }

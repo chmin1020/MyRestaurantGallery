@@ -42,7 +42,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
     //--------------------------------------------
     // 내부 함수 영역
 
-    /* 리사이클러뷰 내부 아이템 리스트를 갱신하는 함수 (diffUtil 이용) */
+    /* 리스트 내역을 새롭게 갱신하는 함수 */
     fun update(items : List<Info>?){
         items?.let {
             //기존 리스트와 새 리스트 차이점을 파악하기 위한 diff 연산

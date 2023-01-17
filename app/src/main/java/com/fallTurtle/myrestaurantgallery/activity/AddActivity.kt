@@ -19,8 +19,8 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.NetworkManager
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.text.SimpleDateFormat
@@ -38,15 +38,12 @@ class AddActivity : AppCompatActivity(){
     //바인딩
     private val binding:ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
-    //네트워크 연결 체크 매니저
-    private val networkManager: NetworkManager by lazy { NetworkManager(this) }
-
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
     //옵저버
-    private val progressObserver = Observer<Boolean> { if(it) progressDialog.show() else progressDialog.close() }
+    private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
     private val finishObserver = Observer<Boolean> { if(it) finish() }
     private val selectedItemObserver = Observer<Info> { setContentsWithItem(it) }
 
@@ -173,14 +170,14 @@ class AddActivity : AppCompatActivity(){
             //갤러리에서 사진 가져오는 것을 선택했다면
             imgDlg.setOnGalleryClickListener {
                 Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImg.launch(it) }
-                imgDlg.closeDialog()
+                imgDlg.destroy()
             }
 
             //기본 그림 이미지 사용을 선택했다면
             imgDlg.setOnDefaultClickListener {
                 curImgName = null
                 selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
-                imgDlg.closeDialog()
+                imgDlg.destroy()
             }
 
             //설정한 다이얼로그 생성
@@ -218,7 +215,7 @@ class AddActivity : AppCompatActivity(){
             = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
         //네트워크 연결 상태라면 저장과정 실행
-        if(networkManager.checkNetworkState()) {
+        if(NetworkWatcher.checkNetworkState(this)) {
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {

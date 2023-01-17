@@ -129,8 +129,8 @@ class RecordActivity : AppCompatActivity() {
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
     private fun decideShowLoading(yes: Boolean){
-        if(yes) progressDialog.show()
-        else progressDialog.close()
+        if(yes) progressDialog.create()
+        else progressDialog.destroy()
     }
 
     /* 삭제 작업이 끝난 것을 확인 후 현재 화면을 종료하는 함수 */

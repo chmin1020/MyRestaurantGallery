@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.model.retrofit.etc
+package com.fallTurtle.myrestaurantgallery.model.retrofit.value_object
 
 /**
  * 각 식당에 대한 정보 중 리스트에 필요한 것을 담는 데이터 클래스.

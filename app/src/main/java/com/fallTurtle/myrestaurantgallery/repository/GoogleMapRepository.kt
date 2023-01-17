@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import androidx.core.app.ActivityCompat
-import com.fallTurtle.myrestaurantgallery.model.retrofit.etc.LocationPair
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices

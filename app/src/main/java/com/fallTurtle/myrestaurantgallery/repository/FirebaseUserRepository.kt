@@ -40,7 +40,7 @@ class FirebaseUserRepository {
     }
 
     /* 토큰으로 인증을 통한 최종 로그인을 시도하는 함수 */
-    suspend fun finalLoginWithCredential(idToken: String){
+    suspend fun loginUser(idToken: String){
         withContext(Dispatchers.IO) {
             //Token 보내서 credential 받고 인증 시도 (성공 시 job 실행)
             val credential = GoogleAuthProvider.getCredential(idToken, null)

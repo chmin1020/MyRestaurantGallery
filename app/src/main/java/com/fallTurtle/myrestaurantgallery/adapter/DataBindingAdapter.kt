@@ -6,7 +6,14 @@ import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 import java.io.File
 
+
+/**
+ * 데이터 바인딩 작업 시 추가적으로 필요한 바인딩 어댑터 함수들을 모아 놓은 object.
+ **/
 object DataBindingAdapter {
+    //-------------------------------------------------------
+    //이미지뷰에 적절한 이미지를 적용하기 위한 어댑터 함수
+
     @BindingAdapter(value=["imagePath", "categoryNum"])
     @JvmStatic
     fun loadImage(imageView: ImageView, path: String?, categoryNum: Int){
@@ -19,25 +26,7 @@ object DataBindingAdapter {
         } ?: setDefaultImage(imageView, categoryNum)
     }
 
-    @BindingAdapter(value = ["intNumberForText"])
-    @JvmStatic
-    fun setTextWithInt(textView: TextView, number: Int){
-        textView.text = number.toString()
-    }
-
-    //////////////////////////////////////////////////
-
-    @BindingAdapter("entries")
-    @JvmStatic
-    fun Spinner.setEntries(entries: Array<String>?) {
-            entries?.let{
-                val arrayAdapter = ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, it)
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                adapter = arrayAdapter
-            }
-    }
-
-
+    /*기본 이미지 로드를 위한 내부 함수*/
     private fun setDefaultImage(imageView: ImageView, categoryNum: Int){
         when (categoryNum) {
             0 -> imageView.setImageResource(R.drawable.korean_food)
@@ -48,5 +37,29 @@ object DataBindingAdapter {
             5 -> imageView.setImageResource(R.drawable.drink)
             6 -> imageView.setImageResource(R.drawable.etc)
         }
+    }
+
+
+    //-------------------------------------------------------
+    //텍스트뷰에 적절한 정수를 문자열 형태로 적용하기 위한 어댑터 함수
+
+    @BindingAdapter(value = ["intNumberForText"])
+    @JvmStatic
+    fun setTextWithInt(textView: TextView, number: Int){
+        textView.text = number.toString()
+    }
+
+
+    //-------------------------------------------------------
+    //스피너에 적절한 배열을 적용한 어댑터를 연결하기 위한 어댑터 함수
+
+    @BindingAdapter("entries")
+    @JvmStatic
+    fun Spinner.setEntries(entries: Array<String>?) {
+            entries?.let{
+                val arrayAdapter = ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, it)
+                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                adapter = arrayAdapter
+            }
     }
 }
