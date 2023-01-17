@@ -47,6 +47,10 @@
     <string name="current_location">현위치 선택</string>
 
     <!--이미지 설명-->
+    <string name="current_gps_pictogram_description">current gps pictogram</string>
+    <string name="back_pictogram_description">back pictogram</string>
+    <string name="search_pictogram_description">search pictogram</string>
+    <string name="calendar_pictogram_description">calendar pictogram</string>
     <string name="item_image_description">Each Image about the restaurant</string>
     <string name="rating_star_description">rating star symbol for each item</string>
 
