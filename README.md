@@ -9,10 +9,18 @@
 
 이러한 저장 내용들을 언제든지 백업해놨다가 다시 가져올 수 있게 하기 위해서, 이 앱을 사용할 때는 구글 계정을 통해 로그인을 해야하도록 조치했습니다. 이에 따라 회원탈퇴를 하지 않았다면 나중에 앱을 다시 깔거나 다른 기기로 변경했더라도 언제든지 기존에 사용하던 정보를 가져올 수 있습니다.
 
-이런 기능을 제공하기 위해서는 정보를 저장하기 위한 데이터베이스, 각 저장된 정보들을 백업하고 불러오기 위한 계정 연동, 식당 위치 검색을 위한 네트워크 검색 API 등이 필요했습니다. 이에 따라 Firebase의 구글 계정 연동과 데이터베이스, Retrofit2을 통한 카카오 맵 API 통신 등을 활용했습니다.
+이런 기능을 제공하기 위해서는 정보를 저장하기 위한 데이터베이스, 각 저장된 정보들을 백업하고 불러오기 위한 계정 연동, 식당 위치 검색을 위한 네트워크 검색 API 등이 필요했습니다. 이에 따라 Firebase의 구글 계정 연동과 데이터베이스, 로컬 DB를 위한 room 데이터베이스, Retrofit2을 통한 카카오 맵 API 통신 등을 활용했습니다.
 각 코드의 구조와 내부 사용 기술들, 그리고 그 목적 등은 아래에서 자세히 후술합니다.
 
 
+MyRestaurantGallery is an android application which allows you to save impressive restaurant information that you know as list forms.
+You can save data such as date, name, location, image, and simple memo as one information item, and you can use GPS on the map interface for getting location.
+This information are displayed as simple form list that have (image, name, category, rate) in it. You can show each information by clicking each item in the list, or edit saved information by clicking the edit button. If you don't designate a proper image for your item, the app provides default images automatically. You can check how those functions work in the real app environment with screenshot images down below :)
+
+In order to back up and restore those saved contents, I make the app user must login for using this app by google authentications. Thanks to that, you can restore your old saved data when you install this app again later except the situation that you already withdrew your account.
+
+For providing those functions to users, I needed database for saving information, authentication system for back up those data, and network searching API for location search of restaurants. So I applied authentication and database of Firebase, room database for local DB, and kakao map API with Retrofit2 interface on this app.
+You can check structure of code, used API for this app, each purpose of API, etc down below.
 
 ## 코드 구조와 기술
 
@@ -20,15 +28,15 @@
 
 ![액티비티 구조](https://user-images.githubusercontent.com/70795841/213671439-c58c5c70-569e-4cf2-afb2-6b5e52a65fea.PNG)
 
-* __LoginActivity__: 기본 시작 액티비티이며 구글 로그인 기능을 제공한다. 이미 로그인 정보가 있다면 바로 Main 화면으로 넘어간다.
-* __MainActivity__: 메인 액티비티로서 항목 확인 및 검색, 메뉴를 통해 항목 추가나 로그아웃 등의 행위가 가능하다.
-* __AddActivity__: 항목을 추가하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름, 지역 등의 정보를 추가하여 저장할 수 있다.
+* __LoginActivity__: 시작 액티비티이며 구글 로그인 기능을 제공한다. 이미 로그인 정보가 있다면 바로 Main 화면으로 넘어간다.
+* __MainActivity__: 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
+* __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름, 지역 등의 정보를 추가하여 저장할 수 있다.
 * __RecordActivity__: 이미 저장되어 있는 항목을 확인할 때 나타나며, AddActivity와 유사하지만 수정 기능을 제공하지 않는다.
 * __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있고, GPS를 통해 현재 위치를 선택하는 것도 가능하다.
 * __LocationListActivity__: 카카오 맵 API를 사용하여 식당의 이름을 검색 및 선택할 수 있으며, MapActivity에서 버튼을 눌러 진입할 수 있다.
 
 **사용 기술 요소**
-* 코딩언어로는 코틀린 활용. 최소 버전 25, 타겟 버전 32.
+* 코딩언어로는 코틀린 활용. (앱 버전 -> 최소 버전 25, 타겟 버전 32)
 * 간단한 기능을 제공하는 앱의 특성상, 컴포넌트로는 다수의 액티비티만 사용함.
 * 맛집의 위치 지정을 편하게 할 수 있도록 지도 및 위치 검색 기능을 추가함. 이를 위해 Retrofit을 통해 구글 및 카카오 맵 API를 활용함.
 * 구글 계정 연동 및 데이터 저장을 위해서는 구글이 제공하는 FireBase의 Authentication, FireStore, Storage를 활용함.
