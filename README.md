@@ -22,7 +22,8 @@ In order to back up and restore those saved contents, I make the app user must l
 For providing those functions to users, I needed database for saving information, authentication system for back up those data, and network searching API for location search of restaurants. So I applied authentication and database of Firebase, room database for local DB, and kakao map API with Retrofit2 interface on this app.
 You can check structure of code, used API for this app, each purpose of API, etc down below.
 
-## 코드 구조와 기술
+
+## 코드 구조와 기술 Code structure and API
 
 **구성 액티비티**
 
@@ -47,13 +48,20 @@ You can check structure of code, used API for this app, each purpose of API, etc
 				 MVVM 패턴, Repository 패턴 추가 활용
 
 
-## 사용 방법
+## 사용 방법 How to use
+
+**앱 사용**
+데이터와 이미지를 백업하기 위해 사용한 파이어베이스의 요금제로 인해 따로 구글 플레이 스토어에 배포하지 않음.
+현재는 코드를 받아서 테스트를 통해서만 실행 가능.
+
+Sadly, I can't release this app on google play store because I use Firebase for back up data and images. (Firebase is not free for big data)
+So this app only can be installed by code test for now :(
 
 **앱 화면 예시**
-
 ![mainActivity](https://user-images.githubusercontent.com/70795841/193832432-3fce3a07-5e92-4f25-84e4-536e468fffda.jpg)
 ![mapActivity](https://user-images.githubusercontent.com/70795841/193832437-0779f411-da09-451d-944f-4f9faeecd847.jpg)
 ![addActivity](https://user-images.githubusercontent.com/70795841/193832441-ec87bd04-b683-457c-bdc7-daf41035fcc0.jpg)
 ![locationListAcitivity](https://user-images.githubusercontent.com/70795841/193832443-9c3ee110-ec18-4abc-9b56-99a0ce76f324.jpg)
 
 순서대로 메인화면, 지도화면, 항목추가화면, 지역검색화면의 모습
+
