@@ -51,6 +51,7 @@ You can check structure of code, used API for this app, each purpose of API, etc
 ## 사용 방법 How to use
 
 **앱 사용**
+
 데이터와 이미지를 백업하기 위해 사용한 파이어베이스의 요금제로 인해 따로 구글 플레이 스토어에 배포하지 않음.
 현재는 코드를 받아서 테스트를 통해서만 실행 가능.
 
@@ -58,6 +59,7 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 So this app only can be installed by code test for now :(
 
 **앱 화면 예시**
+
 ![mainActivity](https://user-images.githubusercontent.com/70795841/193832432-3fce3a07-5e92-4f25-84e4-536e468fffda.jpg)
 ![mapActivity](https://user-images.githubusercontent.com/70795841/193832437-0779f411-da09-451d-944f-4f9faeecd847.jpg)
 ![addActivity](https://user-images.githubusercontent.com/70795841/193832441-ec87bd04-b683-457c-bdc7-daf41035fcc0.jpg)
