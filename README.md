@@ -2,7 +2,7 @@
  
 ## 개요 overview
 
-맛집갤러리는 본인이 즐겨 다니거나 인상깊었던 맛집의 정보를 리스트의 형태로 저장할 수 있는 안드로이드 애플리케이션입니다.
+__맛집갤러리__ 는 본인이 즐겨 다니거나 인상깊었던 맛집의 정보를 리스트의 형태로 저장할 수 있는 안드로이드 애플리케이션입니다.
 식당에 방문한 날짜, 식당 이름, 위치, 이미지, 간단한 메모 등을 하나의 정보로 저장할 수 있으며, 위치 지정을 위해 gps를 통한 지도 인터페이스를 사용할 수 있습니다.
 이렇게 저장된 정보들은 (사진, 이름, 카테고리, 별점)의 간단한 정보로 표시한 틀을 토대로 리스트 형태로 표시됩니다. 여기서 각각의 정보를 눌러서 저장한 정보를 확인할 수 있고,
 수정 버튼을 눌러 내용을 변경할 수 있습니다. 사진을 따로 저장하지 않은 정보에는 기본 이미지가 제공됩니다. 각 앱이 어떤 방식으로 이러한 기능들은 제공하는지는 아래의 몇몇 스크린샷 이미지로 확인하실 수 있습니다.
@@ -13,7 +13,7 @@
 각 코드의 구조와 내부 사용 기술들, 그리고 그 목적 등은 아래에서 자세히 후술합니다.
 
 
-MyRestaurantGallery is an android application which allows you to save impressive restaurant information that you know as list forms.
+__MyRestaurantGallery__ is an android application which allows you to save impressive restaurant information that you know as list forms.
 You can save data such as date, name, location, image, and simple memo as one information item, and you can use GPS on the map interface for getting location.
 This information are displayed as simple form list that have (image, name, category, rate) in it. You can show each information by clicking each item in the list, or edit saved information by clicking the edit button. If you don't designate a proper image for your item, the app provides default images automatically. You can check how those functions work in the real app environment with screenshot images down below :)
 
