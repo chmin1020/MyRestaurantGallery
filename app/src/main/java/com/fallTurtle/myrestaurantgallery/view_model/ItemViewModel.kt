@@ -37,7 +37,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
 
 
     //----------------------------------------------------
-    // 내부 함수 영역 (아이템 작업)
+    // 함수 영역 (아이템 작업)
 
     /* DB primary key(id)에 따른 적절한 아이템을 선택하는 함수 */
     fun setProperItem(id: String){

@@ -10,8 +10,7 @@ import kotlin.coroutines.suspendCoroutine
 class FireStoreRepository {
     private fun collectionRef(): CollectionReference = FirebaseUtils.getStoreRef().collection("restaurants")
 
-    suspend fun clearAllDataInStore(deletingItemIds: List<String>?){
-        //현재 유저의 저장 데이터 각각 제거(Firestore 특성 상)
+   fun clearAllDataInStore(deletingItemIds: List<String>?){
         deletingItemIds?.forEach { collectionRef().document(it).delete() }
     }
 
