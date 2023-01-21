@@ -25,7 +25,7 @@ You can check structure of code, used API for this app, each purpose of API, etc
 
 ## 코드 구조와 기술 Code structure and API
 
-**코드 개요**
+<span style="color:brown;">**코드 개요**</span>
 * 코딩언어로는 코틀린 활용. (앱 버전 -> 최소 버전 25, 타겟 버전 32)
 * 간단한 기능을 제공하는 앱의 특성상, 컴포넌트로는 다수의 액티비티만 사용함.
 * 맛집의 위치 지정을 편하게 할 수 있도록 지도 및 위치 검색 기능을 추가함. 이를 위해 Retrofit을 통해 구글 및 카카오 맵 API를 활용함.
@@ -37,7 +37,7 @@ You can check structure of code, used API for this app, each purpose of API, etc
 				 MVVM 패턴, Repository 패턴 추가 활용
 
 
-**구성 액티비티**
+<span style="color:brown;">**구성 액티비티**</span>
 
 ![액티비티 구조](https://user-images.githubusercontent.com/70795841/213671439-c58c5c70-569e-4cf2-afb2-6b5e52a65fea.PNG)
 
@@ -49,14 +49,13 @@ You can check structure of code, used API for this app, each purpose of API, etc
 * __LocationListActivity__: 카카오 맵 API를 사용하여 식당의 이름을 검색 및 선택할 수 있으며, MapActivity에서 버튼을 눌러 진입할 수 있다.
 
 
-**코드 레이어**
+<span style="color:brown;">**코드 레이어**</span>
 
 ![코드 아키텍처](https://user-images.githubusercontent.com/70795841/213847084-2a92b974-9b6b-460e-a65b-b01946a794e3.PNG)
 
 코드의 디자인패턴은 View, ViewModel, Model로 분리되는 MVVM 구조를 기본적으로 사용했습니다. 여기에 Repository 패턴을 추가하여 비즈니스 로직 부분을 더 세부화했습니다.
 
-__ViewModel__
-
+___ViewModel___
 이 프로젝트에서 사용된 데이터는 크게 유저, 아이템(식당 정보), 지도, 위치 검색과 관련이 있습니다. 초기 앱 버전에서는 이러한 데이터의 처리를 해당하는 액티비티 코드 내부에서 처리했습니다. 하지만 이에 따라 액티비티가 맡은 역할이 비대해져서 코드의 세부 사항을 수정할 때 어려움이 생긴다는 것을 느꼈습니다. 이에 따라 각 데이터 처리 부분을 대신 처리해주는 뷰모델을 만들어서 각 객체의 역할을 보다 더 명확하게 하고자 했습니다.
 
 ViewModel은 위에서 말한 데이터 종류에 따라 4가지로 나뉩니다. 액티비티들은 화면에서 필요로 하는 데이터에 따라 해당하는 뷰모델 객체의 데이터를 관찰합니다. 사용자의 입력에 따라 데이터를 처리해야 할 일이 생기면 액티비티에서 뷰모델에게 작업을 요청하고 뷰모델은 그 작업을 실행합니다. 액티비티는 데이터의 변화를 관찰하고 변경 내용을 가져옵니다.
@@ -64,8 +63,7 @@ ViewModel은 위에서 말한 데이터 종류에 따라 4가지로 나뉩니다
 이러한 기능 수행을 위해 Android AAC의 ViewModel, LiveData를 활용하였으며 일부 액티비티에서는 자동적인 데이터 표시를 위해 Databinding을 활용했습니다.
 
 
-__Repository__
-
+___Repository___
 뷰모델은 실질적인 비즈니스 로직 처리를 담당하기 때문에 데이터를 다루는 모델 부분과 접촉할 필요가 있습니다. 이 앱에서는 해당 데이터를 위해서 이미지대로 Firebase, Room, GoogleMap, Retrofit + Kakao Map API를 사용했습니다. 하지만 때에 따라 모델을 위해 사용하는 API를 수정할 시 Activity가 관찰하는 뷰모델의 코드도 함께 변경하는 것은 액티비티에도 영향을 미칠 수 있을 것이라 생각했습니다. 
 
 따라서 뷰와 인터페이스의 형식으로 연결되는 repository를 만들어서, 혹시나 새로운 API를 사용하게 되더라도 해당 인터페이스로 리포지토리를 구현하여 view와 viewmodel에는 영향이 가지 않도록 조치했습니다.
@@ -73,8 +71,7 @@ __Repository__
 위 이미지에 묘사된 점선으로 둘러 쌓인 리포지토리들은 모두 인터페이스입니다. 다만 item repository는 이미지와 그 외 데이터를 분리해서 관리해야하는 아이템의 특성 상 인터페이스가 아니라 직접적으로 연결되도록 했으며, 대신 내부에서 사용된 data, image 리포지토리를 인터페이스로 조치할 예정입니다.
 
 
-__Model__
-
+___Model___
 여기 설명에서 모델은 리포지토리에서 사용되는 API를 의미합니다. 이들이 제공하는 데이터는 각 인터페이스를 구현한 세부 리포지토리에서 최초 활용합니다. 추후 다른 API를 활용할 가능성도 있으며, 이때는 리포지토리 인터페이스를 구현한 새로운 클래스를 만드는 방식으로 이를 구현할 수 있을 것입니다.
 
 User를 위해서는 Firebase의 Authentication 기능, 더 정확히는 구글 계정 연동을 사용합니다. 따라서 signInIntent와 같은 구글 제공 API를 로그인, 로그아웃, 회원 탈퇴를 위해 사용합니다. 예외적으로 로그인 유지 확인은 shared preference를 이용했습니다.
@@ -88,7 +85,7 @@ Location Search를 위해서는 Kakao Map API를 활용하며, 통신을 위해�
 
 ## 사용 방법 How to use
 
-**앱 사용**
+<span style="color:brown;">**앱 사용**</span>
 
 데이터와 이미지를 백업하기 위해 사용한 파이어베이스의 요금제로 인해 따로 구글 플레이 스토어에 배포하지 않음.
 현재는 코드를 받아서 테스트를 통해서만 실행 가능.
@@ -96,9 +93,9 @@ Location Search를 위해서는 Kakao Map API를 활용하며, 통신을 위해�
 Sadly, I can't release this app on google play store because I use Firebase for back up data and images. (Firebase is not free for big data)
 So this app only can be installed by code test for now :(
 
-**앱 화면 예시**
+<span style="color:brown;">**앱 화면 예시**</span>
 
-![mainActivity](https://user-images.githubusercontent.com/70795841/213849473-bd9d8a5b-a4a0-4d60-ac25-b4f8050c3314.jpg)
+![mainActivity](https://user-images.githubusercontent.com/70795841/213852429-7809db0d-5633-44a6-8654-e7797f338d2b.jpg)
 ![mapActivity](https://user-images.githubusercontent.com/70795841/193832437-0779f411-da09-451d-944f-4f9faeecd847.jpg)
 ![addActivity](https://user-images.githubusercontent.com/70795841/193832441-ec87bd04-b683-457c-bdc7-daf41035fcc0.jpg)
 ![locationListAcitivity](https://user-images.githubusercontent.com/70795841/193832443-9c3ee110-ec18-4abc-9b56-99a0ce76f324.jpg)
