@@ -9,20 +9,22 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 
 object FirebaseUtils {
-    private val mAuth = FirebaseAuth.getInstance()
+    //파이어베이스 각 요소들(Auth, User, Store reference, Storage reference)
+    private val baseAuth = FirebaseAuth.getInstance()
     private var curUser: FirebaseUser? = null
     private lateinit var storeRef: DocumentReference
     private lateinit var storageRef: StorageReference
 
-    /* 현재 유저 정보를 새롭게 갱신하는 함수 */
+    /* 현재 유저 및 관련 파이어베이스 내부 요소를 새롭게 갱신하는 함수 */
     fun updateUserState(){
-        curUser = mAuth.currentUser
+        curUser = baseAuth.currentUser
         val id = curUser?.email.toString()
         storeRef = Firebase.firestore.collection("users").document(id)
         storageRef = Firebase.storage.reference.child(id)
     }
 
-    fun getAuth(): FirebaseAuth = mAuth
+    /* 파이어베이스의 각 요소(Auth, User, Store reference, Storage reference) 제공 함수들 */
+    fun getAuth(): FirebaseAuth = baseAuth
     fun getUser(): FirebaseUser? = curUser
     fun getStoreRef(): DocumentReference = storeRef
     fun getStorageRef(): StorageReference=  storageRef
