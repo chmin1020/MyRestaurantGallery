@@ -68,7 +68,7 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/korean_food"
                 android:contentDescription="@string/item_image_description"
-                app:imagePath="@{info.image}"
+                app:imagePath="@{info.imagePath}"
                 app:categoryNum="@{info.categoryNum}"/>
 
         </LinearLayout>

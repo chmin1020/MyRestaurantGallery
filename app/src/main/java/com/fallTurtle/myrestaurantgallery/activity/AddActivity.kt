@@ -57,6 +57,7 @@ class  AddActivity : AppCompatActivity(){
 
     //이미지 이름, 기기 내 이미지 실제 uri
     private var curImgName: String? = null
+    private var curImgPath: String? = null
     private var imgUri: Uri? = null
 
 
@@ -201,8 +202,9 @@ class  AddActivity : AppCompatActivity(){
         binding.info = item
         binding.spCategory.setSelection(item.categoryNum)
         itemLocation = LocationPair(item.latitude, item.longitude)
-        curImgName = item.image
-        preImgName = item.image
+        curImgName = item.imageName
+        curImgPath = item.imagePath
+        preImgName = item.imageName
     }
 
 
@@ -223,7 +225,7 @@ class  AddActivity : AppCompatActivity(){
                 val id =  itemId ?: getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-                val newItem = Info(image = curImgName, date = binding.tvDate.text.toString(),
+                val newItem = Info(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
                                 name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),

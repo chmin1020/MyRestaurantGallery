@@ -8,7 +8,8 @@ import java.util.*
 @Entity
 data class Info(
         @PrimaryKey val dbID:String = "",
-        var image:String? = null,
+        var imageName:String? = null,
+        var imagePath:String? = null,
         var name:String = "",
         var location:String = "",
         var categoryNum:Int = 0,

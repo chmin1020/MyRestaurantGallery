@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Info::class], version = 1)
+@Database(entities = [Info::class], version = 2)
 abstract class InfoRoomDatabase: RoomDatabase() {
     abstract fun infoRoomDao(): InfoRoomDao
 
@@ -18,7 +18,7 @@ abstract class InfoRoomDatabase: RoomDatabase() {
                 instance = Room.databaseBuilder(
                     context.applicationContext,
                     InfoRoomDatabase::class.java,
-                    "InfoDatabase").build()
+                    "InfoDatabase").addMigrations(MIGRATION_1_2).build()
             }
             return instance
         }
