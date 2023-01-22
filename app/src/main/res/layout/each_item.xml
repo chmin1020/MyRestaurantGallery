@@ -28,13 +28,13 @@
             app:layout_constraintBottom_toTopOf="@id/tv_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.7">
+            app:layout_constraintHeight_percent="0.65">
 
             <ImageView
                 android:id="@+id/iv_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="12dp"
+                android:layout_margin="8dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/etc"
                 android:contentDescription="@string/item_image_description"
@@ -56,11 +56,12 @@
             android:text="@{info.name}"
             android:textAlignment="center"
             android:textColor="@color/regularText"
+            android:autoSizeTextType="uniform"
             app:layout_constraintTop_toBottomOf="@id/layout_image"
             app:layout_constraintBottom_toTopOf="@id/contents_layout"
             app:layout_constraintStart_toStartOf="@id/layout_image"
             app:layout_constraintEnd_toEndOf="@id/layout_image"
-            app:layout_constraintHeight_percent="0.15"/>
+            app:layout_constraintHeight_percent="0.175"/>
 
         <LinearLayout
             android:id="@+id/contents_layout"
@@ -73,11 +74,12 @@
             android:layout_marginStart="3dp"
             android:layout_marginEnd="3dp"
             android:weightSum="10"
+            android:autoSizeTextType="uniform"
             app:layout_constraintTop_toBottomOf="@id/tv_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/tv_name"
             app:layout_constraintEnd_toEndOf="@id/tv_name"
-            app:layout_constraintHeight_percent="0.15">
+            app:layout_constraintHeight_percent="0.175">
 
             <TextView
                 android:id="@+id/tv_category"
@@ -85,7 +87,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"
                 android:text="@{info.category}"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:autoSizeTextType="uniform"/>
 
             <ImageView
                 android:layout_width="0dp"
@@ -99,6 +102,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:autoSizeTextType="uniform"
                 app:intNumberForText="@{info.rate}"/>
         </LinearLayout>
 
