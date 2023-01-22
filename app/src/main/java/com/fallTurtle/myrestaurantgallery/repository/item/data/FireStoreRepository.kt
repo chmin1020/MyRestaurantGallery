@@ -7,31 +7,40 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class FireStoreRepository {
+class FireStoreRepository: DataRepository {
     private fun collectionRef(): CollectionReference = FirebaseUtils.getStoreRef().collection("restaurants")
 
-   fun clearAllDataInStore(deletingItemIds: List<String>?){
-        deletingItemIds?.forEach { collectionRef().document(it).delete() }
-    }
-
-    suspend fun insertData(item: Info){
-        suspendCoroutine<Any?> { continuation ->
-            collectionRef().document(item.dbID).set(item).addOnCompleteListener { continuation.resume(null) }
-        }
-    }
-
-    suspend fun deleteData(item: Info){
-        suspendCoroutine<Any?> { continuation ->
-            collectionRef().document(item.dbID).delete().addOnCompleteListener { continuation.resume(null) }
-        }
-    }
-
-    suspend fun getAllDataInStore(): QuerySnapshot? {
+    override suspend fun getAllData(): List<Info> {
         return suspendCoroutine { continuation ->
             collectionRef().get().addOnCompleteListener {
-                if(it.isSuccessful) continuation.resume(it.result)
-                else continuation.resume(null)
+                if(it.isSuccessful) continuation.resume(it.result.toObjects(Info::class.java))
+                else continuation.resume(listOf())
             }
+        }
+    }
+
+    override suspend fun getProperData(id: String): Info {
+        return suspendCoroutine { continuation ->
+            collectionRef().document(id).get().addOnCompleteListener {
+                if(it.isSuccessful) continuation.resume(it.result.toObject(Info::class.java) ?: Info())
+                else continuation.resume(Info())
+            }
+        }
+    }
+
+    override suspend fun clearData() {
+        getAllData().forEach { deleteData(it) }
+    }
+
+    override suspend fun insertData(data: Info) {
+        suspendCoroutine<Any?> { continuation ->
+            collectionRef().document(data.dbID).set(data).addOnCompleteListener { continuation.resume(null) }
+        }
+    }
+
+    override suspend fun deleteData(data: Info) {
+        suspendCoroutine<Any?> { continuation ->
+            collectionRef().document(data.dbID).delete().addOnCompleteListener { continuation.resume(null) }
         }
     }
 }

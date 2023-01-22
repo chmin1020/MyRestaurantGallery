@@ -1,29 +1,32 @@
 package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
 
-class RoomRepository(application: Application) {
+class RoomRepository(application: Application): DataRepository {
     //room DB 관련 인스턴스 (DB, DAO, elements)
     private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)!!
     private val roomDao = database.infoRoomDao()
 
-    suspend fun getAllItems() = roomDao.getAllItems()
 
-    suspend fun getProperItem(id: String): Info = roomDao.getProperItem(id)
+    override suspend fun getAllData(): List<Info> {
+        return roomDao.getAllItems()
+    }
 
-    suspend fun clearSavedData(){
+    override suspend fun getProperData(id: String): Info {
+        return roomDao.getProperItem(id)
+    }
+
+    override suspend fun clearData() {
         roomDao.clearAllItems()
     }
 
-    suspend fun insertData(item: Info){
-        roomDao.insert(item)
+    override suspend fun insertData(data: Info) {
+        roomDao.insert(data)
     }
 
-    suspend fun deleteData(item: Info){
-        roomDao.delete(item)
+    override suspend fun deleteData(data: Info) {
+        roomDao.delete(data)
     }
-
 }
