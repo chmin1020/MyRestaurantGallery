@@ -1,11 +1,9 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.widget.*
-import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
-import java.io.File
 
 
 /**
@@ -22,6 +20,7 @@ object DataBindingAdapter {
         url?.let {
             imageView.load(it){
                 crossfade(true)
+                error(R.drawable.error_food)
                 placeholder(R.drawable.loading_food)
             }
         } ?: setDefaultImage(imageView, categoryNum)
