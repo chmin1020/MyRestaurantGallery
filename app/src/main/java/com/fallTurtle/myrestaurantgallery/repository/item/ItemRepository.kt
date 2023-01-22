@@ -14,7 +14,7 @@ class ItemRepository(application: Application) {
     private val remoteDataRepository:DataRepository = FireStoreRepository()
     private val localDataRepository:DataRepository = RoomRepository(application)
 
-    //image 리포지토리 (용량과 시간 등의 문제로 이미지는 외부 저장만)
+    //image 리포지토리 (용량과 저장 시간 등의 문제로 이미지는 외부 저장만)
     private val remoteImageRepository:ImageRepository = StorageRepository()
 
     /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
