@@ -2,35 +2,47 @@ package com.fallTurtle.myrestaurantgallery.repository.item.image
 
 import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
-import com.google.firebase.storage.ListResult
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class StorageRepository{
+class StorageRepository: ImageRepository{
     private val storageRef = FirebaseUtils.getStorageRef()
 
-    suspend fun getAllImagesInStorage(): ListResult? {
-        return suspendCoroutine { continuation ->
-            storageRef.listAll().addOnCompleteListener {
-                if(it.isSuccessful) continuation.resume(it.result)
-                else continuation.resume(null)
-            }
-        }
+    override suspend fun clearImages() {
+        val images = getAllImages()
+        images.forEach { deleteImage(it) }
     }
 
-    suspend fun clearAllImagesInStorage(deletingImageNames: List<String?>){
-        deletingImageNames.forEach { it?.let { name-> FirebaseUtils.getStorageRef().child(name).delete() }}
-    }
-
-    suspend fun insertImage(imageName: String, uri: Uri){
+    override suspend fun insertImage(imageName: String, uri: Uri):String?{
         suspendCoroutine<Any?> { continuation ->
             storageRef.child(imageName).putFile(uri).addOnCompleteListener{ continuation.resume(null)}
         }
+
+        return suspendCoroutine { continuation ->
+            storageRef.child(imageName).downloadUrl.addOnCompleteListener {
+                if(it.isSuccessful)
+                    continuation.resume(it.result.toString())
+            }
+        }
+
     }
 
-    suspend fun deleteImage(imageName: String){
+    override suspend fun deleteImage(imageName: String){
         suspendCoroutine<Any?> { continuation ->
             storageRef.child(imageName).delete().addOnCompleteListener { continuation.resume(null) }
+        }
+    }
+
+
+    private suspend fun getAllImages(): List<String> {
+        return suspendCoroutine { continuation ->
+            val images = mutableListOf<String>()
+            storageRef.listAll().addOnCompleteListener {
+                if(it.isSuccessful){
+                    it.result.items.forEach{ ref -> images.add(ref.name) }
+                }
+                continuation.resume(images)
+            }
         }
     }
 }

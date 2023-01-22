@@ -1,6 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.widget.*
+import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
@@ -16,10 +17,10 @@ object DataBindingAdapter {
 
     @BindingAdapter(value=["imagePath", "categoryNum"])
     @JvmStatic
-    fun loadImage(imageView: ImageView, path: String?, categoryNum: Int){
+    fun loadImage(imageView: ImageView, url: String?, categoryNum: Int){
         //이미지 적용
-        path?.let {
-            imageView.load(File("${imageView.context.filesDir}/$it")){
+        url?.let {
+            imageView.load(it){
                 crossfade(true)
                 placeholder(R.drawable.loading_food)
             }
