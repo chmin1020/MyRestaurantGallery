@@ -56,11 +56,13 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
+                android:padding="2dp"
                 android:text="@{info.date}"
                 android:textSize="20sp"
                 android:textAlignment="center"
                 android:gravity="center"
-                android:textColor="#000000"/>
+                android:textColor="#000000"
+                android:autoSizeTextType="uniform"/>
 
             <ImageView
                 android:id="@+id/iv_date"
@@ -101,7 +103,7 @@
         <RatingBar
             android:id="@+id/rb_ratingBar"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:numStars="5"
             android:rating="@{info.rate}"
@@ -116,8 +118,10 @@
             android:id="@+id/et_name"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:padding="3dp"
             android:text="@{info.name}"
             android:maxLines="1"
+            android:autoSizeTextType="uniform"
             android:hint="@string/example_name"
             android:autofillHints="@string/example_name"
             android:inputType="text"
@@ -161,10 +165,12 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
+                android:padding="3dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@{info.location}"
                 android:maxLines="1"
+                android:autoSizeTextType="uniform"
                 android:hint="@string/location_myself"
                 android:autofillHints="text"
                 android:inputType="text" />

@@ -39,7 +39,8 @@
             android:text="@string/search_location"
             android:textSize="15sp"
             android:textColor="#000000"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:autoSizeTextType="uniform"/>
 
         <Button
             android:id="@+id/btn_cur"
@@ -52,7 +53,8 @@
             android:text="@string/current_location"
             android:textSize="15sp"
             android:textColor="#000000"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:autoSizeTextType="uniform"/>
     </LinearLayout>
 
     <FrameLayout
