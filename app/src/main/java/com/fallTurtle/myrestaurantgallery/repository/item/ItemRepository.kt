@@ -4,33 +4,40 @@ import android.app.Application
 import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
+import com.fallTurtle.myrestaurantgallery.repository.item.data.FireStoreRepository
+import com.fallTurtle.myrestaurantgallery.repository.item.data.RoomRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.image.StorageRepository
 
 class ItemRepository(application: Application) {
-    //firebase data 리포지토리
-    private val localDataRepository = DataRepository(application)
+    //data 리포지토리
+    private val remoteDataRepository:DataRepository = FireStoreRepository()
+    private val localDataRepository:DataRepository = RoomRepository(application)
 
+    //image 리포지토리 (용량과 시간 등의 문제로 이미지는 외부 저장만)
     private val remoteImageRepository:ImageRepository = StorageRepository()
 
     /* roomDB 내에서 리스트를 가져오는 작업을 정의한 함수 */
-    suspend fun getAllItems() = localDataRepository.getAllItems()
+    suspend fun getAllItems() = localDataRepository.getAllData()
 
     suspend fun getProperItem(id: String) = localDataRepository.getProperData(id)
 
     /* Firestore 데이터를 불러와서 로컬 저장 공간에 전체 삽입하는 함수 */
     suspend fun restorePreviousItem(){
-        localDataRepository.restoreLocalData()
+        remoteDataRepository.getAllData().forEach {
+            localDataRepository.insertData(it)
+        }
     }
 
     /* roomDB 내의 모든 데이터를 삭제하는 함수 (로그아웃, 탈퇴 시 실행) */
     suspend fun localItemClear(){
-        localDataRepository.clearLocalData()
+        localDataRepository.clearData()
     }
 
     suspend fun remoteItemClear(){
-        val deletingItems = localDataRepository.getAllItems()
-        localDataRepository.clearRemoteData(deletingItems.map { it.dbID })
+        remoteDataRepository.clearData()
+        localDataRepository.clearData()
+
         remoteImageRepository.clearImages()
     }
 
@@ -41,12 +48,15 @@ class ItemRepository(application: Application) {
 
         item.imageName?.let { name -> uri?.let{ item.imagePath = remoteImageRepository.insertImage(name, it) } }
 
+        remoteDataRepository.insertData(item)
         localDataRepository.insertData(item)
     }
 
     /* 아이템 삭제 이벤트를 정의한 함수 */
     suspend fun itemDelete(itemId: String) {
         val targetItem = localDataRepository.getProperData(itemId)
+
+        remoteDataRepository.deleteData(targetItem)
         localDataRepository.deleteData(targetItem)
 
         targetItem.imageName?.let { remoteImageRepository.deleteImage(it) }
