@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.repository.item.data
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.QuerySnapshot
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

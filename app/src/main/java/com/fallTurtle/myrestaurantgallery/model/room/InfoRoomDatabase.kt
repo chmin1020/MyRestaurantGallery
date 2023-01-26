@@ -13,15 +13,14 @@ abstract class InfoRoomDatabase: RoomDatabase() {
         private var instance: InfoRoomDatabase? = null
 
         @Synchronized
-        fun getInstance(context: Context): InfoRoomDatabase?{
-            if(instance == null) {
-                instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    InfoRoomDatabase::class.java,
-                    "InfoDatabase").addMigrations(MIGRATION_1_2).build()
+        fun getInstance(context: Context): InfoRoomDatabase{
+            return instance ?: run{
+                //null -> 최초 DB 접근. 새로운 DB 객체를 생성하여 적용
+                Room.databaseBuilder(context.applicationContext, InfoRoomDatabase::class.java, "InfoDatabase")
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
+                    .also { instance = it }
             }
-            return instance
         }
     }
-
 }

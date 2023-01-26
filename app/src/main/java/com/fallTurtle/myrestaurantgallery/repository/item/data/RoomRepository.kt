@@ -9,7 +9,7 @@ import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
  **/
 class RoomRepository(application: Application): DataRepository {
     //room DB 관련 인스턴스 (DB, DAO, elements)
-    private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)!!
+    private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)
     private val roomDao = database.infoRoomDao()
 
 
