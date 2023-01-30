@@ -10,5 +10,5 @@ interface MapRepository {
     suspend fun requestCurrentLocation(): LocationPair?
 
     /* 좌표를 통해 주소를 얻는 함수 */
-    fun requestCurrentAddress(location: LocationPair): String
+    suspend fun requestCurrentAddress(location: LocationPair): String
 }
