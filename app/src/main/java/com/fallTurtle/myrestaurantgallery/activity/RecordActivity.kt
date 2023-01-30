@@ -82,7 +82,7 @@ class RecordActivity : AppCompatActivity() {
     }
 
     /* onCreateOptionsMenu()에서는 툴바의 추가 메뉴를 세팅한다.(수정, 삭제) */
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.record_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
