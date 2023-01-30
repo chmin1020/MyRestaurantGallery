@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     // 오버라이딩 영역
 
     /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.account_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
