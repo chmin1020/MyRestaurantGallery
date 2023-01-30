@@ -216,6 +216,9 @@ class  AddActivity : AppCompatActivity(){
         fun getNewID(): String
             = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
+        //이미지가 지정되지 않은 상태면 경로도 null -> 이미지 로딩 에러 방지
+        curImgName ?: run{ curImgPath = null }
+
         //네트워크 연결 상태라면 저장과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
             if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
