@@ -19,7 +19,7 @@ import com.fallTurtle.myrestaurantgallery.model.room.Info
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.TedPermission
+import com.gun0912.tedpermission.normal.TedPermission
 
 /**
  * 앱을 처음 실행했을 때 나타나는 메인 화면을 담당하는 액티비티.
@@ -161,11 +161,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         //TedPermission 객체에 체크할 퍼미션들과 퍼미션 리스너 등록
-        TedPermission.with(this)
+        TedPermission.create()
+            .setPermissionListener(permissionListener)
+            .setDeniedMessage("권한을 허용해주세요.")
             .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
-            .setPermissionListener(permissionListener)
             .check()
     }
 
