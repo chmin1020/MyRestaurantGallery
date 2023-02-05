@@ -34,7 +34,7 @@ class LoginActivity: AppCompatActivity() {
     //옵저버들
     private val userExistObserver = Observer<Boolean> { if(it) doProperWorkAccordingToLoginState() }
     private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading() }
-    private val itemRestoreFinishObserver = Observer<Boolean> { if(it) showMain(true) }
+    private val itemRestoreFinishObserver = Observer<Boolean> { if(it) showMain() }
     private val itemRestoreProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
 
     // 유저와 아이템 부분의 비즈니스 작업의 상태 등을 판별할 프로퍼티
@@ -128,21 +128,18 @@ class LoginActivity: AppCompatActivity() {
 
     /* 유저가 존재한다는 걸 확인한 뒤 후속 작업을 진행하는 함수 */
     private fun doProperWorkAccordingToLoginState() {
-        if(sharedPreferences.getBoolean("isLogin", false)) //이전에 로그인 했으므로 그냥 메인 실행
-            showMain(false)
-        else { //새 로그인이므로 상태 저장 및 데이터 복원 실시
-            sharedPreferences.edit().putBoolean("isLogin", true).apply()
-            setItemRestoreObserver().also { itemViewModel.restoreItemsFromAccount() }
-        }
+        sharedPreferences.edit().putBoolean("isLogin", true).apply()
+        setItemRestoreObserver().also { itemViewModel.restoreItemsFromAccount() }
     }
 
     /* 로그인이 완료된 것을 확인한 뒤 메인 화면을 실행하는 함수 */
-    private fun showMain(newLogin: Boolean){
-        //새 로그인
-        if(newLogin) Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
+    private fun showMain(){
+        //새 로그인 안내 토스트 메시지
+        Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
 
         //메인화면 실행 및 현재 화면 종료
-        Intent(this, MainActivity::class.java).also{ startActivity(it); finish() }
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     /* 유저와 아이템 작업 진행 여부를 확인한 뒤 이에 따라 로딩 다이얼로그를 띄우는 함수 */
