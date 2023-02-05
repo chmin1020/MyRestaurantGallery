@@ -70,11 +70,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //권한 허락을 위한 다이얼로그
-        showPermissionDialog()
+        //로그인 여부 확인 (로그인 상태 아니면 로그인 액티비티 실행)
+        if(!sharedPreferences.getBoolean("isLogin", false)){
+            //유저 연결해야함<<<버그>>>
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+        else{
+            //권한 허락을 위한 다이얼로그
+            showPermissionDialog()
 
-        //viewModel 관찰하는 옵저버들 설정
-        setObservers()
+            //viewModel 관찰하는 옵저버들 설정
+            setObservers()
+        }
 
         //리사이클러뷰 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -137,16 +145,17 @@ class MainActivity : AppCompatActivity() {
 
     /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
     private fun setObservers(){
-        //아이템 뷰모델 속 데이터 리스트 변화 관찰
-        itemViewModel.dataItems.observe(this, itemsObserver)
-
         //각 뷰모델 속 작업 진행 여부 변화 관찰
-        itemViewModel.progressing.observe(this, itemProgressObserver)
         userViewModel.progressing.observe(this, userProgressObserver)
+        itemViewModel.progressing.observe(this, itemProgressObserver)
+
 
         //각 뷰모델 속 작업 종료 여부 변화 관찰
-        itemViewModel.workFinishFlag.observe(this, itemFinishObserver)
         userViewModel.workFinishFlag.observe(this, userFinishObserver)
+        itemViewModel.workFinishFlag.observe(this, itemFinishObserver)
+
+        //아이템 뷰모델 속 데이터 리스트 변화 관찰
+        itemViewModel.dataItems.observe(this, itemsObserver)
     }
 
     /* 앱 실행 전 권한을 받기 위한 다이얼로그 (TedPermission 사용) */
