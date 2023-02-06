@@ -64,7 +64,7 @@ class LoginActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         initListeners() //리스너 설정
-        setUserObserver() //유저 옵저버부터 설정
+        setUserObserver() //유저 옵저버부터 설정 (유저가 특정되지 않으면 데이터 복원 불가)
     }
 
 
