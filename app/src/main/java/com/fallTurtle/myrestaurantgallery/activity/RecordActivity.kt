@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 
 /**
@@ -35,7 +35,7 @@ class RecordActivity : AppCompatActivity() {
     //옵저버들
     private val progressObserver = Observer<Boolean> { decideShowLoading(it)}
     private val finishObserver = Observer<Boolean> { if(it) deleteWorkComplete() }
-    private val itemObserver = Observer<Info> { binding.info = it }
+    private val itemObserver = Observer<RestaurantInfo> { binding.info = it }
 
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }

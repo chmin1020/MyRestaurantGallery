@@ -1,7 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.google.firebase.firestore.CollectionReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -18,21 +18,21 @@ class FireStoreRepository: DataRepository {
     // 오버라이딩 영역
 
     /* 모든 데이터를 가져오는 함수 */
-    override suspend fun getAllData(): List<Info> {
+    override suspend fun getAllData(): List<RestaurantInfo> {
         return suspendCoroutine { continuation ->
             collectionRef().get().addOnCompleteListener {
-                if(it.isSuccessful) continuation.resume(it.result.toObjects(Info::class.java))
+                if(it.isSuccessful) continuation.resume(it.result.toObjects(RestaurantInfo::class.java))
                 else continuation.resume(listOf())
             }
         }
     }
 
     /* 특정 데이터를 가져오는 함수 */
-    override suspend fun getProperData(id: String): Info {
+    override suspend fun getProperData(id: String): RestaurantInfo {
         return suspendCoroutine { continuation ->
             collectionRef().document(id).get().addOnCompleteListener {
-                if(it.isSuccessful) continuation.resume(it.result.toObject(Info::class.java) ?: Info())
-                else continuation.resume(Info())
+                if(it.isSuccessful) continuation.resume(it.result.toObject(RestaurantInfo::class.java) ?: RestaurantInfo())
+                else continuation.resume(RestaurantInfo())
             }
         }
     }
@@ -43,14 +43,14 @@ class FireStoreRepository: DataRepository {
     }
 
     /* 특정 데이터를 추가하는 함수 */
-    override suspend fun insertData(data: Info) {
+    override suspend fun insertData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
             collectionRef().document(data.dbID).set(data).addOnCompleteListener { continuation.resume(null) }
         }
     }
 
     /* 특정 데이터를 제거하는 함수 */
-    override suspend fun deleteData(data: Info) {
+    override suspend fun deleteData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
             collectionRef().document(data.dbID).delete().addOnCompleteListener { continuation.resume(null) }
         }

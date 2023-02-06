@@ -21,7 +21,7 @@ import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -45,7 +45,7 @@ class  AddActivity : AppCompatActivity(){
     //옵저버
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
     private val finishObserver = Observer<Boolean> { if(it) finish() }
-    private val selectedItemObserver = Observer<Info> { setContentsWithItem(it) }
+    private val selectedItemObserver = Observer<RestaurantInfo> { setContentsWithItem(it) }
 
     //로딩 다이얼로그
     private val progressDialog by lazy { ProgressDialog(this) }
@@ -68,7 +68,10 @@ class  AddActivity : AppCompatActivity(){
     private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
+            //시간을 통한 고유 이미지 이름 생성
             curImgName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
+
+            //사진 설정
             binding.ivImage.setImageURI(uri)
         }
     }
@@ -77,6 +80,8 @@ class  AddActivity : AppCompatActivity(){
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra("isChanged", false) == true) {
             val address = it.data?.getStringExtra("address")
+
+            //받아온 내용 적용
             itemLocation.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
             itemLocation.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
             binding.etLocation.setText(address)
@@ -92,7 +97,7 @@ class  AddActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
         //데이터 바인딩 (default)
-        binding.info = Info()
+        binding.info = RestaurantInfo()
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
@@ -198,7 +203,7 @@ class  AddActivity : AppCompatActivity(){
     // 내부 함수 영역 (옵저버 후속 작업)
 
     /* 들어온 아이템 정보에 따라 화면을 세팅하는 함수 */
-    private fun setContentsWithItem(item: Info){
+    private fun setContentsWithItem(item: RestaurantInfo){
         binding.info = item
         binding.spCategory.setSelection(item.categoryNum)
         itemLocation = LocationPair(item.latitude, item.longitude)
@@ -228,7 +233,7 @@ class  AddActivity : AppCompatActivity(){
                 val id =  itemId ?: getNewID()
 
                 //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-                val newItem = Info(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
+                val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
                                 name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
                                 category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
                                 memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),

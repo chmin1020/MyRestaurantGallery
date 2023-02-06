@@ -2,7 +2,7 @@ package com.fallTurtle.myrestaurantgallery.repository.item
 
 import android.app.Application
 import android.net.Uri
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.data.FireStoreRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.data.RoomRepository
@@ -27,7 +27,7 @@ class ItemRepository(application: Application) {
     // 비즈니스 로직 함수 영역
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    suspend fun itemInsert(item: Info, uri: Uri?, preImageName: String?) {
+    suspend fun itemInsert(item: RestaurantInfo, uri: Uri?, preImageName: String?) {
         //이미지가 바뀌었다면 기존 이미지 제거, 현재 이미지 추가
         preImageName?.let { if(it != item.imageName) { remoteImageRepository.deleteImage(it) } }
         item.imageName?.let { name -> uri?.let{ item.imagePath = remoteImageRepository.insertImage(name, it) } }

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.databinding.EachItemBinding
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
@@ -18,7 +18,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
     private val holderHeight = holderWidth/6 * 5
 
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 컬렉션
-    private val itemList = mutableListOf<Info>()
+    private val itemList = mutableListOf<RestaurantInfo>()
 
 
     //--------------------------------------------
@@ -43,7 +43,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
     // 함수 영역
 
     /* 리스트 내역을 새롭게 갱신하는 함수 */
-    fun update(items : List<Info>?){
+    fun update(items : List<RestaurantInfo>?){
         items?.let {
             //기존 리스트와 새 리스트 차이점을 파악하기 위한 diff 연산
             val diffResult = DiffUtil.calculateDiff(DiffUtilCallback(this.itemList, it))
@@ -80,23 +80,16 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
         }
 
         //새로운 아이템 데이터와 뷰홀더를 바인드하는 함수
-        fun bind(item:Info){
+        fun bind(item:RestaurantInfo){
             binding.info = item
         }
     }
 
     /* 내부 아이템 리스트 변경을 확인하고 적용할 callback 클래스 */
-    private class DiffUtilCallback(private val oldItems: List<Info>, private val newItems: List<Info>): DiffUtil.Callback(){
-        //기존과 새 아이템 리스트 크기 구하는 함수들
-        override fun getOldListSize() = oldItems.size
-        override fun getNewListSize() = newItems.size
-
+    private class DiffUtilCallback(private val oldItems: List<RestaurantInfo>, private val newItems: List<RestaurantInfo>)
+        : AdapterDiffCallback<RestaurantInfo>(oldItems, newItems){
         //각 인덱스에 맞는 아이템이 서로 같은 아이템인지 확인하는 함수
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int)
                 = oldItems[oldItemPosition].dbID == newItems[newItemPosition].dbID
-
-        //areItemsTheSame -> true 나올 시 내부 내용도 같은지 확인하는 함수
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
-                = oldItems[oldItemPosition] == newItems[newItemPosition]
     }
 }

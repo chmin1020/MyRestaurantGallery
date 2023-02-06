@@ -1,7 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.repository.item.data
 
 import android.app.Application
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
 
 /**
@@ -17,12 +17,12 @@ class RoomRepository(application: Application): DataRepository {
     // 오버라이딩 영역
 
     /* 모든 데이터를 가져오는 함수 */
-    override suspend fun getAllData(): List<Info> {
+    override suspend fun getAllData(): List<RestaurantInfo> {
         return roomDao.getAllItems()
     }
 
     /* 특정 데이터를 가져오는 함수 */
-    override suspend fun getProperData(id: String): Info {
+    override suspend fun getProperData(id: String): RestaurantInfo {
         return roomDao.getProperItem(id)
     }
 
@@ -32,12 +32,12 @@ class RoomRepository(application: Application): DataRepository {
     }
 
     /* 특정 데이터를 추가하는 함수 */
-    override suspend fun insertData(data: Info) {
+    override suspend fun insertData(data: RestaurantInfo) {
         roomDao.insert(data)
     }
 
     /* 특정 데이터를 제거하는 함수 */
-    override suspend fun deleteData(data: Info) {
+    override suspend fun deleteData(data: RestaurantInfo) {
         roomDao.delete(data)
     }
 }

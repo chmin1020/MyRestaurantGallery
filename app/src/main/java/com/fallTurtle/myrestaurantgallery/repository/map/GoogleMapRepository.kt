@@ -79,6 +79,7 @@ class GoogleMapRepository(application: Application): MapRepository {
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
 
+    /* human friendly 문자열 형식 주소를 반환하는 함수 */
     private fun addressCompleteWork(addressFragment: Address?): String {
         val addressMaker = StringBuilder()
 
