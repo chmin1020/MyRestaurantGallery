@@ -39,7 +39,7 @@ You can check structure of code, used API for this app, each purpose of API, etc
 
 ### 구성 액티비티
 
-![액티비티 구조](![123](https://user-images.githubusercontent.com/70795841/216902397-8dfc500d-0825-46c7-95ea-e1cf5d02a903.PNG)
+![액티비티 구조](https://user-images.githubusercontent.com/70795841/216903647-16f6fb5f-bb94-48e1-aadd-f7e01eedc879.PNG)
 
 * __LoginActivity__: 시작 액티비티이며 구글 로그인 기능을 제공한다. 이미 로그인 정보가 있다면 바로 Main 화면으로 넘어간다.
 * __MainActivity__: 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
