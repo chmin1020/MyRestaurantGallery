@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.repository.item.ItemRepository
 import kotlinx.coroutines.*
 
@@ -19,8 +19,8 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     // 라이브 데이터 프로퍼티 영역
 
     //아이템 리스트 상태 live data -> 로컬 데이터 참조
-    private val insideDataItems = MutableLiveData<List<Info>>()
-    val dataItems: LiveData<List<Info>> = insideDataItems
+    private val insideDataItems = MutableLiveData<List<RestaurantInfo>>()
+    val dataItems: LiveData<List<RestaurantInfo>> = insideDataItems
 
     //아이템 처리 진행 여부를 알려주는 boolean live data
     private val insideProgressing = MutableLiveData(false)
@@ -31,8 +31,8 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     val workFinishFlag: LiveData<Boolean> = insideWorkFinishFlag
 
     //하나의 아이템 정보를 필요로 할 때, 그것을 가지고 오는 item live data
-    private val insideSelectedItem = MutableLiveData<Info>()
-    val selectedItem: LiveData<Info> = insideSelectedItem
+    private val insideSelectedItem = MutableLiveData<RestaurantInfo>()
+    val selectedItem: LiveData<RestaurantInfo> = insideSelectedItem
 
 
     //----------------------------------------------------
@@ -86,7 +86,7 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
     }
 
     /* 기본적인 아이템 삽입(혹은 갱신) 이벤트를 위한 함수 */
-    fun insertItem(item: Info, imgUri: Uri?, preImgPath: String?) {
+    fun insertItem(item: RestaurantInfo, imgUri: Uri?, preImgPath: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
             itemRepository.itemInsert(item, imgUri, preImgPath)

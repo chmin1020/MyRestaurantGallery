@@ -14,7 +14,7 @@ import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
@@ -33,7 +33,7 @@ class LocationListActivity : AppCompatActivity(){
     private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationViewModel::class.java] }
 
     //옵저버들
-    private val searchObserver = Observer<List<LocationResult>> { taskWithResults(it) }
+    private val searchObserver = Observer<List<LocationInfo>> { taskWithResults(it) }
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
 
     //리사이클러뷰
@@ -125,7 +125,7 @@ class LocationListActivity : AppCompatActivity(){
     }
 
     /* 받은 응답 값들(뷰모델 데이터)을 통해 적절한 작업을 수행하는 함수 */
-    private fun taskWithResults(results: List<LocationResult>){
+    private fun taskWithResults(results: List<LocationInfo>){
         adapter.update(results)
         adapter.readyToNextPage()
     }

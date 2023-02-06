@@ -9,7 +9,7 @@
 
         <variable
             name="info"
-            type="com.fallTurtle.myrestaurantgallery.model.room.Info" />
+            type="com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -15,7 +15,7 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.model.room.Info
+import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
 
     //옵저버들
-    private val itemsObserver = Observer<List<Info>> { itemsAdapter.update(it) }
+    private val itemsObserver = Observer<List<RestaurantInfo>> { itemsAdapter.update(it) }
     private val itemProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
     private val itemFinishObserver = Observer<Boolean> { itemFinish = it; tryActivityFinish() }
     private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading()}
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         //로그인 여부 확인 (로그인 상태 아니면 로그인 액티비티 실행)
         if(!sharedPreferences.getBoolean("isLogin", false)){
-            //유저 연결해야함<<<버그>>>
+            //유저 연결해야함 -> 로그인 액티비티로 이동
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }

@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity
-data class Info(
+data class RestaurantInfo(
         @PrimaryKey val dbID:String = "",
         var imageName:String? = null,
         var imagePath:String? = null,

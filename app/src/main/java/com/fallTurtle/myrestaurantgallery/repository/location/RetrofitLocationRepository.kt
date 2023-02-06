@@ -1,7 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.repository.location
 
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationResult
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
@@ -28,7 +28,7 @@ class RetrofitLocationRepository: LocationRepository {
     private val locationSearchAPI by lazy { retrofit.create(LocationSearchInterface::class.java) }
 
     // 검색을 위한 설정 변수, 컬렉션
-    private val searchTotalResults = mutableListOf<LocationResult>()
+    private val searchTotalResults = mutableListOf<LocationInfo>()
     private var restaurantFinish = false
     private var cafeFinish = false
 
@@ -37,7 +37,7 @@ class RetrofitLocationRepository: LocationRepository {
     // 오버라이딩 영역
 
     /* 식당과 카페를 포함한 전체 검색 결과를 반환하는 함수 */
-    override suspend fun searchTotalInfo(query: String, page: Int):List<LocationResult> {
+    override suspend fun searchTotalInfo(query: String, page: Int):List<LocationInfo> {
         if(page == 1)
             resetSearchSetting()
 
@@ -73,7 +73,7 @@ class RetrofitLocationRepository: LocationRepository {
         response.body()?.let { searchContent ->
             searchContent.documents.forEach {
                 val locationPair = LocationPair(it.y.toDouble(), it.x.toDouble())
-                searchTotalResults.add(LocationResult(it.address_name, it.place_name, it.category_name, locationPair))
+                searchTotalResults.add(LocationInfo(it.address_name, it.place_name, it.category_name, locationPair))
             }
         }
     }
