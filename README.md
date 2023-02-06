@@ -41,8 +41,8 @@ You can check structure of code, used API for this app, each purpose of API, etc
 
 ![액티비티 구조](https://user-images.githubusercontent.com/70795841/216903647-16f6fb5f-bb94-48e1-aadd-f7e01eedc879.PNG)
 
-* __LoginActivity__: 시작 액티비티이며 구글 로그인 기능을 제공한다. 이미 로그인 정보가 있다면 바로 Main 화면으로 넘어간다.
-* __MainActivity__: 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
+* __MainActivity__: 시작 및 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
+* __LoginActivity__: 로그인이 가능한 액티비티이며 구글 로그인 기능을 제공한다. 로그인 상태가 아닐 시에만 앱 시작할 때 나타난다.
 * __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름, 지역 등의 정보를 추가하여 저장할 수 있다.
 * __RecordActivity__: 이미 저장되어 있는 항목을 확인할 때 나타나며, AddActivity와 유사하지만 수정 기능을 제공하지 않는다.
 * __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있고, GPS를 통해 현재 위치를 선택하는 것도 가능하다.
