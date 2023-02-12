@@ -226,7 +226,7 @@ class  AddActivity : AppCompatActivity(){
 
         //네트워크 연결 상태라면 저장과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
-            if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
+            if (binding.etName.text.isNullOrEmpty() || binding.etLocation.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
