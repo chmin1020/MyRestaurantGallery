@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -188,6 +189,26 @@ class  AddActivity : AppCompatActivity(){
 
             //설정한 다이얼로그 생성
             imgDlg.create()
+        }
+
+        //식당 이름을 입력하지 않을 시
+        binding.etName.addTextChangedListener {
+            it?.let { text ->
+                binding.textLayoutName.error = when(text.length){
+                    0 -> "식당 이름을 입력해주세요"
+                    else -> null
+                }
+            }
+        }
+
+        //식당 이름을 입력하지 않을 시
+        binding.etLocation.addTextChangedListener {
+            it?.let { text ->
+                binding.textLayoutLocation.error = when(text.length){
+                    0 -> "위치를 입력해주세요"
+                    else -> null
+                }
+            }
         }
     }
 
