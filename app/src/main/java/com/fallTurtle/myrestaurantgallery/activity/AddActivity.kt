@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -189,6 +190,26 @@ class  AddActivity : AppCompatActivity(){
             //설정한 다이얼로그 생성
             imgDlg.create()
         }
+
+        //식당 이름을 입력하지 않을 시
+        binding.etName.addTextChangedListener {
+            it?.let { text ->
+                binding.textLayoutName.error = when(text.length){
+                    0 -> "식당 이름을 입력해주세요"
+                    else -> null
+                }
+            }
+        }
+
+        //식당 이름을 입력하지 않을 시
+        binding.etLocation.addTextChangedListener {
+            it?.let { text ->
+                binding.textLayoutLocation.error = when(text.length){
+                    0 -> "위치를 입력해주세요"
+                    else -> null
+                }
+            }
+        }
     }
 
     /* 각 옵저버를 적절한 뷰모델 내 데이터와 연결하는 함수 */
@@ -226,7 +247,7 @@ class  AddActivity : AppCompatActivity(){
 
         //네트워크 연결 상태라면 저장과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
-            if (binding.etName.text.isEmpty() || binding.etLocation.text.isEmpty())
+            if (binding.etName.text.isNullOrEmpty() || binding.etLocation.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else {
                 //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
