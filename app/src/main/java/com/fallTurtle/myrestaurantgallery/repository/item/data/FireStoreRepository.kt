@@ -28,11 +28,11 @@ class FireStoreRepository: DataRepository {
     }
 
     /* 특정 데이터를 가져오는 함수 */
-    override suspend fun getProperData(id: String): RestaurantInfo {
+    override suspend fun getProperData(id: String): RestaurantInfo? {
         return suspendCoroutine { continuation ->
             collectionRef().document(id).get().addOnCompleteListener {
-                if(it.isSuccessful) continuation.resume(it.result.toObject(RestaurantInfo::class.java) ?: RestaurantInfo())
-                else continuation.resume(RestaurantInfo())
+                if(it.isSuccessful) continuation.resume(it.result.toObject(RestaurantInfo::class.java))
+                else continuation.resume(null)
             }
         }
     }
@@ -46,6 +46,26 @@ class FireStoreRepository: DataRepository {
     override suspend fun insertData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
             collectionRef().document(data.dbID).set(data).addOnCompleteListener { continuation.resume(null) }
+        }
+    }
+
+    /* 특정 데이터를 갱신하는 함수 */
+    override suspend fun updateData(data: RestaurantInfo) {
+        suspendCoroutine<Any?> { continuation ->
+            with(collectionRef().document(data.dbID)){
+                update("category", data.category)
+                update("categoryNum", data.categoryNum)
+                update("date", data.date)
+                update("imageName", data.imageName)
+                update("imagePath", data.imagePath)
+                update("latitude", data.latitude)
+                update("longitude", data.longitude)
+                update("memo", data.memo)
+                update("name", data.name)
+                update("rate", data.rate)
+            }.addOnCompleteListener {
+                continuation.resume(null)
+            }
         }
     }
 
