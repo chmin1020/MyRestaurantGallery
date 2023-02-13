@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.etc.Configurations
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -42,7 +43,7 @@ class LoginActivity: AppCompatActivity() {
     private var itemProgress = false
 
     //공유 설정 (로그인 유지 여부)
-    private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
+    private val sharedPreferences by lazy{ getSharedPreferences(Configurations.LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
 
 
     //--------------------------------------------
