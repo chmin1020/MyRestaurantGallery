@@ -272,7 +272,7 @@ class  AddActivity : AppCompatActivity(){
             memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
             latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = newID)
 
-        itemViewModel.insertItem(newItem)
+        itemViewModel.insertItem(newItem, imgUri)
     }
 
 

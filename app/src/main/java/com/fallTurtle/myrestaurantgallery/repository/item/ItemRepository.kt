@@ -27,7 +27,9 @@ class ItemRepository(application: Application) {
     // 비즈니스 로직 함수 영역
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    suspend fun itemInsert(item: RestaurantInfo) {
+    suspend fun itemInsert(item: RestaurantInfo, uri: Uri?) {
+        item.imageName?.let { name -> uri?.let{ item.imagePath = remoteImageRepository.insertImage(name, it) } }
+
         remoteDataRepository.insertData(item)
         localDataRepository.insertData(item)
     }

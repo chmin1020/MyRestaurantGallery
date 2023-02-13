@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Dao
 interface InfoRoomDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insert(item: RestaurantInfo)
 
     @Update
