@@ -27,14 +27,18 @@ class ItemRepository(application: Application) {
     // 비즈니스 로직 함수 영역
 
     /* 아이템 삽입 이벤트를 정의한 함수 */
-    suspend fun itemInsert(item: RestaurantInfo, uri: Uri?, preImageName: String?) {
-        //이미지가 바뀌었다면 기존 이미지 제거, 현재 이미지 추가
+    suspend fun itemInsert(item: RestaurantInfo) {
+        remoteDataRepository.insertData(item)
+        localDataRepository.insertData(item)
+    }
+
+    /* 아이템 갱신 이벤트를 정의한 함수 */
+    suspend fun itemUpdate(item: RestaurantInfo, uri: Uri?, preImageName: String?){
         preImageName?.let { if(it != item.imageName) { remoteImageRepository.deleteImage(it) } }
         item.imageName?.let { name -> uri?.let{ item.imagePath = remoteImageRepository.insertImage(name, it) } }
 
-        //내 외부에 데이터 저장
-        remoteDataRepository.insertData(item)
-        localDataRepository.insertData(item)
+        remoteDataRepository.updateData(item)
+        localDataRepository.updateData(item)
     }
 
     /* 아이템 삭제 이벤트를 정의한 함수 */
@@ -42,11 +46,13 @@ class ItemRepository(application: Application) {
         val targetItem = localDataRepository.getProperData(itemId)
 
         //id를 가진 아이템 데이터 내 외부 모두 제거
-        remoteDataRepository.deleteData(targetItem)
-        localDataRepository.deleteData(targetItem)
+        targetItem?.let {
+            remoteDataRepository.deleteData(it)
+            localDataRepository.deleteData(it)
+        }
 
         //이미지가 있었다면 remote 이미지도 제거
-        targetItem.imageName?.let { remoteImageRepository.deleteImage(it) }
+        targetItem?.imageName?.let { remoteImageRepository.deleteImage(it) }
     }
 
     /* 현재 저장된 아이템들을 모두 가져오는 함수 */

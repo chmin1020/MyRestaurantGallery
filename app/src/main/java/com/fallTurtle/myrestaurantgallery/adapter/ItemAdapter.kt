@@ -72,10 +72,9 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
 
             //클릭 리스너 설정 (id에 따른 정보를 가지고 record 화면으로 넘어감)
             itemView.setOnClickListener { v ->
-                binding.info?.dbID.let { id ->
-                    val record = Intent(v.context, RecordActivity::class.java)
-                    record.putExtra(Configurations.ITEM_ID, id)
-                    v.context.startActivity(record)
+                Intent(v.context, RecordActivity::class.java).let {
+                    it.putExtra(Configurations.ITEM_ID, binding.info?.dbID)
+                    v.context.startActivity(it)
                 }
             }
         }

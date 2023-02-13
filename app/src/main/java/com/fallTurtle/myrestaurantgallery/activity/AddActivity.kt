@@ -53,7 +53,6 @@ class  AddActivity : AppCompatActivity(){
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //선택된 아이템 관련 변수들
-    private var itemId: String? = null
     private var itemLocation = LocationPair()
     private var preImgName: String? = null
 
@@ -99,12 +98,10 @@ class  AddActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
         //데이터 바인딩 (default)
-        binding.info = RestaurantInfo()
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
-        itemId = intent.getStringExtra(Configurations.ITEM_ID)
-        itemId?.let { itemViewModel.setProperItem(it) }
+        intent.getStringExtra(Configurations.ITEM_ID)?.let { itemViewModel.setProperItem(it) }
 
         //각 뷰의 리스너들 설정
         initListeners()
@@ -240,9 +237,6 @@ class  AddActivity : AppCompatActivity(){
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
-        fun getNewID(): String
-            = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
-
         //이미지가 지정되지 않은 상태면 경로도 null -> 이미지 로딩 에러 방지
         curImgName ?: run{ curImgPath = null }
 
@@ -250,22 +244,35 @@ class  AddActivity : AppCompatActivity(){
         if(NetworkWatcher.checkNetworkState(this)) {
             if (binding.etName.text.isNullOrEmpty() || binding.etLocation.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
-            else {
-                //기존 아이디 사용 혹은 현재 시간을 사용한 아이디 생성 (계정마다 따로 저장하므로 겹칠 일 x)
-                val id =  itemId ?: getNewID()
-
-                //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-                val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
-                                name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
-                                category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
-                                memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
-                                latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = id)
-
-                itemViewModel.insertItem(newItem, imgUri, preImgName)
-            }
+            else
+                binding.info?.also { updateItem(it.dbID) } ?: run{ insertItem() }
         }
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateItem(originalID: String){
+        //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
+        val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
+            name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
+            category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
+            memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
+            latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = originalID)
+
+        itemViewModel.updateItem(newItem, imgUri, preImgName)
+    }
+
+    private fun insertItem(){
+        val newID = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
+
+        //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
+        val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
+            name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
+            category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
+            memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
+            latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = newID)
+
+        itemViewModel.insertItem(newItem)
     }
 
 
