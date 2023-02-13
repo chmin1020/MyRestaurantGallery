@@ -71,6 +71,7 @@ class  AddActivity : AppCompatActivity(){
         imgUri?.let{ uri->
             //시간을 통한 고유 이미지 이름 생성
             curImgName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
+            binding.info?.imageName = curImgName
 
             //사진 설정
             binding.ivImage.setImageURI(uri)
@@ -85,6 +86,8 @@ class  AddActivity : AppCompatActivity(){
             //받아온 내용 적용
             itemLocation.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
             itemLocation.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
+            binding.info?.latitude = itemLocation.latitude
+            binding.info?.longitude = itemLocation.longitude
             binding.etLocation.setText(address)
         }
     }
@@ -97,8 +100,9 @@ class  AddActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //데이터 바인딩 (default)
+        //데이터 디폴트 설정
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
+        binding.date = SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
         intent.getStringExtra(Configurations.ITEM_ID)?.let { itemViewModel.setProperItem(it) }
@@ -118,7 +122,7 @@ class  AddActivity : AppCompatActivity(){
         }
 
         setObservers() //옵저버와 뷰모델 연결
-    }
+     }
 
 
     //--------------------------------------------
@@ -145,6 +149,8 @@ class  AddActivity : AppCompatActivity(){
         //스피너에 표시할 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                binding.info?.category = binding.spCategory.selectedItem.toString()
+                binding.info?.categoryNum = position
                 curImgName ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -155,6 +161,7 @@ class  AddActivity : AppCompatActivity(){
             val cal = Calendar.getInstance()
             val dp = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+                binding.info?.date = dText
                 binding.tvDate.text = dText
             }
             DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
@@ -189,9 +196,15 @@ class  AddActivity : AppCompatActivity(){
             imgDlg.create()
         }
 
-        //식당 이름을 입력하지 않을 시
+        //별점 개수 변경 시
+        binding.rbRatingBar.setOnRatingBarChangeListener { _, fl, _ ->
+            binding.info?.rate = fl.toInt()
+        }
+
+        //식당 이름 텍스트 변경 시
         binding.etName.addTextChangedListener {
             it?.let { text ->
+                binding.info?.name = it.toString()
                 binding.textLayoutName.error = when(text.length){
                     0 -> "식당 이름을 입력해주세요"
                     else -> null
@@ -199,14 +212,20 @@ class  AddActivity : AppCompatActivity(){
             }
         }
 
-        //식당 이름을 입력하지 않을 시
+        //식당 위치 텍스트 변경 시
         binding.etLocation.addTextChangedListener {
             it?.let { text ->
+                binding.info?.name = it.toString()
                 binding.textLayoutLocation.error = when(text.length){
                     0 -> "위치를 입력해주세요"
                     else -> null
                 }
             }
+        }
+
+        //메모 텍스트 변경 시
+        binding.etMemo.addTextChangedListener {
+            it?.let { binding.info?.memo = it.toString() }
         }
     }
 
@@ -223,7 +242,8 @@ class  AddActivity : AppCompatActivity(){
 
     /* 들어온 아이템 정보에 따라 화면을 세팅하는 함수 */
     private fun setContentsWithItem(item: RestaurantInfo){
-        binding.info = item
+        binding.info = item.copy()
+        binding.date = item.date
         binding.spCategory.setSelection(item.categoryNum)
         itemLocation = LocationPair(item.latitude, item.longitude)
         curImgName = item.imageName
@@ -238,30 +258,28 @@ class  AddActivity : AppCompatActivity(){
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
         //이미지가 지정되지 않은 상태면 경로도 null -> 이미지 로딩 에러 방지
-        curImgName ?: run{ curImgPath = null }
+        curImgName ?: run{
+            curImgPath = null
+            binding.info?.imagePath = null
+        }
 
         //네트워크 연결 상태라면 저장과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
             if (binding.etName.text.isNullOrEmpty() || binding.etLocation.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
-            else
-                binding.info?.also { updateItem(it.dbID) } ?: run{ insertItem() }
+            else //갱신 혹은 삽입
+                binding.info?.also { updateItem() } ?: run{ insertItem() }
         }
         else
             Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateItem(originalID: String){
-        //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-        val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
-            name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
-            category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
-            memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
-            latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = originalID)
-
-        itemViewModel.updateItem(newItem, imgUri, preImgName)
+    /* 기존 아이템을 갱신하는 함수 */
+    private fun updateItem(){
+        binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
     }
 
+    /* 새 아이템을 추가하는 함수 */
     private fun insertItem(){
         val newID = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
