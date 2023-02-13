@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
 import com.fallTurtle.myrestaurantgallery.databinding.EachItemBinding
+import com.fallTurtle.myrestaurantgallery.etc.Configurations
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 
 /**
@@ -14,7 +15,7 @@ import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
  **/
 class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
     //각 아이템뷰의 길이 (가로, 세로)
-    private val holderWidth = windowWidth / 7 * 3
+    private val holderWidth = windowWidth/7 * 3
     private val holderHeight = holderWidth/6 * 5
 
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 컬렉션
@@ -73,7 +74,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
             itemView.setOnClickListener { v ->
                 binding.info?.dbID.let { id ->
                     val record = Intent(v.context, RecordActivity::class.java)
-                    record.putExtra("item_id", id)
+                    record.putExtra(Configurations.ITEM_ID, id)
                     v.context.startActivity(record)
                 }
             }

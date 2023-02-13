@@ -20,6 +20,7 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.etc.Configurations
 import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
@@ -102,7 +103,7 @@ class  AddActivity : AppCompatActivity(){
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
-        itemId = intent.getStringExtra("item_id")
+        itemId = intent.getStringExtra(Configurations.ITEM_ID)
         itemId?.let { itemViewModel.setProperItem(it) }
 
         //각 뷰의 리스너들 설정
