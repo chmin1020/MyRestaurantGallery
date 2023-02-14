@@ -22,7 +22,7 @@ class RoomRepository(application: Application): DataRepository {
     }
 
     /* 특정 데이터를 가져오는 함수 */
-    override suspend fun getProperData(id: String): RestaurantInfo {
+    override suspend fun getProperData(id: String): RestaurantInfo? {
         return roomDao.getProperItem(id)
     }
 
@@ -34,6 +34,11 @@ class RoomRepository(application: Application): DataRepository {
     /* 특정 데이터를 추가하는 함수 */
     override suspend fun insertData(data: RestaurantInfo) {
         roomDao.insert(data)
+    }
+
+    /* 특정 데이터를 갱신하는 함수 */
+    override suspend fun updateData(data: RestaurantInfo) {
+        roomDao.update(data)
     }
 
     /* 특정 데이터를 제거하는 함수 */

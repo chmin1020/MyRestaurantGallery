@@ -85,11 +85,21 @@ class ItemViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    /* 기본적인 아이템 삽입(혹은 갱신) 이벤트를 위한 함수 */
-    fun insertItem(item: RestaurantInfo, imgUri: Uri?, preImgPath: String?) {
+    /* 기본적인 아이템 삽입 이벤트를 위한 함수 */
+    fun insertItem(item: RestaurantInfo, imgUri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
             insideProgressing.postValue(true)
-            itemRepository.itemInsert(item, imgUri, preImgPath)
+            itemRepository.itemInsert(item, imgUri)
+            insideProgressing.postValue(false)
+            insideWorkFinishFlag.postValue(true)
+        }
+    }
+
+    /* 기본적인 아이템 갱신 이벤트를 위한 함수 */
+    fun updateItem(item: RestaurantInfo, imgUri: Uri?, preImgPath: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            insideProgressing.postValue(true)
+            itemRepository.itemUpdate(item, imgUri, preImgPath)
             insideProgressing.postValue(false)
             insideWorkFinishFlag.postValue(true)
         }
