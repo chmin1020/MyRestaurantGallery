@@ -4,8 +4,11 @@ import androidx.room.*
 
 @Dao
 interface InfoRoomDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insert(item: RestaurantInfo)
+
+    @Update
+    suspend fun update(item: RestaurantInfo)
 
     @Delete
     suspend fun delete(item: RestaurantInfo)
@@ -17,5 +20,5 @@ interface InfoRoomDao {
     suspend fun clearAllItems()
 
     @Query("SELECT * FROM RestaurantInfo WHERE dbID is :id")
-    suspend fun getProperItem(id: String): RestaurantInfo
+    suspend fun getProperItem(id: String): RestaurantInfo?
 }

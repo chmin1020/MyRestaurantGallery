@@ -15,6 +15,7 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.etc.Configurations
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //공유 설정 (로그인 유지 여부)
-    private val sharedPreferences by lazy{ getSharedPreferences("loginCheck", MODE_PRIVATE) }
+    private val sharedPreferences by lazy{ getSharedPreferences(Configurations.LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
 
     // 유저와 아이템 부분의 비즈니스 작업의 상태 등을 판별할 프로퍼티
     private var userProgress = false
