@@ -10,14 +10,16 @@
     <string name="loading">로딩중…</string>
     <string name="find">찾기</string>
     <string name="location_myself">위치 직접 입력</string>
-
+    <string name="permission_ask">권한을 허용해주세요</string>
 
     <!--로그인 문구-->
     <string name="login_welcome">맛집 갤러리에 오신 것을 환영합니다!</string>
     <string name="login_explain">앱 이용을 위해 구글 계정 로그인해주세요</string>
     <string name="logout">로그아웃</string>
     <string name="withdrawal">앱 탈퇴</string>
+    <string name="google_auth_failure">구글 인증 실패</string>
     <string name="withdrawal_ask">정말 탈퇴하시겠습니까? 저장하신 정보는 삭제됩니다.</string>
+    <string name="login_success">로그인 완료</string>
     <string name="logout_success">로그아웃 완료</string>
     <string name="withdrawal_success">탈퇴 완료</string>
 
@@ -34,7 +36,7 @@
     <string name="default_message">기본 이미지로 변경</string>
     <string name="delete_message">정말 삭제하시겠습니까?</string>
 
-
+    <string name="network_error">네트워크에 연결되어 있지 않습니다.</string>
     <string name="delete_complete">삭제 완료</string>
     <string name="save_complete">저장 완료</string>
     <string name="edit_complete">수정 완료</string>

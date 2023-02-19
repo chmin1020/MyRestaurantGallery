@@ -10,7 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.Configurations
+import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
+import com.fallTurtle.myrestaurantgallery.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,7 +44,7 @@ class LoginActivity: AppCompatActivity() {
     private var itemProgress = false
 
     //공유 설정 (로그인 유지 여부)
-    private val sharedPreferences by lazy{ getSharedPreferences(Configurations.LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
+    private val sharedPreferences by lazy{ getSharedPreferences(LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
 
 
     //--------------------------------------------
@@ -53,7 +54,7 @@ class LoginActivity: AppCompatActivity() {
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         getTokenForLogin(it.data)
             ?.let { token-> userViewModel.loginUser(token) } //성공 시 로그인
-            ?: run{ Toast.makeText(this, "구글 계정 인증 실패", Toast.LENGTH_SHORT).show()} //실패 시 메시지 출력
+            ?: run{ Toast.makeText(this, R.string.google_auth_failure, Toast.LENGTH_SHORT).show()} //실패 시 메시지 출력
     }
 
 
@@ -129,14 +130,14 @@ class LoginActivity: AppCompatActivity() {
 
     /* 유저가 존재한다는 걸 확인한 뒤 후속 작업을 진행하는 함수 */
     private fun doProperWorkAccordingToLoginState() {
-        sharedPreferences.edit().putBoolean("isLogin", true).apply()
+        sharedPreferences.edit().putBoolean(IS_LOGIN, true).apply()
         setItemRestoreObserver().also { itemViewModel.restoreItemsFromAccount() }
     }
 
     /* 로그인이 완료된 것을 확인한 뒤 메인 화면을 실행하는 함수 */
     private fun showMain(){
         //새 로그인 안내 토스트 메시지
-        Toast.makeText(this, "로그인 완료!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show()
 
         //메인화면 실행 및 현재 화면 종료
         startActivity(Intent(this, MainActivity::class.java))

@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.view_model.LocationViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
@@ -21,7 +22,7 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationIn
  * 이 액티비티에서는 직접 식당 이름을 검색하고, 그에 맞는 결과를 확인하여 선택할 수 있다.
  * 이 때, 검색 결과를 위해서 카카오 맵 API 를 Retrofit2 객체를 활용해서 사용했다.
  **/
-class LocationListActivity : AppCompatActivity(){
+class LocationListActivity : AppCompatActivity() {
     //editText 키보드 관리자
     private val inputManager: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
@@ -29,18 +30,28 @@ class LocationListActivity : AppCompatActivity(){
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //뷰모델
-    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val locationViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[LocationViewModel::class.java] }
+    private val viewModelFactory by lazy { ViewModelProvider.AndroidViewModelFactory(this.application) }
+    private val locationViewModel by lazy {
+        ViewModelProvider(
+            this,
+            viewModelFactory
+        )[LocationViewModel::class.java]
+    }
 
     //옵저버들
     private val searchObserver = Observer<List<LocationInfo>> { taskWithResults(it) }
-    private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
+    private val progressObserver =
+        Observer<Boolean> { if (it) progressDialog.create() else progressDialog.destroy() }
 
     //리사이클러뷰
-    private val adapter =  LocationAdapter()
+    private val adapter = LocationAdapter()
 
     //뷰 바인딩
-    private val binding:ActivityLocationListBinding by lazy{ ActivityLocationListBinding.inflate(layoutInflater)}
+    private val binding: ActivityLocationListBinding by lazy {
+        ActivityLocationListBinding.inflate(
+            layoutInflater
+        )
+    }
 
 
     //--------------------------------------------
@@ -63,7 +74,7 @@ class LocationListActivity : AppCompatActivity(){
     // 내부 함수 영역 (초기화)
 
     /* 어댑터와 레이아웃 매니저 지정, 추가 리스너 구현 등 리사이클러뷰와 관련된 초기 설정을 하는 함수 */
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         //리사이클러뷰 설정(adapter, layoutManager)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
@@ -81,13 +92,13 @@ class LocationListActivity : AppCompatActivity(){
     }
 
     /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
-    private fun initListeners(){
+    private fun initListeners() {
         //뒤로 가기 버튼 클릭
         binding.ivBack.setOnClickListener { finish() }
 
         //키보드에서 엔터를 클릭
-        binding.etSearch.setOnKeyListener{ _, keyCode, event ->
-            if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+        binding.etSearch.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
                 return@setOnKeyListener true.also { doSearch(binding.etSearch.text.toString()) }
             return@setOnKeyListener false
         }
@@ -97,7 +108,7 @@ class LocationListActivity : AppCompatActivity(){
     }
 
     /* 각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
-    private fun initObservers(){
+    private fun initObservers() {
         locationViewModel.searchResults.observe(this, searchObserver)
         locationViewModel.progressing.observe(this, progressObserver)
     }
@@ -107,15 +118,15 @@ class LocationListActivity : AppCompatActivity(){
     // 내부 함수 영역 (검색)
 
     /* 키워드를 가지고 실제 검색을 하는 함수 */
-    private fun doSearch(keyword: String){
+    private fun doSearch(keyword: String) {
         adapter.searchSettingReset(keyword)
         hideKeyboard()
 
         //네트워크 상태에 따른 검색 작업 실시
-        if(NetworkWatcher.checkNetworkState(this))
+        if (NetworkWatcher.checkNetworkState(this))
             locationViewModel.searchLocationWithQuery(keyword, 1) //첫 페이지부터 검색
         else
-            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
     }
 
     /* 다음 페이지 내용을 검색해서 가져오는 함수 */
@@ -125,7 +136,7 @@ class LocationListActivity : AppCompatActivity(){
     }
 
     /* 받은 응답 값들(뷰모델 데이터)을 통해 적절한 작업을 수행하는 함수 */
-    private fun taskWithResults(results: List<LocationInfo>){
+    private fun taskWithResults(results: List<LocationInfo>) {
         adapter.update(results)
         adapter.readyToNextPage()
     }
@@ -135,14 +146,22 @@ class LocationListActivity : AppCompatActivity(){
     // 내부 함수 영역 (키보드 조정)
 
     /* 키보드를 드러내기 위해 사용하는 함수 */
-    private fun showKeyboard(){
+    private fun showKeyboard() {
         binding.etSearch.requestFocus()
-        binding.etSearch.postDelayed({ inputManager.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT) }, 100)
+        binding.etSearch.postDelayed({
+            inputManager.showSoftInput(
+                binding.etSearch,
+                InputMethodManager.SHOW_IMPLICIT
+            )
+        }, 100)
     }
 
     /* 키보드를 숨기기 위해 사용하는 함수 */
-    private fun hideKeyboard(){
-        inputManager.hideSoftInputFromWindow(binding.etSearch.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    private fun hideKeyboard() {
+        inputManager.hideSoftInputFromWindow(
+            binding.etSearch.windowToken,
+            InputMethodManager.HIDE_IMPLICIT_ONLY
+        )
     }
 
 }

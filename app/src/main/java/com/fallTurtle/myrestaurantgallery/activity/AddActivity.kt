@@ -20,8 +20,7 @@ import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.Configurations
-import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
+import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
@@ -32,8 +31,8 @@ import java.util.Date
 
 
 /**
- * 항목 추가 화면을 담당하는 액티비티.
- * 이 액티비티에서는 새로운 맛집 정보를 저장하거나 기존 내용을 수정하게 해준다.
+ * 항목 추가 화면 담당을 하는 activity.
+ * 새로운 맛집 정보 저장을 하는 작업과 기존 내용을 수정을 하는 작업을 하게 해준다.
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
 class  AddActivity : AppCompatActivity(){
@@ -46,7 +45,7 @@ class  AddActivity : AppCompatActivity(){
 
     //옵저버
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
-    private val finishObserver = Observer<Boolean> { if(it) finish() }
+    private val finishObserver = Observer<Boolean> { if(it) workCompleteFinish() }
     private val selectedItemObserver = Observer<RestaurantInfo> { setContentsWithItem(it) }
 
     //로딩 다이얼로그
@@ -66,7 +65,7 @@ class  AddActivity : AppCompatActivity(){
     // 액티비티 결과 런처
 
     /* 갤러리에서 가지고 온 이미지 결과를 처리하는 런처 */
-    private val getImg = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         imgUri = it.data?.data
         imgUri?.let{ uri->
             //시간을 통한 고유 이미지 이름 생성
@@ -79,13 +78,13 @@ class  AddActivity : AppCompatActivity(){
     }
 
     /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
-    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        if(it.data?.getBooleanExtra("isChanged", false) == true) {
-            val address = it.data?.getStringExtra("address")
+    private val getAddressLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
+            val address = it.data?.getStringExtra(ADDRESS)
 
             //받아온 내용 적용
-            itemLocation.latitude = it.data?.getDoubleExtra("latitude", -1.0) ?: -1.0
-            itemLocation.longitude = it.data?.getDoubleExtra("longitude", -1.0) ?: -1.0
+            itemLocation.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
+            itemLocation.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             binding.info?.latitude = itemLocation.latitude
             binding.info?.longitude = itemLocation.longitude
             binding.etLocation.setText(address)
@@ -102,10 +101,10 @@ class  AddActivity : AppCompatActivity(){
 
         //데이터 디폴트 설정
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
-        binding.date = SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
+        binding.date = SimpleDateFormat(DATE_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
-        intent.getStringExtra(Configurations.ITEM_ID)?.let { itemViewModel.setProperItem(it) }
+        intent.getStringExtra(ITEM_ID)?.let { itemViewModel.setProperItem(it) }
 
         //각 뷰의 리스너들 설정
         initListeners()
@@ -140,6 +139,12 @@ class  AddActivity : AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
+    /* 화면 종료를 정의한다.(애니메이션) */
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out)
+    }
+
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
@@ -170,9 +175,9 @@ class  AddActivity : AppCompatActivity(){
         //map (주소 가져오기)
         binding.btnMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", itemLocation.latitude)
-            intent.putExtra("longitude", itemLocation.longitude)
-            getAddress.launch(intent)
+            intent.putExtra(LATITUDE, itemLocation.latitude)
+            intent.putExtra(LONGITUDE, itemLocation.longitude)
+            getAddressLauncher.launch(intent)
         }
 
         //이미지뷰 클릭 시
@@ -181,7 +186,7 @@ class  AddActivity : AppCompatActivity(){
 
             //갤러리에서 사진 가져오는 것을 선택했다면
             imgDlg.setOnGalleryClickListener {
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImg.launch(it) }
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImageLauncher.launch(it) }
                 imgDlg.destroy()
             }
 
@@ -251,6 +256,12 @@ class  AddActivity : AppCompatActivity(){
         preImgName = item.imageName
     }
 
+    /* 완료한 작업에 따라 적절한 메시지와 함께 화면을 종료하는 함수 */
+    private fun workCompleteFinish(){
+        val completeText = if(binding.info == null) R.string.save_complete else R.string.edit_complete
+        Toast.makeText(this, completeText, Toast.LENGTH_SHORT).show()
+        finish()
+    }
 
     //--------------------------------------------
     // 내부 함수 영역 (데이터 저장)
@@ -271,17 +282,18 @@ class  AddActivity : AppCompatActivity(){
                 binding.info?.also { updateItem() } ?: run{ insertItem() }
         }
         else
-            Toast.makeText(this, "네트워크에 연결되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
     }
 
     /* 기존 아이템을 갱신하는 함수 */
     private fun updateItem(){
+        binding.info?.imageName = curImgName
         binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
     }
 
     /* 새 아이템을 추가하는 함수 */
     private fun insertItem(){
-        val newID = SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
+        val newID = SimpleDateFormat(ID_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
         //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
         val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),

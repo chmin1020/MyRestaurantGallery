@@ -12,10 +12,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
+import com.fallTurtle.myrestaurantgallery.adapter.RestaurantAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.Configurations
+import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
+import com.fallTurtle.myrestaurantgallery.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //리사이클러뷰 어댑터
-    private val itemsAdapter by lazy { ItemAdapter(resources.displayMetrics.widthPixels )}
+    private val itemsAdapter by lazy { RestaurantAdapter(resources.displayMetrics.widthPixels )}
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //공유 설정 (로그인 유지 여부)
-    private val sharedPreferences by lazy{ getSharedPreferences(Configurations.LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
+    private val sharedPreferences by lazy{ getSharedPreferences(LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
 
     // 유저와 아이템 부분의 비즈니스 작업의 상태 등을 판별할 프로퍼티
     private var userProgress = false
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //로그인 여부 확인 (로그인 상태 아니면 로그인 액티비티 실행)
-        if(!sharedPreferences.getBoolean("isLogin", false)){
+        if(!sharedPreferences.getBoolean(IS_LOGIN, false)){
             //유저 연결해야함 -> 로그인 액티비티로 이동
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
@@ -80,6 +81,9 @@ class MainActivity : AppCompatActivity() {
         else{
             //권한 허락을 위한 다이얼로그
             showPermissionDialog()
+
+            //클릭 리스너 지정
+            initListener()
 
             //viewModel 관찰하는 옵저버들 설정
             setObservers()
@@ -116,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             //로그아웃 선택 시
             R.id.menu_logout -> {
                 endToastMessage = R.string.logout_success
-                sharedPreferences.edit().putBoolean("isLogin", false).apply()
+                sharedPreferences.edit().putBoolean(IS_LOGIN, false).apply()
                 userViewModel.logoutUser()
                 itemViewModel.clearAllLocalItems()
             }
@@ -129,13 +133,6 @@ class MainActivity : AppCompatActivity() {
                     .setNegativeButton(R.string.no){_,_ -> }
                     .show()
             }
-
-            //아이템 추가 선택 시
-            R.id.add_item ->{
-                val addIntent = Intent(this@MainActivity, AddActivity::class.java)
-                addIntent.putExtra("isEdit", false)
-                startActivity(addIntent)
-            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -144,12 +141,20 @@ class MainActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
+    /* 뷰 클릭 리스너를 지정하는 함수 */
+    private fun initListener(){
+        binding.floatingButtonAdd.setOnClickListener{
+            val addIntent = Intent(this@MainActivity, AddActivity::class.java)
+            startActivity(addIntent)
+            overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
+        }
+    }
+
     /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
     private fun setObservers(){
         //각 뷰모델 속 작업 진행 여부 변화 관찰
         userViewModel.progressing.observe(this, userProgressObserver)
         itemViewModel.progressing.observe(this, itemProgressObserver)
-
 
         //각 뷰모델 속 작업 종료 여부 변화 관찰
         userViewModel.workFinishFlag.observe(this, userFinishObserver)
@@ -165,7 +170,7 @@ class MainActivity : AppCompatActivity() {
         val permissionListener: PermissionListener = object : PermissionListener {
             override fun onPermissionGranted() { }
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                Toast.makeText(this@MainActivity, "권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, R.string.permission_ask, Toast.LENGTH_SHORT).show()
                 finishAffinity()
             }
         }
@@ -173,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         //TedPermission 객체에 체크할 퍼미션들과 퍼미션 리스너 등록
         TedPermission.create()
             .setPermissionListener(permissionListener)
-            .setDeniedMessage("권한을 허용해주세요.")
+            .setDeniedMessage(R.string.permission_ask)
             .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -201,7 +206,7 @@ class MainActivity : AppCompatActivity() {
     /* 사용자의 탈퇴 처리를 위한 함수 */
     private fun withdrawCurrentUser(){
         endToastMessage = R.string.withdrawal_success
-        sharedPreferences.edit().putBoolean("isLogin", false).apply()
+        sharedPreferences.edit().putBoolean(IS_LOGIN, false).apply()
         itemViewModel.clearAllRemoteItems()
         itemViewModel.clearAllLocalItems()
         userViewModel.withdrawUser()
