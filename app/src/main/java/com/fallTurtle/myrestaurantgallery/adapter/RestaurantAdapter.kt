@@ -1,5 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -74,7 +76,9 @@ class RestaurantAdapter(windowWidth: Int) : RecyclerView.Adapter<RestaurantAdapt
             itemView.setOnClickListener { v ->
                 Intent(v.context, RecordActivity::class.java).let {
                     it.putExtra(ITEM_ID, binding.info?.dbID)
-                    v.context.startActivity(it)
+                    val options = ActivityOptions.makeSceneTransitionAnimation(
+                        v.context as Activity, binding.layoutImage, binding.layoutImage.transitionName)
+                    v.context.startActivity(it, options.toBundle())
                 }
             }
         }
