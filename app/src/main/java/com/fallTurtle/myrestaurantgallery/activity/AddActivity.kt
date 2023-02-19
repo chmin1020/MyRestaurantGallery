@@ -287,6 +287,7 @@ class  AddActivity : AppCompatActivity(){
 
     /* 기존 아이템을 갱신하는 함수 */
     private fun updateItem(){
+        binding.info?.imageName = curImgName
         binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
     }
 
