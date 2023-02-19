@@ -45,7 +45,7 @@ class  AddActivity : AppCompatActivity(){
 
     //옵저버
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
-    private val finishObserver = Observer<Boolean> { if(it) finish() }
+    private val finishObserver = Observer<Boolean> { if(it) workCompleteFinish() }
     private val selectedItemObserver = Observer<RestaurantInfo> { setContentsWithItem(it) }
 
     //로딩 다이얼로그
@@ -256,6 +256,12 @@ class  AddActivity : AppCompatActivity(){
         preImgName = item.imageName
     }
 
+    /* 완료한 작업에 따라 적절한 메시지와 함께 화면을 종료하는 함수 */
+    private fun workCompleteFinish(){
+        val completeText = if(binding.info == null) R.string.save_complete else R.string.edit_complete
+        Toast.makeText(this, completeText, Toast.LENGTH_SHORT).show()
+        finish()
+    }
 
     //--------------------------------------------
     // 내부 함수 영역 (데이터 저장)

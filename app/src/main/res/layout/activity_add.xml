@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="info"
@@ -48,38 +48,38 @@
                 android:id="@+id/ll_date"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:padding="2dp"
                 android:layout_margin="10dp"
-                android:weightSum="5"
-                android:orientation="horizontal"
                 android:background="@drawable/date_sign"
-                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:weightSum="5"
                 app:layout_constraintBottom_toTopOf="@id/ll_image"
-                app:layout_constraintStart_toStartOf="@id/toolbar"
+                app:layout_constraintDimensionRatio="5"
                 app:layout_constraintEnd_toEndOf="@id/toolbar"
-                app:layout_constraintWidth_percent="0.68"
-                app:layout_constraintDimensionRatio="5">
+                app:layout_constraintStart_toStartOf="@id/toolbar"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                app:layout_constraintWidth_percent="0.68">
 
                 <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="4"
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
                     android:padding="4dp"
                     android:text="@{date}"
-                    android:textSize="15sp"
-                    android:gravity="center"
                     android:textColor="#000000"
-                    android:autoSizeTextType="uniform"/>
+                    android:textSize="15sp" />
 
                 <ImageView
                     android:id="@+id/iv_date"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:contentDescription="@string/calendar_pictogram_description"
                     android:padding="8dp"
-                    android:src="@drawable/calendar"
-                    android:contentDescription="@string/calendar_pictogram_description"/>
+                    android:src="@drawable/calendar" />
 
             </LinearLayout>
 
@@ -88,23 +88,23 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@drawable/grid_border"
-                app:layout_constraintTop_toBottomOf="@id/ll_date"
                 app:layout_constraintBottom_toTopOf="@id/rb_ratingBar"
-                app:layout_constraintStart_toStartOf="@id/ll_date"
+                app:layout_constraintDimensionRatio="1.5"
                 app:layout_constraintEnd_toEndOf="@id/ll_date"
-                app:layout_constraintWidth_percent="0.9"
-                app:layout_constraintDimensionRatio="1.5">
+                app:layout_constraintStart_toStartOf="@id/ll_date"
+                app:layout_constraintTop_toBottomOf="@id/ll_date"
+                app:layout_constraintWidth_percent="0.9">
 
                 <ImageView
                     android:id="@+id/iv_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="12dp"
+                    android:contentDescription="@string/item_image_description"
                     android:scaleType="centerInside"
                     android:src="@drawable/korean_food"
-                    android:contentDescription="@string/item_image_description"
-                    app:imagePath="@{info.imagePath}"
-                    app:categoryNum="@{info.categoryNum}"/>
+                    app:categoryNum="@{info.categoryNum}"
+                    app:imagePath="@{info.imagePath}" />
 
             </LinearLayout>
 
@@ -117,18 +117,18 @@
                 android:numStars="5"
                 android:rating="@{info.rate}"
                 android:stepSize="1"
-                app:layout_constraintTop_toBottomOf="@id/ll_image"
                 app:layout_constraintBottom_toTopOf="@id/text_layout_name"
-                app:layout_constraintStart_toStartOf="@id/ll_image"
                 app:layout_constraintEnd_toEndOf="@id/ll_image"
-                app:layout_constraintHeight_percent="0.06"/>
+                app:layout_constraintHeight_percent="0.06"
+                app:layout_constraintStart_toStartOf="@id/ll_image"
+                app:layout_constraintTop_toBottomOf="@id/ll_image" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_layout_name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_constraintBottom_toTopOf="@id/sp_category"
                 app:layout_constraintEnd_toEndOf="@id/rb_ratingBar"
                 app:layout_constraintHeight_percent="0.1"
@@ -152,14 +152,14 @@
                 android:id="@+id/sp_category"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:spinnerMode="dialog"
                 android:layout_margin="10dp"
-                app:layout_constraintTop_toBottomOf="@id/text_layout_name"
+                android:spinnerMode="dialog"
                 app:layout_constraintBottom_toTopOf="@id/text_layout_location"
-                app:layout_constraintStart_toStartOf="@id/text_layout_name"
                 app:layout_constraintEnd_toEndOf="@id/text_layout_name"
-                app:layout_constraintWidth_percent="0.9"
                 app:layout_constraintHeight_percent="0.06"
+                app:layout_constraintStart_toStartOf="@id/text_layout_name"
+                app:layout_constraintTop_toBottomOf="@id/text_layout_name"
+                app:layout_constraintWidth_percent="0.9"
                 tools:entries="@{spinnerEntries}" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -199,10 +199,10 @@
                 android:textColor="#000000"
 
                 app:layout_constraintBaseline_toBaselineOf="@id/text_layout_location"
-                app:layout_constraintTop_toTopOf="@id/text_layout_location"
                 app:layout_constraintBottom_toBottomOf="@id/text_layout_location"
                 app:layout_constraintStart_toEndOf="@id/text_layout_location"
-                app:layout_constraintWidth_percent="0.2"/>
+                app:layout_constraintTop_toTopOf="@id/text_layout_location"
+                app:layout_constraintWidth_percent="0.2" />
 
             <EditText
                 android:id="@+id/et_memo"

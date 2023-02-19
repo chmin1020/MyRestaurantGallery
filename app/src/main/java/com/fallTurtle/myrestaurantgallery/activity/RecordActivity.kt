@@ -75,7 +75,7 @@ class RecordActivity : AppCompatActivity() {
     /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
-            android.R.id.home -> finish() //뒤로 가기
+            android.R.id.home -> supportFinishAfterTransition() //뒤로 가기
             R.id.delete_item -> makeDeleteDialog() //삭제
             R.id.edit_item -> moveToEditActivity() //수정
         }
@@ -87,7 +87,6 @@ class RecordActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.record_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
@@ -120,7 +119,9 @@ class RecordActivity : AppCompatActivity() {
     /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 화면으로 이동하는 함수  */
     private fun moveToEditActivity(){
         Intent(this, AddActivity::class.java).also{
-            it.putExtra(ITEM_ID, itemId); startActivity(it)
+            it.putExtra(ITEM_ID, itemId)
+            startActivity(it)
+            overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
         }
     }
 
