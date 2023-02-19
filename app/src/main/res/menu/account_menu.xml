@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:title="@string/logout"
         android:enabled="true"
@@ -9,9 +8,4 @@
         android:title="@string/withdrawal"
         android:enabled="true"
         android:id="@+id/menu_withdrawal"/>
-    <item
-        android:id="@+id/add_item"
-        android:icon="@drawable/add_picture"
-        android:title="@string/add_new_item"
-        app:showAsAction="always"/>
 </menu>

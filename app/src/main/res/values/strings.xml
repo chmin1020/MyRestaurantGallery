@@ -10,13 +10,16 @@
     <string name="loading">Loading…</string>
     <string name="find">Find</string>
     <string name="location_myself">Write location by yourself</string>
+    <string name="permission_ask">Please allow to get permissions for better using this app.</string>
 
     <!--for login-->
     <string name="login_welcome">Welcome to My Restaurant Gallery!</string>
     <string name="login_explain">Please log in with your Google account for using this app.</string>
     <string name="logout">logout</string>
     <string name="withdrawal">withdrawal</string>
+    <string name="google_auth_failure">google authentication failure!</string>
     <string name="withdrawal_ask">Are you sure to want withdrawal? All of your data will be removed.</string>
+    <string name="login_success">login is completed</string>
     <string name="logout_success">logout is completed</string>
     <string name="withdrawal_success">withdrawal is completed</string>
 
@@ -33,6 +36,7 @@
     <string name="default_message">use default image</string>
     <string name="delete_message">Do you want to delete?</string>
 
+    <string name="network_error">Please check your network status</string>
     <string name="delete_complete">Delete complete</string>
     <string name="save_complete">Save complete</string>
     <string name="edit_complete">Edit complete</string>
