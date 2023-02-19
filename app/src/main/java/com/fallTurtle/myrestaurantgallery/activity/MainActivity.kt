@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.adapter.ItemAdapter
+import com.fallTurtle.myrestaurantgallery.adapter.RestaurantAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //리사이클러뷰 어댑터
-    private val itemsAdapter by lazy { ItemAdapter(resources.displayMetrics.widthPixels )}
+    private val itemsAdapter by lazy { RestaurantAdapter(resources.displayMetrics.widthPixels )}
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
@@ -81,6 +81,9 @@ class MainActivity : AppCompatActivity() {
         else{
             //권한 허락을 위한 다이얼로그
             showPermissionDialog()
+
+            //클릭 리스너 지정
+            initListener()
 
             //viewModel 관찰하는 옵저버들 설정
             setObservers()
@@ -130,12 +133,6 @@ class MainActivity : AppCompatActivity() {
                     .setNegativeButton(R.string.no){_,_ -> }
                     .show()
             }
-
-            //아이템 추가 선택 시
-            R.id.add_item ->{
-                val addIntent = Intent(this@MainActivity, AddActivity::class.java)
-                startActivity(addIntent)
-            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -143,6 +140,14 @@ class MainActivity : AppCompatActivity() {
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
+
+    /* 뷰 클릭 리스너를 지정하는 함수 */
+    private fun initListener(){
+        binding.floatingButtonAdd.setOnClickListener{
+            val addIntent = Intent(this@MainActivity, AddActivity::class.java)
+            startActivity(addIntent)
+        }
+    }
 
     /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
     private fun setObservers(){

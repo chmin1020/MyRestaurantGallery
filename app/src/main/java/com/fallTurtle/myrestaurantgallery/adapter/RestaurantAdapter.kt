@@ -13,9 +13,9 @@ import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
-class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomViewHolder>() {
+class RestaurantAdapter(windowWidth: Int) : RecyclerView.Adapter<RestaurantAdapter.CustomViewHolder>() {
     //각 아이템뷰의 길이 (가로, 세로)
-    private val holderWidth = windowWidth/7 * 3
+    private val holderWidth = windowWidth/9 * 4
     private val holderHeight = holderWidth/6 * 5
 
     //리사이클러뷰를 이루는 리스트 데이터를 저장하는 컬렉션
@@ -51,7 +51,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
 
             //결과에 따라 아이템 리스트 새롭게 갱신
             this.itemList.run {
-                diffResult.dispatchUpdatesTo(this@ItemAdapter)
+                diffResult.dispatchUpdatesTo(this@RestaurantAdapter)
                 clear()
                 addAll(it)
             }

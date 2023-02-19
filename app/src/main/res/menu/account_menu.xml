@@ -9,9 +9,4 @@
         android:title="@string/withdrawal"
         android:enabled="true"
         android:id="@+id/menu_withdrawal"/>
-    <item
-        android:id="@+id/add_item"
-        android:icon="@drawable/add_picture"
-        android:title="@string/add_new_item"
-        app:showAsAction="always"/>
 </menu>
