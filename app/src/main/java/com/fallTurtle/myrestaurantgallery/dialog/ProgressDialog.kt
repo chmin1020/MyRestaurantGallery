@@ -2,14 +2,14 @@ package com.fallTurtle.myrestaurantgallery.dialog
 
 import android.app.Dialog
 import android.content.Context
-import com.fallTurtle.myrestaurantgallery.databinding.ProgressDialogBinding
+import com.fallTurtle.myrestaurantgallery.databinding.DialogProgressBinding
 
 /**
  * 무언가 진행 중 임을 나타내는 다이얼로그 클래스.
  **/
 class ProgressDialog(context: Context) {
     //뷰 바인딩
-    private val binding by lazy { ProgressDialogBinding.inflate(dialog.layoutInflater) }
+    private val binding by lazy { DialogProgressBinding.inflate(dialog.layoutInflater) }
 
     //다이얼로그 객체
     private val dialog = Dialog(context)

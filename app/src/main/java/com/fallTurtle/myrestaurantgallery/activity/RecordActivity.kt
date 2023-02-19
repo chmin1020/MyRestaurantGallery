@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.Configurations
+import com.fallTurtle.myrestaurantgallery.etc.ITEM_ID
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 
@@ -55,7 +55,7 @@ class RecordActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
-        itemId = intent.getStringExtra(Configurations.ITEM_ID)
+        itemId = intent.getStringExtra(ITEM_ID)
 
         //옵저버 설정
         setObservers()
@@ -120,7 +120,7 @@ class RecordActivity : AppCompatActivity() {
     /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 화면으로 이동하는 함수  */
     private fun moveToEditActivity(){
         Intent(this, AddActivity::class.java).also{
-            it.putExtra(Configurations.ITEM_ID, itemId); startActivity(it)
+            it.putExtra(ITEM_ID, itemId); startActivity(it)
         }
     }
 
