@@ -8,7 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.MapActivity
-import com.fallTurtle.myrestaurantgallery.databinding.MapListBinding
+import com.fallTurtle.myrestaurantgallery.databinding.ListItemLocationBinding
+import com.fallTurtle.myrestaurantgallery.etc.DEFAULT_LOCATION
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 
 /**
@@ -34,7 +35,7 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
 
     /* 새로운 뷰홀더 만들어질 때 실행되는 callback 함수 */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = MapListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ListItemLocationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
@@ -85,15 +86,15 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
 
 
     /* 해당 리사이클러뷰에서 사용하는 뷰홀더 클래스 */
-    class CustomViewHolder(private val binding: MapListBinding) : RecyclerView.ViewHolder(binding.root){
+    class CustomViewHolder(private val binding: ListItemLocationBinding) : RecyclerView.ViewHolder(binding.root){
         //초기화 블록 (리스너 설정)
         init {
             itemView.setOnClickListener {
                 //뷰홀더가 가진 데이터를 인텐트로 보내며 해당 액티비티 종료
                 (itemView.context as Activity).apply {
                     val backTo = Intent(this, MapActivity::class.java).apply {
-                        putExtra("x", binding.locationResult?.locationPair?.latitude ?: -1.0)
-                        putExtra("y", binding.locationResult?.locationPair?.longitude ?: -1.0)
+                        putExtra("x", binding.locationResult?.locationPair?.latitude ?: DEFAULT_LOCATION)
+                        putExtra("y", binding.locationResult?.locationPair?.longitude ?: DEFAULT_LOCATION)
                     }
                     this.setResult(AppCompatActivity.RESULT_OK, backTo)
                     this.finish()

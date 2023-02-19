@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
-import com.fallTurtle.myrestaurantgallery.databinding.EachItemBinding
-import com.fallTurtle.myrestaurantgallery.etc.Configurations
+import com.fallTurtle.myrestaurantgallery.databinding.ListItemRestaurantBinding
+import com.fallTurtle.myrestaurantgallery.etc.ITEM_ID
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 
 /**
@@ -27,7 +27,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
 
     /* 새로운 뷰홀더 만들어질 때 실행되는 callback 함수 */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        val binding = EachItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ListItemRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
@@ -63,7 +63,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
     //관련 클래스
 
     /* 해당 리사이클러뷰에서 사용하는 뷰홀더 클래스 */
-    inner class CustomViewHolder(private val binding: EachItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CustomViewHolder(private val binding: ListItemRestaurantBinding) : RecyclerView.ViewHolder(binding.root) {
         //초기화 블록 (아이템뷰 크기 및 리스너 설정)
         init {
             //크기 설정
@@ -73,7 +73,7 @@ class ItemAdapter(windowWidth: Int) : RecyclerView.Adapter<ItemAdapter.CustomVie
             //클릭 리스너 설정 (id에 따른 정보를 가지고 record 화면으로 넘어감)
             itemView.setOnClickListener { v ->
                 Intent(v.context, RecordActivity::class.java).let {
-                    it.putExtra(Configurations.ITEM_ID, binding.info?.dbID)
+                    it.putExtra(ITEM_ID, binding.info?.dbID)
                     v.context.startActivity(it)
                 }
             }

@@ -4,7 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.view.View
 import android.view.WindowManager
-import com.fallTurtle.myrestaurantgallery.databinding.ImgDialogBinding
+import com.fallTurtle.myrestaurantgallery.databinding.DialogImageSelectBinding
 
 /**
  * 이미지를 변경하려고 할 시 나타나는 커스텀 다이얼로그.
@@ -12,7 +12,7 @@ import com.fallTurtle.myrestaurantgallery.databinding.ImgDialogBinding
  **/
 class ImgDialog(context: Context) {
     //뷰 바인딩
-    private val binding by lazy {ImgDialogBinding.inflate(dialog.layoutInflater)}
+    private val binding by lazy { DialogImageSelectBinding.inflate(dialog.layoutInflater)}
 
     //다이얼로그 객체
     private val dialog = Dialog(context)

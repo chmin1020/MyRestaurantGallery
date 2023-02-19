@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
-import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.view_model.MapViewModel
 import androidx.lifecycle.Observer
+import com.fallTurtle.myrestaurantgallery.etc.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -52,7 +52,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
             mapViewModel.updateLocationFromUser(
-                intent.getDoubleExtra("x", -1.0), intent.getDoubleExtra("y", -1.0)
+                intent.getDoubleExtra("x", DEFAULT_LOCATION), intent.getDoubleExtra("y", DEFAULT_LOCATION)
             )
         }
     }
@@ -68,7 +68,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //지도를 불러오기 위해서는 네트워크 연결 필요함
         if(!NetworkWatcher.checkNetworkState(this)){
-            Toast.makeText(this, "네트워크를 연결해 주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
             finish()
         }
 
@@ -115,11 +115,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 초기 카메라를 세팅하는 함수 */
     private fun initCamera(){
-        val latitude = intent.getDoubleExtra("latitude", -1.0)
-        val longitude = intent.getDoubleExtra("longitude", -1.0)
+        val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
+        val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
 
         //위치 저장 내용이 있으면 거기로, 아니면 현재 위치로
-        if(latitude == -1.0 || longitude == -1.0)
+        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION)
             mapViewModel.requestCurrentLocation()
         else
             mapViewModel.updateLocationFromUser(latitude, longitude)
@@ -154,10 +154,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     /* 주소를 포함한 모든 위치 정보를 이전 화면으로 보내는 함수 */
     private fun sendAddressInfoToPreviousPage(address: String){
         val backTo = Intent(this, AddActivity::class.java).apply {
-            putExtra("isChanged", true)
-            putExtra("latitude", mapViewModel.location.value?.latitude)
-            putExtra("longitude", mapViewModel.location.value?.longitude)
-            putExtra("address", address)
+            putExtra(IS_CHANGED, true)
+            putExtra(LATITUDE, mapViewModel.location.value?.latitude)
+            putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
+            putExtra(ADDRESS, address)
         }
         setResult(RESULT_OK, backTo)
         finish()
