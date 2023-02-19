@@ -146,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         binding.floatingButtonAdd.setOnClickListener{
             val addIntent = Intent(this@MainActivity, AddActivity::class.java)
             startActivity(addIntent)
+            overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out)
         }
     }
 
@@ -154,7 +155,6 @@ class MainActivity : AppCompatActivity() {
         //각 뷰모델 속 작업 진행 여부 변화 관찰
         userViewModel.progressing.observe(this, userProgressObserver)
         itemViewModel.progressing.observe(this, itemProgressObserver)
-
 
         //각 뷰모델 속 작업 종료 여부 변화 관찰
         userViewModel.workFinishFlag.observe(this, userFinishObserver)

@@ -139,6 +139,12 @@ class  AddActivity : AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
+    /* 화면 종료를 정의한다.(애니메이션) */
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out)
+    }
+
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
