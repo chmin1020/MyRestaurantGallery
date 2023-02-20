@@ -14,6 +14,7 @@ const val IS_CHANGED = "is_changed"
 const val LATITUDE = "latitude"
 const val LONGITUDE = "longitude"
 const val RESTAURANT_NAME = "restaurant_name"
+const val FOR_CHECK = "for_check"
 
 //기본값
 const val DEFAULT_LOCATION = -1.0

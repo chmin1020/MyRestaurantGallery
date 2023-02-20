@@ -2,6 +2,8 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -76,8 +78,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        initListeners() //뷰의 리스너들 세팅
         setObservers() //옵저버 세팅
+
+        //체크 용도인 경우 데이터 갱신 가능성 배제
+        if(intent.getBooleanExtra(FOR_CHECK, false)){
+            with(binding){
+                ivBack.visibility = View.GONE
+                btnCur.visibility = View.GONE
+                btnSearch.visibility = View.GONE
+                fabMyLocation.visibility = View.GONE
+            }
+        }
+        else
+            initListeners() //뷰의 리스너들 세팅
     }
 
 
