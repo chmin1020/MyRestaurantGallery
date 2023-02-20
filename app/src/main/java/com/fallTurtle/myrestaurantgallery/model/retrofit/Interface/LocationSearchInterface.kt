@@ -13,22 +13,10 @@ import retrofit2.http.Query
  */
 interface LocationSearchInterface {
     //GET 명령을 해당 url 에게 보내서 searchLocation 정보를 얻어오는 함수를 정의한다. (LocationResponse 객체로 받아옴)
-
-    //첫번째 GET 명령 : 키워드에 맞는 음식점 검색
     @GET(APIConstant.GET_KAKAOMAP_LOCATION)
     suspend fun getSearchLocationOfRestaurants(
         @Header("Authorization") Authorization: String = APIConstant.KAKAO_API_KEY,
         @Query("query") query: String,
-        @Query("page") page: Int,
-        @Query("category_group_code") code: String = "FD6"
+        @Query("page") page: Int
         ): Response<LocationSearch>
-
-    //두번째 GET 명령 : 키워드에 맞는 카페 검색
-    @GET(APIConstant.GET_KAKAOMAP_LOCATION)
-    suspend fun getSearchLocationOfCafe(
-        @Header("Authorization") Authorization: String = APIConstant.KAKAO_API_KEY,
-        @Query("query") query: String,
-        @Query("page") page: Int,
-        @Query("category_group_code") code: String = "CE7"
-    ): Response<LocationSearch>
 }
