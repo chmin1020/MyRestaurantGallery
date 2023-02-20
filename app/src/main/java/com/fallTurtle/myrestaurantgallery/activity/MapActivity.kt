@@ -43,7 +43,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var marker: Marker? = null
     private val markerOps: MarkerOptions by lazy { MarkerOptions() }
 
-    private var curRestaurant:String? = null
 
     //--------------------------------------------
     // 액티비티 결과 런처
@@ -51,7 +50,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //지역 검색 화면에서 선택 데이터를 가져와 적용하는 런처
     private val getLocation = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
-            curRestaurant = intent.getStringExtra(RESTAURANT_NAME) ?: curRestaurant
+            binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME)
             mapViewModel.updateLocationFromUser(
                 intent.getDoubleExtra("x", DEFAULT_LOCATION), intent.getDoubleExtra("y", DEFAULT_LOCATION)
             )
@@ -110,14 +109,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 putExtra(IS_CHANGED, true)
                 putExtra(LATITUDE, mapViewModel.location.value?.latitude)
                 putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
-                putExtra(RESTAURANT_NAME, curRestaurant)
+
+                if(binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
+                    putExtra(RESTAURANT_NAME, binding.tvCurrentRestaurant.text)
             }
             setResult(RESULT_OK, backTo)
             finish()
         }
 
         //gps fab 버튼을 눌렀을 때
-        binding.fabMyLocation.setOnClickListener{ mapViewModel.requestCurrentLocation() }
+        binding.fabMyLocation.setOnClickListener{
+            mapViewModel.requestCurrentLocation()
+            Toast.makeText(this, "좌표를 현재 위치로 설정합니다.", Toast.LENGTH_SHORT).show()
+        }
 
         //back 버튼(이미지)을 눌렀을 때
         binding.ivBack.setOnClickListener { finish() }
@@ -125,13 +129,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 초기 카메라를 세팅하는 함수 */
     private fun initCamera(){
-        curRestaurant = intent.getStringExtra(RESTAURANT_NAME)
+        binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME) ?: NO_SELECTED_LOCATION
         val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
         val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
 
         //위치 저장 내용이 있으면 거기로, 아니면 현재 위치로
-        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION)
+        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION) {
             mapViewModel.requestCurrentLocation()
+            Toast.makeText(this, "설정 좌표가 없어 현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
+        }
         else
             mapViewModel.updateLocationFromUser(latitude, longitude)
     }
@@ -158,6 +164,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             marker?.remove()
             marker = googleMap.addMarker(markerOps)
 
-        } ?: Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show()
     }
 }
