@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -78,13 +79,17 @@ class  AddActivity : AppCompatActivity(){
     }
 
     /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
-    private val getAddressLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val getLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
             //받아온 내용 적용
             itemLocation.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             itemLocation.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             binding.info?.latitude = itemLocation.latitude
             binding.info?.longitude = itemLocation.longitude
+            it.data?.getStringExtra(RESTAURANT_NAME)?.let {name->
+                binding.info?.name = name
+                binding.etName.setText(name)
+            }
         }
     }
 
@@ -174,7 +179,7 @@ class  AddActivity : AppCompatActivity(){
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra(LATITUDE, itemLocation.latitude)
             intent.putExtra(LONGITUDE, itemLocation.longitude)
-            getAddressLauncher.launch(intent)
+            getLocationLauncher.launch(intent)
         }
 
         //이미지뷰 클릭 시

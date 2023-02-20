@@ -13,7 +13,7 @@ const val ITEM_ID = "item_id"
 const val IS_CHANGED = "is_changed"
 const val LATITUDE = "latitude"
 const val LONGITUDE = "longitude"
-const val ADDRESS = "address"
+const val RESTAURANT_NAME = "restaurant_name"
 
 //기본값
 const val DEFAULT_LOCATION = -1.0
