@@ -23,10 +23,6 @@ class MapViewModel(application: Application): AndroidViewModel(application) {
     private val insideLocation = MutableLiveData<LocationPair?>()
     val location:LiveData<LocationPair?> = insideLocation
 
-    //현재 주소
-    private val insideAddress = MutableLiveData<String>()
-    val address:LiveData<String> = insideAddress
-
 
     //----------------------------------------------------
     // 함수 영역 (지도 작업)
@@ -35,15 +31,6 @@ class MapViewModel(application: Application): AndroidViewModel(application) {
     fun requestCurrentLocation(){
         viewModelScope.launch(Dispatchers.IO) {
             insideLocation.postValue(mapRepository.requestCurrentLocation())
-        }
-    }
-
-    /* 현재 위치의 주소 값을 요청하는 함수 */
-    fun requestCurrentAddress(){
-        viewModelScope.launch {
-            insideLocation.value?.let {
-                insideAddress.postValue(mapRepository.requestCurrentAddress(it))
-            }
         }
     }
 

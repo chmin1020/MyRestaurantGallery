@@ -43,7 +43,7 @@
     <string name="error_happened">error!!</string>
 
     <!--etc-->
-    <string name="satisfy_warning">Entering the restaurant name and location is mandatory!</string>
+    <string name="satisfy_warning">Entering the restaurant is mandatory!</string>
     <string name="add_new_item">Add new item</string>
     <string name="search_location">location searching</string>
     <string name="current_location">set current location</string>

@@ -10,7 +10,6 @@ data class RestaurantInfo(
     var imageName: String? = "",
     var imagePath: String? = "",
     var name: String = "",
-    var location: String = "",
     var categoryNum: Int = 0,
     var category: String = "",
     var rate: Int = 0,
