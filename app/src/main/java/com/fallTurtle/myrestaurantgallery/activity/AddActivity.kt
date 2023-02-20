@@ -80,14 +80,11 @@ class  AddActivity : AppCompatActivity(){
     /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
     private val getAddressLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
-            val address = it.data?.getStringExtra(ADDRESS)
-
             //받아온 내용 적용
             itemLocation.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             itemLocation.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             binding.info?.latitude = itemLocation.latitude
             binding.info?.longitude = itemLocation.longitude
-            binding.etLocation.setText(address)
         }
     }
 
@@ -217,17 +214,6 @@ class  AddActivity : AppCompatActivity(){
             }
         }
 
-        //식당 위치 텍스트 변경 시
-        binding.etLocation.addTextChangedListener {
-            it?.let { text ->
-                binding.info?.name = it.toString()
-                binding.textLayoutLocation.error = when(text.length){
-                    0 -> "위치를 입력해주세요"
-                    else -> null
-                }
-            }
-        }
-
         //메모 텍스트 변경 시
         binding.etMemo.addTextChangedListener {
             it?.let { binding.info?.memo = it.toString() }
@@ -276,7 +262,7 @@ class  AddActivity : AppCompatActivity(){
 
         //네트워크 연결 상태라면 저장과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
-            if (binding.etName.text.isNullOrEmpty() || binding.etLocation.text.isNullOrEmpty())
+            if (binding.etName.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else //갱신 혹은 삽입
                 binding.info?.also { updateItem() } ?: run{ insertItem() }
@@ -298,9 +284,9 @@ class  AddActivity : AppCompatActivity(){
         //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
         val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
             name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
-            category = binding.spCategory.selectedItem.toString(), location = binding.etLocation.text.toString(),
-            memo = binding.etMemo.text.toString(), rate = binding.rbRatingBar.rating.toInt(),
-            latitude = itemLocation.latitude, longitude = itemLocation.longitude, dbID = newID)
+            category = binding.spCategory.selectedItem.toString(), memo = binding.etMemo.text.toString(),
+            rate = binding.rbRatingBar.rating.toInt(), latitude = itemLocation.latitude,
+            longitude = itemLocation.longitude, dbID = newID)
 
         itemViewModel.insertItem(newItem, imgUri)
     }

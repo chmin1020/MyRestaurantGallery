@@ -8,7 +8,4 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPa
 interface MapRepository {
     /* 위치(좌표)를 얻는 함수 */
     suspend fun requestCurrentLocation(): LocationPair?
-
-    /* 좌표를 통해 주소를 얻는 함수 */
-    suspend fun requestCurrentAddress(location: LocationPair): String
 }

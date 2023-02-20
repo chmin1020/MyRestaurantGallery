@@ -35,7 +35,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //옵저버
     private val locationObserver = Observer<LocationPair?>{ moveCamera(it) }
-    private val addressObserver = Observer<String> { sendAddressInfoToPreviousPage(it) }
 
     //지도 객체
     private lateinit var googleMap: GoogleMap
@@ -104,7 +103,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         //current 버튼을 눌렀을 때
-        binding.btnCur.setOnClickListener { mapViewModel.requestCurrentAddress() }
+        binding.btnCur.setOnClickListener {
+            val backTo = Intent(this, AddActivity::class.java).apply {
+                putExtra(IS_CHANGED, true)
+                putExtra(LATITUDE, mapViewModel.location.value?.latitude)
+                putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
+            }
+            setResult(RESULT_OK, backTo)
+            finish()
+        }
 
         //gps fab 버튼을 눌렀을 때
         binding.fabMyLocation.setOnClickListener{ mapViewModel.requestCurrentLocation() }
@@ -128,7 +135,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     /* 뷰모델 데이터와 옵저버를 연결하는 함수 */
     private fun setObservers(){
         mapViewModel.location.observe(this, locationObserver)
-        mapViewModel.address.observe(this, addressObserver)
     }
 
 
@@ -149,17 +155,5 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             marker = googleMap.addMarker(markerOps)
 
         } ?: Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-    }
-
-    /* 주소를 포함한 모든 위치 정보를 이전 화면으로 보내는 함수 */
-    private fun sendAddressInfoToPreviousPage(address: String){
-        val backTo = Intent(this, AddActivity::class.java).apply {
-            putExtra(IS_CHANGED, true)
-            putExtra(LATITUDE, mapViewModel.location.value?.latitude)
-            putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
-            putExtra(ADDRESS, address)
-        }
-        setResult(RESULT_OK, backTo)
-        finish()
     }
 }
