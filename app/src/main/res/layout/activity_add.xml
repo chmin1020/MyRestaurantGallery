@@ -130,18 +130,20 @@
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
                 app:layout_constraintBottom_toTopOf="@id/sp_category"
-                app:layout_constraintEnd_toEndOf="@id/rb_ratingBar"
+                app:layout_constraintEnd_toStartOf="@id/btn_map"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintHorizontal_bias="0.469"
-                app:layout_constraintStart_toStartOf="@id/rb_ratingBar"
+                app:layout_constraintStart_toStartOf="@+id/ll_image"
                 app:layout_constraintTop_toBottomOf="@id/rb_ratingBar"
-                app:layout_constraintWidth_percent="0.9">
+                app:layout_constraintWidth_percent="0.7">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:hint="@string/example_name"
                     android:inputType="text"
                     android:text="@{info.name}" />
@@ -154,38 +156,13 @@
                 android:layout_height="0dp"
                 android:layout_margin="10dp"
                 android:spinnerMode="dialog"
-                app:layout_constraintBottom_toTopOf="@id/text_layout_location"
-                app:layout_constraintEnd_toEndOf="@id/text_layout_name"
+                app:layout_constraintBottom_toTopOf="@id/et_memo"
+                app:layout_constraintEnd_toEndOf="@+id/ll_image"
                 app:layout_constraintHeight_percent="0.06"
-                app:layout_constraintStart_toStartOf="@id/text_layout_name"
+                app:layout_constraintStart_toStartOf="@+id/ll_image"
                 app:layout_constraintTop_toBottomOf="@id/text_layout_name"
                 app:layout_constraintWidth_percent="0.9"
                 tools:entries="@{spinnerEntries}" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_layout_location"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                app:layout_constraintBottom_toTopOf="@id/et_memo"
-                app:layout_constraintEnd_toStartOf="@id/btn_map"
-                app:layout_constraintStart_toStartOf="@id/sp_category"
-                app:layout_constraintTop_toBottomOf="@id/sp_category"
-                app:layout_constraintWidth_percent="0.7">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:autoSizeTextType="uniform"
-                    android:hint="@string/location_myself"
-                    android:inputType="text"
-                    android:text="@{info.location}" />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btn_map"
@@ -197,18 +174,19 @@
                 android:padding="2dp"
                 android:text="@string/find"
                 android:textColor="#000000"
-
-                app:layout_constraintBaseline_toBaselineOf="@id/text_layout_location"
-                app:layout_constraintBottom_toBottomOf="@id/text_layout_location"
-                app:layout_constraintStart_toEndOf="@id/text_layout_location"
-                app:layout_constraintTop_toTopOf="@id/text_layout_location"
+                app:layout_constraintBaseline_toBaselineOf="@id/text_layout_name"
+                app:layout_constraintBottom_toBottomOf="@id/text_layout_name"
+                app:layout_constraintStart_toEndOf="@id/text_layout_name"
+                app:layout_constraintEnd_toEndOf="@id/ll_image"
+                app:layout_constraintTop_toTopOf="@id/text_layout_name"
                 app:layout_constraintWidth_percent="0.2" />
+
 
             <EditText
                 android:id="@+id/et_memo"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
+                android:layout_width="372dp"
+                android:layout_height="250dp"
+                android:layout_margin="15dp"
                 android:background="@drawable/edit_text_border"
                 android:gravity="start"
                 android:hint="@string/example_memo"
@@ -216,10 +194,10 @@
                 android:padding="10dp"
                 android:text="@{info.memo}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/btn_map"
+                app:layout_constraintEnd_toEndOf="@id/sp_category"
                 app:layout_constraintHeight_percent="0.28"
-                app:layout_constraintStart_toStartOf="@id/text_layout_location"
-                app:layout_constraintTop_toBottomOf="@id/text_layout_location"
+                app:layout_constraintStart_toStartOf="@id/sp_category"
+                app:layout_constraintTop_toBottomOf="@id/sp_category"
                 app:layout_constraintWidth_percent="0.9" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
