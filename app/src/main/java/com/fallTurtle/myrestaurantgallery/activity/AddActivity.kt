@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -179,6 +178,7 @@ class  AddActivity : AppCompatActivity(){
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra(LATITUDE, itemLocation.latitude)
             intent.putExtra(LONGITUDE, itemLocation.longitude)
+            intent.putExtra(RESTAURANT_NAME, binding.etName.text.toString())
             getLocationLauncher.launch(intent)
         }
 
@@ -253,6 +253,7 @@ class  AddActivity : AppCompatActivity(){
         Toast.makeText(this, completeText, Toast.LENGTH_SHORT).show()
         finish()
     }
+
 
     //--------------------------------------------
     // 내부 함수 영역 (데이터 저장)

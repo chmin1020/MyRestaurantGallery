@@ -17,3 +17,4 @@ const val RESTAURANT_NAME = "restaurant_name"
 
 //기본값
 const val DEFAULT_LOCATION = -1.0
+const val NO_SELECTED_LOCATION = "설정 위치 없음"
