@@ -56,6 +56,7 @@
     <string name="calendar_pictogram_description">calendar pictogram</string>
     <string name="item_image_description">Each Image about the restaurant</string>
     <string name="rating_star_description">rating star symbol for each item</string>
+    <string name="map_check_description">map location check</string>
 
     <!--firebase auth value-->
     <string name="firebase_client_id" translatable="false">63887686662-hfn4f5plrhv914v7tmhhekg81qgj0ooi.apps.googleusercontent.com</string>

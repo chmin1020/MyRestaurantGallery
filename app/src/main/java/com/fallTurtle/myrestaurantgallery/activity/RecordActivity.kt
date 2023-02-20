@@ -2,6 +2,7 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -13,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.ITEM_ID
+import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 
@@ -57,8 +58,8 @@ class RecordActivity : AppCompatActivity() {
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
         itemId = intent.getStringExtra(ITEM_ID)
 
-        //옵저버 설정
-        setObservers()
+        initListener() //리스너 지정
+        setObservers() //옵저버 설정
     }
 
     /* onStart()마다 뷰모델에게 적절한 아이템 정보 갱신 요구 */
@@ -91,6 +92,11 @@ class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
+    /* 뷰 클릭 리스너를 지정하는 함수 */
+    private fun initListener(){
+        binding.ivMap.setOnClickListener{ moveToMapDisplay() }
+    }
+
     /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
     private fun setObservers(){
         itemViewModel.progressing.observe(this, progressObserver)
@@ -114,6 +120,21 @@ class RecordActivity : AppCompatActivity() {
     /* 삭제를 원하는 것이 확실할 시 해당 이미지 삭제 작업을 진행하는 함수 */
     private fun deleteCurrentItem(){
         itemId?.let{ itemViewModel.deleteItem(it) }
+    }
+
+    /* 위치 설정이 된 경우 지도로 이를 확인시켜주는 함수 */
+    private fun moveToMapDisplay(){
+        if(binding.info?.latitude == DEFAULT_LOCATION || binding.info?.longitude == DEFAULT_LOCATION )
+            Toast.makeText(this, "지도 위치 설정이 되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+        else{
+            Intent(this, MapActivity::class.java).let{
+                it.putExtra(FOR_CHECK, true)
+                it.putExtra(RESTAURANT_NAME, binding.info?.name)
+                it.putExtra(LATITUDE, binding.info?.latitude)
+                it.putExtra(LONGITUDE, binding.info?.longitude)
+                startActivity(it)
+            }
+        }
     }
 
     /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 화면으로 이동하는 함수  */
