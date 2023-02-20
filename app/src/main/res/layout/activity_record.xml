@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="info"
@@ -35,20 +35,20 @@
             android:id="@+id/tv_date"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="3dp"
-            android:text="@{info.date}"
-            android:textSize="22sp"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textColor="#000000"
             android:autoSizeTextType="uniform"
             android:background="@drawable/date_sign"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:gravity="center"
+            android:padding="3dp"
+            android:text="@{info.date}"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@id/ll_image"
-            app:layout_constraintStart_toStartOf="@id/toolbar"
             app:layout_constraintEnd_toEndOf="@id/toolbar"
-            app:layout_constraintWidth_percent="0.68"
-            app:layout_constraintHeight_percent="0.06"/>
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="@id/toolbar"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintWidth_percent="0.68" />
 
         <LinearLayout
             android:id="@+id/ll_image"
@@ -56,23 +56,23 @@
             android:layout_height="0dp"
             android:background="@drawable/grid_border"
             android:transitionName="imageTransition"
-            app:layout_constraintTop_toBottomOf="@id/tv_date"
             app:layout_constraintBottom_toTopOf="@id/rb_ratingBar"
-            app:layout_constraintStart_toStartOf="@id/tv_date"
             app:layout_constraintEnd_toEndOf="@id/tv_date"
-            app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.28">
+            app:layout_constraintHeight_percent="0.28"
+            app:layout_constraintStart_toStartOf="@id/tv_date"
+            app:layout_constraintTop_toBottomOf="@id/tv_date"
+            app:layout_constraintWidth_percent="0.9">
 
             <ImageView
                 android:id="@+id/iv_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="12dp"
+                android:contentDescription="@string/item_image_description"
                 android:scaleType="centerInside"
                 android:src="@drawable/korean_food"
-                android:contentDescription="@string/item_image_description"
-                app:imagePath="@{info.imagePath}"
-                app:categoryNum="@{info.categoryNum}"/>
+                app:categoryNum="@{info.categoryNum}"
+                app:imagePath="@{info.imagePath}" />
 
         </LinearLayout>
 
@@ -81,85 +81,80 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:isIndicator="true"
             android:numStars="5"
             android:rating="@{info.rate}"
             android:stepSize="1"
-            android:isIndicator="true"
-            app:layout_constraintTop_toBottomOf="@id/ll_image"
             app:layout_constraintBottom_toTopOf="@id/tv_name"
-            app:layout_constraintStart_toStartOf="@id/ll_image"
             app:layout_constraintEnd_toEndOf="@id/ll_image"
-            app:layout_constraintHeight_percent="0.06"/>
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="@id/ll_image"
+            app:layout_constraintTop_toBottomOf="@id/ll_image" />
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="4dp"
-            android:maxLines="1"
-            android:text="@{info.name}"
-            android:textColor="@color/regularText"
-            android:textAlignment="center"
-            android:textSize="20sp"
             android:autoSizeTextType="uniform"
-            app:layout_constraintTop_toBottomOf="@id/rb_ratingBar"
+            android:maxLines="1"
+            android:padding="4dp"
+            android:text="@{info.name}"
+            android:textAlignment="center"
+            android:textColor="@color/regularText"
+            android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@id/tv_category"
-            app:layout_constraintStart_toStartOf="@id/rb_ratingBar"
-            app:layout_constraintEnd_toEndOf="@id/rb_ratingBar"
-            app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.06"/>
+            app:layout_constraintEnd_toStartOf="@id/iv_map"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="@+id/ll_image"
+            app:layout_constraintTop_toBottomOf="@id/rb_ratingBar"
+            app:layout_constraintWidth_percent="0.7" />
+
+        <ImageView
+            android:id="@+id/iv_map"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/map_check_description"
+            android:src="@drawable/map"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_name"
+            app:layout_constraintEnd_toEndOf="@+id/ll_image"
+            app:layout_constraintStart_toEndOf="@+id/tv_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_name"
+            app:layout_constraintWidth_percent="0.15" />
 
         <TextView
             android:id="@+id/tv_category"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:autoSizeTextType="uniform"
             android:padding="4dp"
             android:text="@{info.category}"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:autoSizeTextType="uniform"
-            app:layout_constraintTop_toBottomOf="@id/tv_name"
-            app:layout_constraintBottom_toTopOf="@id/tv_location"
-            app:layout_constraintStart_toStartOf="@id/tv_name"
-            app:layout_constraintEnd_toEndOf="@id/tv_name"
-            app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.06"/>
-
-        <TextView
-            android:id="@+id/tv_location"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:padding="4dp"
-            android:text="@{info.location}"
-            android:textColor="@color/regularText"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:autoSizeTextType="uniform"
-            android:maxLines="1"
-            app:layout_constraintTop_toBottomOf="@id/tv_category"
             app:layout_constraintBottom_toTopOf="@id/tv_memo"
-            app:layout_constraintStart_toStartOf="@id/tv_category"
-            app:layout_constraintEnd_toEndOf="@id/tv_category"
-            app:layout_constraintWidth_percent="0.9"
-            app:layout_constraintHeight_percent="0.06"/>
+            app:layout_constraintEnd_toEndOf="@+id/ll_image"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="@+id/ll_image"
+            app:layout_constraintTop_toBottomOf="@id/tv_name"
+            app:layout_constraintWidth_percent="0.9" />
 
         <TextView
             android:id="@+id/tv_memo"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="7.5dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/edit_text_border"
             android:gravity="start"
+            android:padding="7.5dp"
             android:text="@{info.memo}"
-            android:textSize="15sp"
             android:textColor="@color/regularText"
-            app:layout_constraintTop_toBottomOf="@id/tv_location"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tv_location"
-            app:layout_constraintEnd_toEndOf="@id/tv_location"
+            app:layout_constraintEnd_toEndOf="@id/tv_category"
             app:layout_constraintHeight_percent="0.28"
-            app:layout_constraintWidth_percent="0.9"/>
+            app:layout_constraintStart_toStartOf="@id/tv_category"
+            app:layout_constraintTop_toBottomOf="@id/tv_category"
+            app:layout_constraintWidth_percent="0.9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

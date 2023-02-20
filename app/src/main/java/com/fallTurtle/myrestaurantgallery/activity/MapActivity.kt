@@ -2,6 +2,8 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -35,7 +37,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //옵저버
     private val locationObserver = Observer<LocationPair?>{ moveCamera(it) }
-    private val addressObserver = Observer<String> { sendAddressInfoToPreviousPage(it) }
 
     //지도 객체
     private lateinit var googleMap: GoogleMap
@@ -49,8 +50,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 액티비티 결과 런처
 
     //지역 검색 화면에서 선택 데이터를 가져와 적용하는 런처
-    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val getLocation = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
+            binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME)
             mapViewModel.updateLocationFromUser(
                 intent.getDoubleExtra("x", DEFAULT_LOCATION), intent.getDoubleExtra("y", DEFAULT_LOCATION)
             )
@@ -76,8 +78,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        initListeners() //뷰의 리스너들 세팅
         setObservers() //옵저버 세팅
+
+        //체크 용도인 경우 데이터 갱신 가능성 배제
+        if(intent.getBooleanExtra(FOR_CHECK, false)){
+            with(binding){
+                ivBack.visibility = View.GONE
+                btnCur.visibility = View.GONE
+                btnSearch.visibility = View.GONE
+                fabMyLocation.visibility = View.GONE
+            }
+        }
+        else
+            initListeners() //뷰의 리스너들 세팅
     }
 
 
@@ -100,14 +113,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //search 버튼을 눌렀을 때
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
-            getAddress.launch(intent)
+            getLocation.launch(intent)
         }
 
         //current 버튼을 눌렀을 때
-        binding.btnCur.setOnClickListener { mapViewModel.requestCurrentAddress() }
+        binding.btnCur.setOnClickListener {
+            val backTo = Intent(this, AddActivity::class.java).apply {
+                putExtra(IS_CHANGED, true)
+                putExtra(LATITUDE, mapViewModel.location.value?.latitude)
+                putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
+
+                if(binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
+                    putExtra(RESTAURANT_NAME, binding.tvCurrentRestaurant.text)
+            }
+            setResult(RESULT_OK, backTo)
+            finish()
+        }
 
         //gps fab 버튼을 눌렀을 때
-        binding.fabMyLocation.setOnClickListener{ mapViewModel.requestCurrentLocation() }
+        binding.fabMyLocation.setOnClickListener{
+            mapViewModel.requestCurrentLocation()
+            Toast.makeText(this, "좌표를 현재 위치로 설정합니다.", Toast.LENGTH_SHORT).show()
+        }
 
         //back 버튼(이미지)을 눌렀을 때
         binding.ivBack.setOnClickListener { finish() }
@@ -115,12 +142,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 초기 카메라를 세팅하는 함수 */
     private fun initCamera(){
+        binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME) ?: NO_SELECTED_LOCATION
         val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
         val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
 
         //위치 저장 내용이 있으면 거기로, 아니면 현재 위치로
-        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION)
+        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION) {
             mapViewModel.requestCurrentLocation()
+            Toast.makeText(this, "설정 좌표가 없어 현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
+        }
         else
             mapViewModel.updateLocationFromUser(latitude, longitude)
     }
@@ -128,7 +158,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     /* 뷰모델 데이터와 옵저버를 연결하는 함수 */
     private fun setObservers(){
         mapViewModel.location.observe(this, locationObserver)
-        mapViewModel.address.observe(this, addressObserver)
     }
 
 
@@ -148,18 +177,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             marker?.remove()
             marker = googleMap.addMarker(markerOps)
 
-        } ?: Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-    }
-
-    /* 주소를 포함한 모든 위치 정보를 이전 화면으로 보내는 함수 */
-    private fun sendAddressInfoToPreviousPage(address: String){
-        val backTo = Intent(this, AddActivity::class.java).apply {
-            putExtra(IS_CHANGED, true)
-            putExtra(LATITUDE, mapViewModel.location.value?.latitude)
-            putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
-            putExtra(ADDRESS, address)
-        }
-        setResult(RESULT_OK, backTo)
-        finish()
+        } ?: Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show()
     }
 }
