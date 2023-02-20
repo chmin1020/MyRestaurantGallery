@@ -4,7 +4,7 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPa
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
-import com.fallTurtle.myrestaurantgallery.model.retrofit.values.Url
+import com.fallTurtle.myrestaurantgallery.model.retrofit.values.APIConstant
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +18,7 @@ class RetrofitLocationRepository: LocationRepository {
     companion object {
         private val retrofit by lazy {
             Retrofit.Builder()
-                .baseUrl(Url.KAKAOMAP_URL)
+                .baseUrl(APIConstant.KAKAOMAP_URL)
                 .addConverterFactory(GsonConverterFactory.create()) // json 을 받아서 gson 으로 파싱
                 .build()
         }
@@ -92,5 +92,4 @@ class RetrofitLocationRepository: LocationRepository {
     /* 검색할 수 있는 상황인지 체크하는 함수 */
     private fun isSearchFinish(response: Response<LocationSearch>, searchEnd: Boolean)
         = response.isSuccessful && (searchEnd || (response.body()?.meta?.is_end ?: true))
-
 }

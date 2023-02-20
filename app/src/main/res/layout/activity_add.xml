@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
                 app:layout_constraintBottom_toTopOf="@id/sp_category"
-                app:layout_constraintEnd_toEndOf="@id/rb_ratingBar"
+                app:layout_constraintEnd_toStartOf="@id/btn_map"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintHorizontal_bias="0.469"
                 app:layout_constraintStart_toStartOf="@+id/ll_image"
@@ -174,10 +174,10 @@
                 android:padding="2dp"
                 android:text="@string/find"
                 android:textColor="#000000"
-
                 app:layout_constraintBaseline_toBaselineOf="@id/text_layout_name"
                 app:layout_constraintBottom_toBottomOf="@id/text_layout_name"
                 app:layout_constraintStart_toEndOf="@id/text_layout_name"
+                app:layout_constraintEnd_toEndOf="@id/ll_image"
                 app:layout_constraintTop_toTopOf="@id/text_layout_name"
                 app:layout_constraintWidth_percent="0.2" />
 

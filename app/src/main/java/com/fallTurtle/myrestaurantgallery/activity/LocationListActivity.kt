@@ -163,5 +163,4 @@ class LocationListActivity : AppCompatActivity() {
             InputMethodManager.HIDE_IMPLICIT_ONLY
         )
     }
-
 }

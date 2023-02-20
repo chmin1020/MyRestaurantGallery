@@ -1,10 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.model.room
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.fallTurtle.myrestaurantgallery.etc.DEFAULT_LOCATION
 
 /**첫번째 DB 마이그레이션.
  * (변경사항 1. 이미지 로딩 형태 변경을 위한 imagePath 컬럼 추가).

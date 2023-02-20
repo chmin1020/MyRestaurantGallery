@@ -43,13 +43,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var marker: Marker? = null
     private val markerOps: MarkerOptions by lazy { MarkerOptions() }
 
+    private var curRestaurant:String? = null
 
     //--------------------------------------------
     // 액티비티 결과 런처
 
     //지역 검색 화면에서 선택 데이터를 가져와 적용하는 런처
-    private val getAddress = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val getLocation = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
+            curRestaurant = intent.getStringExtra(RESTAURANT_NAME) ?: curRestaurant
             mapViewModel.updateLocationFromUser(
                 intent.getDoubleExtra("x", DEFAULT_LOCATION), intent.getDoubleExtra("y", DEFAULT_LOCATION)
             )
@@ -99,7 +101,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //search 버튼을 눌렀을 때
         binding.btnSearch.setOnClickListener {
             val intent = Intent(this, LocationListActivity::class.java)
-            getAddress.launch(intent)
+            getLocation.launch(intent)
         }
 
         //current 버튼을 눌렀을 때
@@ -108,6 +110,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 putExtra(IS_CHANGED, true)
                 putExtra(LATITUDE, mapViewModel.location.value?.latitude)
                 putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
+                putExtra(RESTAURANT_NAME, curRestaurant)
             }
             setResult(RESULT_OK, backTo)
             finish()
@@ -122,6 +125,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* 초기 카메라를 세팅하는 함수 */
     private fun initCamera(){
+        curRestaurant = intent.getStringExtra(RESTAURANT_NAME)
         val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
         val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
 
