@@ -35,20 +35,20 @@ import java.util.Date
  * 새로운 맛집 정보 저장을 하는 작업과 기존 내용을 수정을 하는 작업을 하게 해준다.
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
-class  AddActivity : AppCompatActivity(){
-    //바인딩
+class AddActivity : AppCompatActivity(){
+    //데이터 바인딩
     private val binding:ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
-    //옵저버
+    //옵저버(진행 과정 여부, 종료 여부, 선택된 아이템)
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
     private val finishObserver = Observer<Boolean> { if(it) workCompleteFinish() }
     private val selectedItemObserver = Observer<RestaurantInfo> { setContentsWithItem(it) }
 
-    //로딩 다이얼로그
+    //로딩 dialog
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //선택된 아이템 관련 변수들
@@ -66,9 +66,11 @@ class  AddActivity : AppCompatActivity(){
 
     /* 갤러리에서 가지고 온 이미지 결과를 처리하는 런처 */
     private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        imgUri = it.data?.data
+        imgUri = it.data?.data //갤러리 데이터: 사진 uri
+
+        //uri 정상 -> null 아님
         imgUri?.let{ uri->
-            //시간을 통한 고유 이미지 이름 생성
+            //현재 시간을 통한 고유 이미지 이름 생성(중복 방지)
             curImgName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
             binding.info?.imageName = curImgName
 
@@ -80,11 +82,13 @@ class  AddActivity : AppCompatActivity(){
     /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
     private val getLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
-            //받아온 내용 적용
+            //위도, 경도 적용
             itemLocation.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             itemLocation.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
             binding.info?.latitude = itemLocation.latitude
             binding.info?.longitude = itemLocation.longitude
+
+            //식당 이름 적용
             it.data?.getStringExtra(RESTAURANT_NAME)?.let {name->
                 binding.info?.name = name
                 binding.etName.setText(name)
@@ -96,7 +100,6 @@ class  AddActivity : AppCompatActivity(){
     //--------------------------------------------
     // 액티비티 생명주기 영역
 
-    /* onCreate()에서는 뷰와 퍼미션 체크, 리사이클러뷰, 툴바, 이벤트 등의 기본적인 것들을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -107,40 +110,38 @@ class  AddActivity : AppCompatActivity(){
         //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
         intent.getStringExtra(ITEM_ID)?.let { itemViewModel.setProperItem(it) }
 
-        //각 뷰의 리스너들 설정
+        //각 뷰의 listeners 설정
         initListeners()
 
         //toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.save_item -> true.also { saveCurrentItemProcess() }
-                else -> false
-            }
-        }
 
-        setObservers() //옵저버와 뷰모델 연결
+        //observer 연결
+        setObservers()
      }
 
 
     //--------------------------------------------
     // 오버라이딩 영역
 
-    /* onCreateOptionsMenu()에서는 툴바에서 나타날 메뉴를 만든다. */
+    /* 툴바 메뉴 생성 콜백 */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.add_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    /* onOptionsItemSelected()에서는 툴바에서 선택한 옵션에 따라 나타날 이벤트를 정의한다. */
+    /* 튤바 메뉴 옵션에 따른 행동 지정 콜백 */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == android.R.id.home) finish()
+        when(item.itemId){
+            R.id.save_item -> saveCurrentItemProcess() //저장
+            R.id.home -> finish() //취소, 종료
+        }
         return super.onOptionsItemSelected(item)
     }
 
-    /* 화면 종료를 정의한다.(애니메이션) */
+    /* 화면 종료 정의(애니메이션 효과) */
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out)
@@ -150,70 +151,79 @@ class  AddActivity : AppCompatActivity(){
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
-    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
+    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 listener 등록 함수 */
     private fun initListeners(){
-        //스피너에 표시할 아이템 목록 설정
+        //spinner 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                //아이템 선택 시마다 이를 데이터 바인딩 객체에 저장
                 binding.info?.category = binding.spCategory.selectedItem.toString()
                 binding.info?.categoryNum = position
+
+                //선택 이미지 없으면 기본 그림 이미지 설정
                 curImgName ?: selectFoodDefaultImage(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        //datePicker 다이얼로그 설정
+        //날짜 항목 클릭 시
         binding.llDate.setOnClickListener {
+            //달력 요소, 달력 선택 리스너
             val cal = Calendar.getInstance()
-            val dp = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            val dateSelectListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
                 binding.info?.date = dText
                 binding.tvDate.text = dText
             }
-            DatePickerDialog(this, dp, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+
+            //데이트 피커 dialog 생성
+            DatePickerDialog(this, dateSelectListener,
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                .show()
         }
 
-        //map (주소 가져오기)
+        //map 버튼 클릭 시
         binding.btnMap.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra(LATITUDE, itemLocation.latitude)
-            intent.putExtra(LONGITUDE, itemLocation.longitude)
-            intent.putExtra(RESTAURANT_NAME, binding.etName.text.toString())
-            getLocationLauncher.launch(intent)
-        }
+            //장소 정보 얻기 위한 intent 실행
+            Intent(this, MapActivity::class.java).let {
+                //기존 정보가 있을 시 이를 intent 통해서 전송
+                it.putExtra(LATITUDE, itemLocation.latitude)
+                it.putExtra(LONGITUDE, itemLocation.longitude)
+                it.putExtra(RESTAURANT_NAME, binding.etName.text.toString())
 
-        //이미지뷰 클릭 시
-        binding.ivImage.setOnClickListener{
-            val imgDlg = ImgDialog(this)
-
-            //갤러리에서 사진 가져오는 것을 선택했다면
-            imgDlg.setOnGalleryClickListener {
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImageLauncher.launch(it) }
-                imgDlg.destroy()
+                //결과 받기 위해 런처로 실행
+                getLocationLauncher.launch(it)
             }
-
-            //기본 그림 이미지 사용을 선택했다면
-            imgDlg.setOnDefaultClickListener {
-                curImgName = null
-                selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
-                imgDlg.destroy()
-            }
-
-            //설정한 다이얼로그 생성
-            imgDlg.create()
         }
 
-        //별점 개수 변경 시
-        binding.rbRatingBar.setOnRatingBarChangeListener { _, fl, _ ->
-            binding.info?.rate = fl.toInt()
+        //imageView 클릭 시
+        binding.ivImage.setOnClickListener{ _ ->
+            //이미지 dialog 생성
+            ImgDialog(this).also { dialog ->
+                //갤러리 사진 사용 선택
+                dialog.setOnGalleryClickListener{
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also{ getImageLauncher.launch(it) }
+                    dialog.destroy()
+                }
+
+                //기본 그림 이미지 사용 선택
+                dialog.setOnDefaultClickListener{
+                    curImgName = null
+                    selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
+                    dialog.destroy()
+                }
+            }.create()
         }
+
+        //별점 개수 변경 시도 시
+        binding.rbRatingBar.setOnRatingBarChangeListener { _, fl, _ -> binding.info?.rate = fl.toInt() }
 
         //식당 이름 텍스트 변경 시
         binding.etName.addTextChangedListener {
             it?.let { text ->
                 binding.info?.name = it.toString()
                 binding.textLayoutName.error = when(text.length){
-                    0 -> "식당 이름을 입력해주세요"
+                    0 -> PLEASE_INSERT_NAME
                     else -> null
                 }
             }
@@ -225,7 +235,7 @@ class  AddActivity : AppCompatActivity(){
         }
     }
 
-    /* 각 옵저버를 적절한 뷰모델 내 데이터와 연결하는 함수 */
+    /* 각 observer, viewModel 연결을 하는 함수 */
     private fun setObservers(){
         itemViewModel.progressing.observe(this, progressObserver)
         itemViewModel.workFinishFlag.observe(this, finishObserver)
@@ -238,10 +248,16 @@ class  AddActivity : AppCompatActivity(){
 
     /* 들어온 아이템 정보에 따라 화면을 세팅하는 함수 */
     private fun setContentsWithItem(item: RestaurantInfo){
-        binding.info = item.copy()
-        binding.date = item.date
-        binding.spCategory.setSelection(item.categoryNum)
+        with(binding){
+            info = item.copy()
+            date = item.date
+            spCategory.setSelection(item.categoryNum)
+        }
+
+        //위치 좌표 값
         itemLocation = LocationPair(item.latitude, item.longitude)
+
+        //이미지 관련 값 세팅(현재 이미지 이름과 경로, 이전 이미지 경로<이미지 변경 시>)
         curImgName = item.imageName
         curImgPath = item.imagePath
         preImgName = item.imageName
@@ -260,30 +276,30 @@ class  AddActivity : AppCompatActivity(){
 
     /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
-        //이미지가 지정되지 않은 상태면 경로도 null -> 이미지 로딩 에러 방지
+        //이미지 지정 x라면 경로도 null -> 이미지 로딩 에러 방지
         curImgName ?: run{
             curImgPath = null
             binding.info?.imagePath = null
         }
 
-        //네트워크 연결 상태라면 저장과정 실행
+        //network 연결 원활함 -> 저장 과정 실행
         if(NetworkWatcher.checkNetworkState(this)) {
             if (binding.etName.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else //갱신 혹은 삽입
                 binding.info?.also { updateItem() } ?: run{ insertItem() }
         }
-        else
+        else //연결 안되어 있음
             Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
     }
 
-    /* 기존 아이템을 갱신하는 함수 */
+    /* 기존 아이템 갱신 함수 */
     private fun updateItem(){
         binding.info?.imageName = curImgName
         binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
     }
 
-    /* 새 아이템을 추가하는 함수 */
+    /* 새 아이템 추가 함수 */
     private fun insertItem(){
         val newID = SimpleDateFormat(ID_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 

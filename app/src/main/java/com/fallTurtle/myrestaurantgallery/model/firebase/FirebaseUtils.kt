@@ -17,7 +17,10 @@ object FirebaseUtils {
 
     /* 현재 유저 및 관련 파이어베이스 내부 요소를 새롭게 갱신하는 함수 */
     fun updateUserState(){
+        //유저 갱신
         curUser = baseAuth.currentUser
+
+        //유저 id에 따른 reference 갱신
         val id = curUser?.email.toString()
         storeRef = Firebase.firestore.collection("users").document(id)
         storageRef = Firebase.storage.reference.child(id)

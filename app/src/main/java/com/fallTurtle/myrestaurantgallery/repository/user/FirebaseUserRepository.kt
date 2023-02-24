@@ -29,7 +29,7 @@ class FirebaseUserRepository: UserRepository {
     /* 유저 로그인 상태 확인 함수 */
     override fun getLoginCompleteAnswer(): LiveData<Boolean> = loginComplete
 
-    /* 토큰으로 인증을 통한 최종 로그인을 시도하는 함수 */
+    /* 로그인 함수 (by token) */
     override suspend fun loginUser(idToken: String){
         suspendCoroutine<Any?> { continuation ->
             //Token 보내서 credential 받고 인증 시도

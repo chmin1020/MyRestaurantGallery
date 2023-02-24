@@ -16,7 +16,7 @@ import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter
  **/
 class RestaurantAdapter(windowWidth: Int) : RecyclerView.Adapter<RestaurantAdapter.CustomViewHolder>() {
-    //각 아이템뷰의 길이 (가로, 세로)
+    //각 뷰의 길이 (가로, 세로)
     private val holderWidth = windowWidth/9 * 4
     private val holderHeight = holderWidth/6 * 5
 
@@ -27,28 +27,25 @@ class RestaurantAdapter(windowWidth: Int) : RecyclerView.Adapter<RestaurantAdapt
     //--------------------------------------------
     // 리사이클러뷰 필수 오버라이딩 함수 영역
 
-    /* 새로운 뷰홀더 만들어질 때 실행되는 callback 함수 */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = ListItemRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
-    /* 뷰홀더와 새 항목(position 확인)을 연결할 때 실행되는 callback 함수 */
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         holder.bind(itemList[position])
     }
 
-    /* 리스트 생성을 위해 아이템 개수를 파악할 때 실행되는 callback 함수 */
     override fun getItemCount(): Int = itemList.size
 
 
     //--------------------------------------------
     // 함수 영역
 
-    /* 리스트 내역을 새롭게 갱신하는 함수 */
+    /* 리스트 내역을 갱신 */
     fun update(items : List<RestaurantInfo>?){
         items?.let {
-            //기존 리스트와 새 리스트 차이점을 파악하기 위한 diff 연산
+            //diff 연산
             val diffResult = DiffUtil.calculateDiff(DiffUtilCallback(this.itemList, it))
 
             //결과에 따라 아이템 리스트 새롭게 갱신
@@ -92,7 +89,6 @@ class RestaurantAdapter(windowWidth: Int) : RecyclerView.Adapter<RestaurantAdapt
     /* 내부 아이템 리스트 변경을 확인하고 적용할 callback 클래스 */
     private class DiffUtilCallback(private val oldItems: List<RestaurantInfo>, private val newItems: List<RestaurantInfo>)
         : AdapterDiffCallback<RestaurantInfo>(oldItems, newItems){
-        //각 인덱스에 맞는 아이템이 서로 같은 아이템인지 확인하는 함수
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int)
                 = oldItems[oldItemPosition].dbID == newItems[newItemPosition].dbID
     }

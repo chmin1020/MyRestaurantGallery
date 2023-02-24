@@ -24,7 +24,7 @@ class RetrofitLocationRepository: LocationRepository {
         }
     }
 
-    // 후에 http GET 요청을 보내기 위해 사용할 서비스 인터페이스 실현 객체
+    // 후에 http GET 요청을 보내기 위해 사용할 서비스 인터페이스 객체
     private val locationSearchAPI by lazy { retrofit.create(LocationSearchInterface::class.java) }
 
     // 검색을 위한 설정 변수, 컬렉션
@@ -35,7 +35,7 @@ class RetrofitLocationRepository: LocationRepository {
     //---------------------------------------------
     // 오버라이딩 영역
 
-    /* 전체 검색 결과를 반환하는 함수 */
+    /* 전체 검색 결과를 받는 함수 */
     override suspend fun searchTotalInfo(query: String, page: Int):List<LocationInfo> {
         if(page == 1)
             resetSearchSetting()
@@ -54,11 +54,11 @@ class RetrofitLocationRepository: LocationRepository {
     //---------------------------------------------
     // 내부 함수 영역 (검색 결과 저장 수행 관련)
 
-    /* 쿼리에 해당하는 위치 검색 리스트를 얻는 함수 */
+    /* 쿼리에 해당하는 위치 검색 리스트 얻는 함수 */
     private suspend fun searchRestaurantInfo(query: String, page: Int)
     = locationSearchAPI.getSearchLocationOfRestaurants(query = query, page = page)
 
-    /* 검색 결과를 response 내에서 추출하여 리스트에 추가하는 함수 */
+    /* 검색 결과를 response 내에서 추출 -> 리스트 추가하는 함수 */
     private fun extractResultsFromResponse(response: Response<LocationSearch>){
         response.body()?.let { searchContent ->
             searchContent.documents.forEach {

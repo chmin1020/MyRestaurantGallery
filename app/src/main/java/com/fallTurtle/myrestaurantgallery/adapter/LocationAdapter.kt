@@ -34,45 +34,42 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     //--------------------------------------------
     // 리사이클러뷰 필수 오버라이딩 함수 영역
 
-    /* 새로운 뷰홀더 만들어질 때 실행되는 callback 함수 */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val binding = ListItemLocationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CustomViewHolder(binding)
     }
 
-    /* 뷰홀더와 새 항목(position 확인)을 연결할 때 실행되는 callback 함수 */
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         holder.bind(itemList[position])
     }
 
-    /* 리스트 생성을 위해 아이템 개수를 파악할 때 실행되는 callback 함수 */
     override fun getItemCount() = itemList.size
 
 
     //--------------------------------------------
     // 함수 영역
 
-    /* 새로운 검색을 하기 위한 설정 초기화 함수 */
+    /* 새로운 검색을 위한 설정 초기화 */
     fun searchSettingReset(keyword: String){
         currentPage = 1 //페이지 초기화
         currentKeyword = keyword //현재 검색 키워드 백업
         isEnd = false //리스트 검색 활동 초기화
     }
 
-    /* 연속 검색을 위해 검색 페이지를 증가시키는 함수 */
+    /* 연속 검색을 위한 페이지 증가 */
     fun readyToNextPage(){
         currentPage++
     }
 
-    /* 리스트 내역을 새롭게 갱신하는 함수 */
+    /* 리스트 갱신 함수 */
     fun update(items: List<LocationInfo>?) {
         if(items?.size == itemCount) isEnd = true
 
         items?.let{
-            //기존 리스트와 새 리스트 차이점을 파악하기 위한 diff 연산
+            //diff 연산
             val diffResult = DiffUtil.calculateDiff(DiffUtilCallback(this.itemList, it))
 
-            //결과에 따라 아이템 리스트 새롭게 갱신
+            //결과에 따라 리스트 갱신
             this.itemList.run {
                 diffResult.dispatchUpdatesTo(this@LocationAdapter)
                 clear()
@@ -113,7 +110,6 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
     /* 내부 아이템 리스트 변경을 확인하고 적용할 callback 클래스 */
     private class DiffUtilCallback(private val oldItems: List<LocationInfo>, private val newItems: List<LocationInfo>)
         : AdapterDiffCallback<LocationInfo>(oldItems, newItems){
-        //각 인덱스에 맞는 아이템이 서로 같은 아이템인지 확인하는 함수
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int)
                 = oldItems[oldItemPosition].locationPair == newItems[newItemPosition].locationPair
     }
