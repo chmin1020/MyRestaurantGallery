@@ -19,3 +19,4 @@ const val FOR_CHECK = "for_check"
 //기본값
 const val DEFAULT_LOCATION = -1.0
 const val NO_SELECTED_LOCATION = "설정 위치 없음"
+const val PLEASE_INSERT_NAME = "식당 이름을 입력해주세요"

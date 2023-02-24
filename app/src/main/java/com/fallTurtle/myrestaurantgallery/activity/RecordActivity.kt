@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -34,19 +33,18 @@ class RecordActivity : AppCompatActivity() {
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
 
-    //옵저버들
+    //observers
     private val progressObserver = Observer<Boolean> { decideShowLoading(it)}
     private val finishObserver = Observer<Boolean> { if(it) deleteWorkComplete() }
     private val itemObserver = Observer<RestaurantInfo> { binding.info = it }
 
-    //로딩 다이얼로그
+    //로딩 dialog
     private val progressDialog by lazy { ProgressDialog(this) }
 
 
     //--------------------------------------------
     // 액티비티 생명주기 영역
 
-    /* onCreate()에서는 툴바를 설정하고 뷰에 내용을 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,16 +53,17 @@ class RecordActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
+        //선택된 데이터 db 아이디, intent 통해 가져 와서 viewModel 적용
         itemId = intent.getStringExtra(ITEM_ID)
 
-        initListener() //리스너 지정
+        initListeners() //리스너 지정
         setObservers() //옵저버 설정
     }
 
-    /* onStart()마다 뷰모델에게 적절한 아이템 정보 갱신 요구 */
     override fun onStart() {
         super.onStart()
+
+        //아이디 없음 -> 화면 종료
         itemId?.let { itemViewModel.setProperItem(it) }
             ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
     }
@@ -73,7 +72,7 @@ class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 오버라이딩 영역
 
-    /* onOptionsItemSelected()에서는 툴바의 각 아이템 선택 시 수행할 행동을 정의한다. */
+    /* 툴바 메뉴 생성 콜백 */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             android.R.id.home -> supportFinishAfterTransition() //뒤로 가기
@@ -83,7 +82,7 @@ class RecordActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    /* onCreateOptionsMenu()에서는 툴바의 추가 메뉴를 세팅한다.(수정, 삭제) */
+    /* 튤바 메뉴 옵션에 따른 행동 지정 콜백 */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.record_activity_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -92,12 +91,13 @@ class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
-    /* 뷰 클릭 리스너를 지정하는 함수 */
-    private fun initListener(){
+    /* 뷰 클릭 listener 지정 함수 */
+    private fun initListeners(){
+        //맵 버튼 클릭 시
         binding.ivMap.setOnClickListener{ moveToMapDisplay() }
     }
 
-    /* 데이터 변화 관찰을 위한 각 뷰모델과 옵저버 연결 함수 */
+    /* 데이터 변화 관찰을 위한 각 뷰모델, 옵저버 연결 함수 */
     private fun setObservers(){
         itemViewModel.progressing.observe(this, progressObserver)
         itemViewModel.workFinishFlag.observe(this, finishObserver)
@@ -108,7 +108,7 @@ class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (툴바 리스너 반응)
 
-    /* 삭제 버튼 클릭시 재확인 다이얼로그를 만드는 함수 */
+    /* 삭제 버튼 클릭시 재확인 dialog 만드는 함수 */
     private fun makeDeleteDialog(){
         AlertDialog.Builder(this)
             .setMessage(R.string.delete_message)
@@ -117,16 +117,18 @@ class RecordActivity : AppCompatActivity() {
             .show()
     }
 
-    /* 삭제를 원하는 것이 확실할 시 해당 이미지 삭제 작업을 진행하는 함수 */
+    /* 삭제를 원하는 것이 확실할 시 해당 이미지 삭제 작업 진행 함수 */
     private fun deleteCurrentItem(){
         itemId?.let{ itemViewModel.deleteItem(it) }
     }
 
-    /* 위치 설정이 된 경우 지도로 이를 확인시켜주는 함수 */
+    /* 위치 설정이 된 경우 지도 이동을 하는 함수 */
     private fun moveToMapDisplay(){
+        //위치 좌표 값 설정이 되어 있지 않음
         if(binding.info?.latitude == DEFAULT_LOCATION || binding.info?.longitude == DEFAULT_LOCATION )
-            Toast.makeText(this, "지도 위치 설정이 되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.no_location_selection, Toast.LENGTH_SHORT).show()
         else{
+            //설정이 되어 있음 (설정 값 가지고 맵으로 이동)
             Intent(this, MapActivity::class.java).let{
                 it.putExtra(FOR_CHECK, true)
                 it.putExtra(RESTAURANT_NAME, binding.info?.name)
@@ -137,7 +139,7 @@ class RecordActivity : AppCompatActivity() {
         }
     }
 
-    /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 화면으로 이동하는 함수  */
+    /* 수정 버튼 클릭시 id 정보를 가지고 AddActivity 이동을 하는 함수  */
     private fun moveToEditActivity(){
         Intent(this, AddActivity::class.java).also{
             it.putExtra(ITEM_ID, itemId)
@@ -150,13 +152,13 @@ class RecordActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (옵저버 후속 작업)
 
-    /* 유저와 아이템 작업 진행 여부에 따라 로딩 다이얼로그를 띄우는 함수 */
+    /* 유저와 아이템 작업 진행 여부에 따라 로딩 dialog 띄우는 함수 */
     private fun decideShowLoading(yes: Boolean){
         if(yes) progressDialog.create()
         else progressDialog.destroy()
     }
 
-    /* 삭제 작업이 끝난 것을 확인 후 현재 화면을 종료하는 함수 */
+    /* 삭제 작업 이후 현재 화면 종료 함수 */
     private fun deleteWorkComplete(){
         Toast.makeText(this, R.string.delete_complete, Toast.LENGTH_SHORT).show()
         finish()

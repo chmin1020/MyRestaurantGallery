@@ -23,10 +23,13 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationIn
  * 이 때, 검색 결과를 위해서 카카오 맵 API 를 Retrofit2 객체를 활용해서 사용했다.
  **/
 class LocationListActivity : AppCompatActivity() {
+    //뷰 바인딩
+    private val binding: ActivityLocationListBinding by lazy { ActivityLocationListBinding.inflate(layoutInflater) }
+
     //editText 키보드 관리자
     private val inputManager: InputMethodManager by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
-    //로딩 다이얼로그
+    //로딩 dialog
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //뷰모델
@@ -38,44 +41,36 @@ class LocationListActivity : AppCompatActivity() {
         )[LocationViewModel::class.java]
     }
 
-    //옵저버들
+    //옵저버
     private val searchObserver = Observer<List<LocationInfo>> { taskWithResults(it) }
     private val progressObserver =
         Observer<Boolean> { if (it) progressDialog.create() else progressDialog.destroy() }
 
-    //리사이클러뷰
+    //recyclerView 어댑터
     private val adapter = LocationAdapter()
-
-    //뷰 바인딩
-    private val binding: ActivityLocationListBinding by lazy {
-        ActivityLocationListBinding.inflate(
-            layoutInflater
-        )
-    }
 
 
     //--------------------------------------------
     // 액티비티 생명주기 영역
 
-    /* onCreate()에서는 리스너와 리사이클러뷰를 설정하고 이외 사전 작업을 수행한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        initRecyclerView() //리사이클러뷰 설정
-        initListeners() //리스너 지정
-        initObservers() //observer 관찰 대상 설정
+        //초기 화면 세팅 지정
+        initRecyclerView()
+        initListeners()
+        initObservers()
 
-        showKeyboard() //최초 생성 시 키보드 자동 올림
+        showKeyboard() //키보드 자동 올림
     }
 
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
-    /* 어댑터와 레이아웃 매니저 지정, 추가 리스너 구현 등 리사이클러뷰와 관련된 초기 설정을 하는 함수 */
+    /* recyclerView 관련된 초기 설정을 하는 함수 */
     private fun initRecyclerView() {
-        //리사이클러뷰 설정(adapter, layoutManager)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
@@ -83,20 +78,20 @@ class LocationListActivity : AppCompatActivity() {
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                recyclerView.adapter ?: return //어댑터가 null -> 동작을 수행하지 않음
+                recyclerView.adapter ?: return //어댑터 null -> 동작을 수행 x
 
-                // 페이지 끝에 도달한 경우(위에서 구한 인덱스도 비교)
+                // 페이지 끝에 도달한 경우(위에서 구한 인덱스 비교)
                 if (!recyclerView.canScrollVertically(1)) loadNext()
             }
         })
     }
 
-    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
+    /* 화면 뷰들의 이벤트 listener 등록 함수 */
     private fun initListeners() {
         //뒤로 가기 버튼 클릭
         binding.ivBack.setOnClickListener { finish() }
 
-        //키보드에서 엔터를 클릭
+        //키보드 엔터를 클릭
         binding.etSearch.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
                 return@setOnKeyListener true.also { doSearch(binding.etSearch.text.toString()) }
@@ -107,7 +102,7 @@ class LocationListActivity : AppCompatActivity() {
         binding.ivSearch.setOnClickListener { doSearch(binding.etSearch.text.toString()) }
     }
 
-    /* 각 옵저버와 뷰모델의 데이터를 연결하는 함수 */
+    /* 각 옵저버 뷰모델 연결 함수 */
     private fun initObservers() {
         locationViewModel.searchResults.observe(this, searchObserver)
         locationViewModel.progressing.observe(this, progressObserver)
@@ -117,25 +112,25 @@ class LocationListActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (검색)
 
-    /* 키워드를 가지고 실제 검색을 하는 함수 */
+    /* 키워드로 실제 검색을 하는 함수 */
     private fun doSearch(keyword: String) {
         adapter.searchSettingReset(keyword)
         hideKeyboard()
 
-        //네트워크 상태에 따른 검색 작업 실시
+        //네트워크 상태에 따른 검색 작업
         if (NetworkWatcher.checkNetworkState(this))
             locationViewModel.searchLocationWithQuery(keyword, 1) //첫 페이지부터 검색
         else
             Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
     }
 
-    /* 다음 페이지 내용을 검색해서 가져오는 함수 */
+    /* 다음 페이지 내용을 가져오는 함수 */
     private fun loadNext() {
         if (adapter.isEnd) return
         locationViewModel.searchLocationWithQuery(adapter.currentKeyword, adapter.currentPage)
     }
 
-    /* 받은 응답 값들(뷰모델 데이터)을 통해 적절한 작업을 수행하는 함수 */
+    /* 받은 응답 값들(뷰모델 데이터) 적용 함수 */
     private fun taskWithResults(results: List<LocationInfo>) {
         adapter.update(results)
         adapter.readyToNextPage()
@@ -145,9 +140,11 @@ class LocationListActivity : AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (키보드 조정)
 
-    /* 키보드를 드러내기 위해 사용하는 함수 */
+    /* 키보드 자동 드러내기 */
     private fun showKeyboard() {
         binding.etSearch.requestFocus()
+
+        //명령 인식을 위한 딜레이
         binding.etSearch.postDelayed({
             inputManager.showSoftInput(
                 binding.etSearch,
@@ -156,7 +153,7 @@ class LocationListActivity : AppCompatActivity() {
         }, 100)
     }
 
-    /* 키보드를 숨기기 위해 사용하는 함수 */
+    /* 키보드를 숨기기 함수 */
     private fun hideKeyboard() {
         inputManager.hideSoftInputFromWindow(
             binding.etSearch.windowToken,
