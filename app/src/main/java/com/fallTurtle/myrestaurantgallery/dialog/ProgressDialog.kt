@@ -11,7 +11,7 @@ class ProgressDialog(context: Context) {
     //뷰 바인딩
     private val binding by lazy { DialogProgressBinding.inflate(dialog.layoutInflater) }
 
-    //다이얼로그 객체
+    //dialog 객체
     private val dialog = Dialog(context)
 
 

@@ -10,14 +10,14 @@ import android.net.NetworkCapabilities
  */
 object NetworkWatcher {
     fun checkNetworkState(context: Context): Boolean {
-        //인터넷 연결에 대한 속성을 관리하는 매니저 객체
+        //인터넷 연결에 매니저 객체
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        //현재 네트워크 연결 중이 아니거나, 네트워크가 인터넷 연결이 안되어 있으면 false
+        //현재 인터넷 사용이 불가 하면 false
         val currentActiveNet = connectivityManager.activeNetwork ?: return false
         val netAbility = connectivityManager.getNetworkCapabilities(currentActiveNet) ?: return false
 
-        //와이파이 또는 셀룰러 네트워크를 통해 연결 중이라면 true
+        //연결 중이라면 true
         return when {
             netAbility.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             netAbility.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true

@@ -19,27 +19,29 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 /**
  * 앱의 로그인 화면을 담당하는 액티비티.
- * 로그인 작업을 수행할 수 있으며, 그 기능을 위한 수행은 최대한 뷰모델로 위임한다.
+ * 로그인 작업을 수행할 수 있으며, 그 기능을 위한 수행은 최대한 viewModel이 수행을 한다.
  **/
 class LoginActivity: AppCompatActivity() {
     //뷰 바인딩
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
-    //로딩 다이얼로그
-    private val progressDialog by lazy { ProgressDialog(this) }
-
-    //뷰모델
+    //뷰모델(식당 아이템, 유저)
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
     private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java]}
 
-    //옵저버들
+    //로딩 dialog
+    private val progressDialog by lazy { ProgressDialog(this) }
+
+    //observers(유저 존재 유무, 관련 진행 과정 유무)
     private val userExistObserver = Observer<Boolean> { if(it) doProperWorkAccordingToLoginState() }
     private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading() }
+
+    //observers(아이템 복원 진행 과정 유무, 해당 과정 종료 유무)
     private val itemRestoreFinishObserver = Observer<Boolean> { if(it) showMain() }
     private val itemRestoreProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
 
-    // 유저와 아이템 부분의 비즈니스 작업의 상태 등을 판별할 프로퍼티
+    // 유저와 아이템 부분의 business 작업의 상태 등 판별 property
     private var userProgress = false
     private var itemProgress = false
 
@@ -48,10 +50,11 @@ class LoginActivity: AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 액티비티 결과 런처
+    // activity 결과 런처
 
     //로그인 요청에 대한 결과를 가져오는 런처
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        //토큰을 받아온 후 추가 작업 수행
         getTokenForLogin(it.data)
             ?.let { token-> userViewModel.loginUser(token) } //성공 시 로그인
             ?: run{ Toast.makeText(this, R.string.google_auth_failure, Toast.LENGTH_SHORT).show()} //실패 시 메시지 출력
@@ -66,7 +69,7 @@ class LoginActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         initListeners() //리스너 설정
-        setUserObserver() //유저 옵저버부터 설정 (유저가 특정되지 않으면 데이터 복원 불가)
+        setUserObserver() //유저 observer 설정 (유저가 특정이 되어야 아이템 복원 가능)
     }
 
 
@@ -79,13 +82,13 @@ class LoginActivity: AppCompatActivity() {
         binding.signInButton.setOnClickListener{ trySignIn() }
     }
 
-    /* 유저 뷰모델 옵저버를 설정하는 함수 */
+    /* 유저 뷰모델 observers 설정 함수 */
     private fun setUserObserver(){
         userViewModel.loginCompleteAnswer.observe(this, userExistObserver)
         userViewModel.workFinishFlag.observe(this, userProgressObserver)
     }
 
-    /* 아이템 뷰모델 옵저버를 설정하는 함수 (유저가 정해진 후 뷰모델이 생성되어야 하므로 따로 분리) */
+    /* 아이템 뷰모델 observers 설정 함수 (유저가 결정이 되어야 외부 저장소 역시 결정) */
     private fun setItemRestoreObserver(){
         itemViewModel.workFinishFlag.observe(this,itemRestoreFinishObserver)
         itemViewModel.progressing.observe(this, itemRestoreProgressObserver)
@@ -96,7 +99,7 @@ class LoginActivity: AppCompatActivity() {
     // 내부 함수 영역 (구글 로그인)
     // <<뷰 영역에 맞지 않으나 인텐트 작업의 존재로 분리가 어려움>>
 
-    /* (구글)로그인을 위해 런처로 인텐트를 실행하는 함수 */
+    /* (구글)로그인을 위한 런처 intent 실행 함수 */
     private fun trySignIn(){
         //구글 로그인을 위한 인텐트 생성
         val signInIntent = GoogleSignIn
@@ -128,9 +131,11 @@ class LoginActivity: AppCompatActivity() {
     //--------------------------------------------
     // 내부 함수 영역 (옵저버 후속 작업)
 
-    /* 유저가 존재한다는 걸 확인한 뒤 후속 작업을 진행하는 함수 */
+    /* 유저의 존재(login 성공)를 확인한 뒤 후속 작업을 진행할 때 쓰이는 함수 */
     private fun doProperWorkAccordingToLoginState() {
         sharedPreferences.edit().putBoolean(IS_LOGIN, true).apply()
+
+        //외부 저장소 데이터 복구
         setItemRestoreObserver().also { itemViewModel.restoreItemsFromAccount() }
     }
 
