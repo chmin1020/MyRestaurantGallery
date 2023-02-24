@@ -14,7 +14,7 @@ abstract class AdapterDiffCallback<T>
     override fun getOldListSize() = oldItems.size
     override fun getNewListSize() = newItems.size
 
-    //areItemsTheSame -> true 나올 시 내부 내용도 같은지 확인하는 함수
+    //areItemsTheSame -> true 나올 시 내부 내용도 같은지 확인
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
             = oldItems[oldItemPosition] == newItems[newItemPosition]
 }

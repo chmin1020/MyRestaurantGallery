@@ -13,6 +13,9 @@
     <string name="loading">로딩중…</string>
     <string name="find">지도 설정</string>
     <string name="permission_ask">권한을 허용해주세요</string>
+    <string name="no_location_selection">지도 위치 값이 없습니다.</string>
+    <string name="gps_complete">좌표를 현재 위치로 설정합니다.</string>
+    <string name="default_location">설정 좌표가 없어 현재 위치로 이동합니다.</string>
 
     <!--로그인 문구-->
     <string name="login_welcome">맛집 갤러리에 오신 것을 환영합니다!</string>

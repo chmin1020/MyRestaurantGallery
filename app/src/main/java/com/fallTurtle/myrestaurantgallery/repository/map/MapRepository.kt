@@ -6,6 +6,6 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPa
  * 맵 리포지토리의 역할을 정의한 인터페이스.
  **/
 interface MapRepository {
-    /* 위치(좌표)를 얻는 함수 */
+    /* 현재 위치를 가지고 오는 함수 */
     suspend fun requestCurrentLocation(): LocationPair?
 }

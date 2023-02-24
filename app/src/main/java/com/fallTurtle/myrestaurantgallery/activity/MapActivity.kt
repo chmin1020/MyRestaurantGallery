@@ -2,7 +2,6 @@ package com.fallTurtle.myrestaurantgallery.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,12 +62,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //--------------------------------------------
     // 액티비티 생명주기 영역
 
-    /* onCreate()에서는 맵 관련 프로퍼티와 뷰 리스너를 세팅한다. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //지도를 불러오기 위해서는 네트워크 연결 필요함
+        //네트워크 연결 필요함
         if(!NetworkWatcher.checkNetworkState(this)){
             Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
             finish()
@@ -90,25 +88,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         else
-            initListeners() //뷰의 리스너들 세팅
+            initListeners() //뷰의 리스너 세팅
     }
 
 
     //--------------------------------------------
     // 오버라이딩 영역
 
-    /* onMapReady()에서는 지도가 준비되었을 때, 그 지도의 설정을 진행한다. */
+    /* 지도가 준비되었을 때, 그 지도의 설정을 진행. */
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        initCamera()
+        initCamera() //카메라 초기 설정
     }
 
 
     //--------------------------------------------
     // 내부 함수 영역 (초기화)
 
-    /* 화면 내 사용자 입력 관련 뷰들의 이벤트 리스너를 등록하는 함수 */
+    /* 뷰들의 listener 등록  */
     private fun initListeners(){
         //search 버튼을 눌렀을 때
         binding.btnSearch.setOnClickListener {
@@ -123,6 +121,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 putExtra(LATITUDE, mapViewModel.location.value?.latitude)
                 putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
 
+                //이미 이름이 있는지 여부
                 if(binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
                     putExtra(RESTAURANT_NAME, binding.tvCurrentRestaurant.text)
             }
@@ -133,29 +132,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //gps fab 버튼을 눌렀을 때
         binding.fabMyLocation.setOnClickListener{
             mapViewModel.requestCurrentLocation()
-            Toast.makeText(this, "좌표를 현재 위치로 설정합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.gps_complete, Toast.LENGTH_SHORT).show()
         }
 
         //back 버튼(이미지)을 눌렀을 때
         binding.ivBack.setOnClickListener { finish() }
     }
 
-    /* 초기 카메라를 세팅하는 함수 */
+    /* 초기 카메라 세팅 */
     private fun initCamera(){
+        //받은 정보 토대로 설정
         binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME) ?: NO_SELECTED_LOCATION
         val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
         val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
 
-        //위치 저장 내용이 있으면 거기로, 아니면 현재 위치로
+        //위치 저장 내용이 있으면 거기로
         if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION) {
             mapViewModel.requestCurrentLocation()
-            Toast.makeText(this, "설정 좌표가 없어 현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.default_location, Toast.LENGTH_SHORT).show()
         }
         else
             mapViewModel.updateLocationFromUser(latitude, longitude)
     }
 
-    /* 뷰모델 데이터와 옵저버를 연결하는 함수 */
+    /* 뷰모델 - 옵저버 연결 함수 */
     private fun setObservers(){
         mapViewModel.location.observe(this, locationObserver)
     }
@@ -164,16 +164,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //--------------------------------------------
     // 내부 함수 영역 (옵저버 후속 작업)
 
-    /* 맵 카메라를 현재 위치로 이동시키고 맵 마커도 옮기는 함수 */
+    /* 맵 카메라 시점 현재 위치로 이동, 맵 마커도 옮기는 함수 */
     private fun moveCamera(location: LocationPair?){
         location?.let {
-            //현재 설정 위치대로 이동
+            //현재 설정 위치 이동
             val now = LatLng(it.latitude, it.longitude)
             val position = CameraPosition.Builder().target(now).zoom(16f).build()
             markerOps.position(now)
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
 
-            //기존 마커가 있다면 지우고, 새 위치에 마커를 추가한다.
+            //기존 마커가 있다면 지우고, 새 위치에 마커를 추가
             marker?.remove()
             marker = googleMap.addMarker(markerOps)
 
