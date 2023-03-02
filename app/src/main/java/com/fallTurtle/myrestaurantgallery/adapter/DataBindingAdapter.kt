@@ -1,7 +1,12 @@
 package com.fallTurtle.myrestaurantgallery.adapter
 
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import android.widget.*
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import coil.api.load
 import com.fallTurtle.myrestaurantgallery.R
 
@@ -61,5 +66,36 @@ object DataBindingAdapter {
                 arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 adapter = arrayAdapter
             }
+    }
+
+    //-------------------------------------------------------
+    //editText 역방향 데이터 바인딩 어댑터
+
+    // BindingAdapter (Setter 역할)
+    @JvmStatic
+    @BindingAdapter("android:text")
+    fun getTextForView(view: EditText, content: String?) {
+        if (view.text.toString() != content)
+            view.setText(content)
+    }
+
+    // InverseBindingAdapter (Getter 역할)
+    @JvmStatic
+    @InverseBindingAdapter(attribute = "android:text", event = "textAttrChanged")
+    fun getTextForData(view: EditText): String {
+        return view.text.toString()
+    }
+
+    // InverseBindingListener (InverseBindingAdpater 실행 역할)
+    @JvmStatic
+    @BindingAdapter("textAttrChanged")
+    fun setTextWatcher(view: EditText, textAttrChanged: InverseBindingListener?){
+        view.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) { }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                textAttrChanged?.onChange()
+            }
+        })
     }
 }
