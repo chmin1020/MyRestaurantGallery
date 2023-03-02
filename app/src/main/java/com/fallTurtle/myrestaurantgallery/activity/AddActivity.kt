@@ -97,7 +97,6 @@ class AddActivity : AppCompatActivity(){
         //데이터 디폴트 설정
         binding.info = RestaurantInfo()
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
-        binding.date = SimpleDateFormat(DATE_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
         //인텐트로 선택된 데이터 db 아이디 뷰모델에 적용
         intent.getStringExtra(ITEM_ID)?.let { itemViewModel.setProperItem(it) }
@@ -232,7 +231,6 @@ class AddActivity : AppCompatActivity(){
     private fun setContentsWithItem(item: RestaurantInfo){
         with(binding){
             info = item.copy()
-            date = item.date
             spCategory.setSelection(item.categoryNum)
         }
 
