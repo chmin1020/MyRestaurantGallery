@@ -21,7 +21,6 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
 import java.text.SimpleDateFormat
@@ -52,11 +51,9 @@ class AddActivity : AppCompatActivity(){
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //선택된 아이템 관련 변수들
-    private var itemLocation = LocationPair()
     private var preImgName: String? = null
 
     //이미지 이름, 기기 내 이미지 실제 uri
-    private var curImgName: String? = null
     private var curImgPath: String? = null
     private var imgUri: Uri? = null
 
@@ -66,13 +63,9 @@ class AddActivity : AppCompatActivity(){
 
     /* 갤러리에서 가지고 온 이미지 결과를 처리하는 런처 */
     private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        imgUri = it.data?.data //갤러리 데이터: 사진 uri
-
-        //uri 정상 -> null 아님
-        imgUri?.let{ uri->
+        imgUri = it.data?.data?.also{ uri->
             //현재 시간을 통한 고유 이미지 이름 생성(중복 방지)
-            curImgName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
-            binding.info?.imageName = curImgName
+            binding.info?.imageName = uri.lastPathSegment.toString() + System.currentTimeMillis().toString()
 
             //사진 설정
             binding.ivImage.setImageURI(uri)
@@ -83,10 +76,8 @@ class AddActivity : AppCompatActivity(){
     private val getLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
             //위도, 경도 적용
-            itemLocation.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
-            itemLocation.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
-            binding.info?.latitude = itemLocation.latitude
-            binding.info?.longitude = itemLocation.longitude
+            binding.info?.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
+            binding.info?.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
 
             //식당 이름 적용
             it.data?.getStringExtra(RESTAURANT_NAME)?.let {name->
@@ -104,23 +95,21 @@ class AddActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
         //데이터 디폴트 설정
+        binding.info = RestaurantInfo()
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
-        binding.date = SimpleDateFormat(DATE_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
 
-        //인텐트로 선택된 데이터 db 아이디 가져와서 뷰모델에 적용 (실패 시 화면 종료)
+        //인텐트로 선택된 데이터 db 아이디 뷰모델에 적용
         intent.getStringExtra(ITEM_ID)?.let { itemViewModel.setProperItem(it) }
-
-        //각 뷰의 listeners 설정
-        initListeners()
 
         //toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        //observer 연결
+        //초기 설정
+        initListeners()
         setObservers()
-     }
+    }
 
 
     //--------------------------------------------
@@ -136,7 +125,7 @@ class AddActivity : AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_item -> saveCurrentItemProcess() //저장
-            R.id.home -> finish() //취소, 종료
+            android.R.id.home -> finish() //취소, 종료
         }
         return super.onOptionsItemSelected(item)
     }
@@ -156,12 +145,14 @@ class AddActivity : AppCompatActivity(){
         //spinner 아이템 목록 설정
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                //아이템 선택 시마다 이를 데이터 바인딩 객체에 저장
-                binding.info?.category = binding.spCategory.selectedItem.toString()
-                binding.info?.categoryNum = position
+                binding.info?.run {
+                    //바인딩 데이터 갱신
+                    category = binding.spCategory.selectedItem.toString()
+                    categoryNum = position
 
-                //선택 이미지 없으면 기본 그림 이미지 설정
-                curImgName ?: selectFoodDefaultImage(position)
+                    //선택 이미지 없으면 기본 그림 이미지 설정
+                    imageName ?: selectFoodDefaultImage(position)
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -187,8 +178,8 @@ class AddActivity : AppCompatActivity(){
             //장소 정보 얻기 위한 intent 실행
             Intent(this, MapActivity::class.java).let {
                 //기존 정보가 있을 시 이를 intent 통해서 전송
-                it.putExtra(LATITUDE, itemLocation.latitude)
-                it.putExtra(LONGITUDE, itemLocation.longitude)
+                it.putExtra(LATITUDE, binding.info?.latitude)
+                it.putExtra(LONGITUDE, binding.info?.longitude)
                 it.putExtra(RESTAURANT_NAME, binding.etName.text.toString())
 
                 //결과 받기 위해 런처로 실행
@@ -196,9 +187,8 @@ class AddActivity : AppCompatActivity(){
             }
         }
 
-        //imageView 클릭 시
+        //imageView 클릭 시 (dialog 생성)
         binding.ivImage.setOnClickListener{ _ ->
-            //이미지 dialog 생성
             ImgDialog(this).also { dialog ->
                 //갤러리 사진 사용 선택
                 dialog.setOnGalleryClickListener{
@@ -208,30 +198,21 @@ class AddActivity : AppCompatActivity(){
 
                 //기본 그림 이미지 사용 선택
                 dialog.setOnDefaultClickListener{
-                    curImgName = null
+                    binding.info?.imageName = null
                     selectFoodDefaultImage(binding.spCategory.selectedItemPosition)
                     dialog.destroy()
                 }
             }.create()
         }
 
-        //별점 개수 변경 시도 시
-        binding.rbRatingBar.setOnRatingBarChangeListener { _, fl, _ -> binding.info?.rate = fl.toInt() }
-
-        //식당 이름 텍스트 변경 시
+        //식당 이름 텍스트 변경 시 (에러 체크)
         binding.etName.addTextChangedListener {
             it?.let { text ->
-                binding.info?.name = it.toString()
                 binding.textLayoutName.error = when(text.length){
                     0 -> PLEASE_INSERT_NAME
                     else -> null
                 }
             }
-        }
-
-        //메모 텍스트 변경 시
-        binding.etMemo.addTextChangedListener {
-            it?.let { binding.info?.memo = it.toString() }
         }
     }
 
@@ -250,15 +231,10 @@ class AddActivity : AppCompatActivity(){
     private fun setContentsWithItem(item: RestaurantInfo){
         with(binding){
             info = item.copy()
-            date = item.date
             spCategory.setSelection(item.categoryNum)
         }
 
-        //위치 좌표 값
-        itemLocation = LocationPair(item.latitude, item.longitude)
-
         //이미지 관련 값 세팅(현재 이미지 이름과 경로, 이전 이미지 경로<이미지 변경 시>)
-        curImgName = item.imageName
         curImgPath = item.imagePath
         preImgName = item.imageName
     }
@@ -274,10 +250,10 @@ class AddActivity : AppCompatActivity(){
     //--------------------------------------------
     // 내부 함수 영역 (데이터 저장)
 
-    /* 지금까지 작성한 정보를 아이템으로서 저장하는 과정을 담은 함수 */
+    /* 작성한 정보의 저장 과정을 담은 함수 */
     private fun saveCurrentItemProcess(){
         //이미지 지정 x라면 경로도 null -> 이미지 로딩 에러 방지
-        curImgName ?: run{
+        binding.info?.imageName ?: run{
             curImgPath = null
             binding.info?.imagePath = null
         }
@@ -287,30 +263,20 @@ class AddActivity : AppCompatActivity(){
             if (binding.etName.text.isNullOrEmpty())
                 Toast.makeText(this, R.string.satisfy_warning, Toast.LENGTH_SHORT).show()
             else //갱신 혹은 삽입
-                binding.info?.also { updateItem() } ?: run{ insertItem() }
+                intent.getStringExtra(ITEM_ID)?.let { updateItem() } ?: run{ insertItem() }
         }
-        else //연결 안되어 있음
+        else
             Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show()
     }
 
     /* 기존 아이템 갱신 함수 */
     private fun updateItem(){
-        binding.info?.imageName = curImgName
         binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
     }
 
     /* 새 아이템 추가 함수 */
     private fun insertItem(){
-        val newID = SimpleDateFormat(ID_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())).toString()
-
-        //위에서 설정한 값들, 뷰에서 가져온 값들을 하나의 맵에 모두 담아서 document 최종 저장
-        val newItem = RestaurantInfo(imageName = curImgName, imagePath = curImgPath, date = binding.tvDate.text.toString(),
-            name = binding.etName.text.toString(), categoryNum = binding.spCategory.selectedItemPosition,
-            category = binding.spCategory.selectedItem.toString(), memo = binding.etMemo.text.toString(),
-            rate = binding.rbRatingBar.rating.toInt(), latitude = itemLocation.latitude,
-            longitude = itemLocation.longitude, dbID = newID)
-
-        itemViewModel.insertItem(newItem, imgUri)
+        binding.info?.let{ itemViewModel.insertItem(it, imgUri) }
     }
 
 
