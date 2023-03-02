@@ -1,17 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.view_model
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.repository.location.LocationRepository
 import com.fallTurtle.myrestaurantgallery.repository.location.RetrofitLocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class LocationViewModel(application: Application) : AndroidViewModel(application) {
+class LocationViewModel() : ViewModel() {
     //지역 검색 비즈니스 로직 리포지토리
     private val searchRepository: LocationRepository = RetrofitLocationRepository()
 

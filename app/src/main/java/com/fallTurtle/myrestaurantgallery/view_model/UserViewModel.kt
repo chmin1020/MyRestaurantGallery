@@ -1,16 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.view_model
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.fallTurtle.myrestaurantgallery.repository.user.FirebaseUserRepository
 import com.fallTurtle.myrestaurantgallery.repository.user.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+class UserViewModel : ViewModel() {
     //유저 비즈니스 로직 리포지토리
     private val userRepository: UserRepository = FirebaseUserRepository()
 
