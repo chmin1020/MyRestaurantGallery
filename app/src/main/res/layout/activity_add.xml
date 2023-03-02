@@ -115,7 +115,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:numStars="5"
-                android:rating="@{info.rate}"
+                android:rating="@={info.rate}"
                 android:stepSize="1"
                 app:layout_constraintBottom_toTopOf="@id/text_layout_name"
                 app:layout_constraintEnd_toEndOf="@id/ll_image"
@@ -146,7 +146,7 @@
                     android:layout_marginRight="10dp"
                     android:hint="@string/example_name"
                     android:inputType="text"
-                    android:text="@{info.name}" />
+                    android:text="@={info.name}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -192,7 +192,7 @@
                 android:hint="@string/example_memo"
                 android:inputType="textMultiLine"
                 android:padding="10dp"
-                android:text="@{info.memo}"
+                android:text="@={info.memo}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/sp_category"
                 app:layout_constraintHeight_percent="0.28"

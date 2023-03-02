@@ -81,6 +81,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         //체크 용도인 경우 데이터 갱신 가능성 배제
         if(intent.getBooleanExtra(FOR_CHECK, false)){
             with(binding){
+                llSearchBar.visibility = View.GONE
                 ivBack.visibility = View.GONE
                 btnCur.visibility = View.GONE
                 btnSearch.visibility = View.GONE
