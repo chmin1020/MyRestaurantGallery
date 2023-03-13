@@ -11,7 +11,7 @@
     <string name="yes">네</string>
     <string name="no">아니오</string>
     <string name="loading">로딩중…</string>
-    <string name="find">지도 설정</string>
+    <string name="find">검색</string>
     <string name="permission_ask">권한을 허용해주세요</string>
     <string name="no_location_selection">지도 위치 값이 없습니다.</string>
     <string name="gps_complete">좌표를 현재 위치로 설정합니다.</string>
