@@ -23,10 +23,7 @@ import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
-import java.util.Date
 
 
 /**
