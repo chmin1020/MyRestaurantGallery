@@ -8,6 +8,9 @@ plugins {
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def googleMapApiKey = properties.getProperty('google_map_api_key')
+def kakaoSdkAppKey = properties.getProperty('kakao_sdk_app_key')
+
 
 android {
     compileSdkVersion 33
@@ -21,6 +24,9 @@ android {
         versionName "1.0"
 
         buildConfigField("String","KAKAO_API_KEY", properties['kakao_api_key'])
+
+        manifestPlaceholders["google_map_api_key"] = googleMapApiKey
+        manifestPlaceholders["kakao_sdk_app_key"] = kakaoSdkAppKey
 
         javaCompileOptions {
             annotationProcessorOptions {
