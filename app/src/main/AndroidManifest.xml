@@ -32,13 +32,13 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyABmEI59-DK3a6NPqZiTP0HDCTHTcFh-e8" />
+            android:value="${google_map_api_key}" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="1eb5c3d2752bf1d4cf31635f37db1812" />
+            android:value="${kakao_sdk_app_key}" />
 
         <activity
             android:name=".activity.LocationListActivity"
