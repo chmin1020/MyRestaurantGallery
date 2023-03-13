@@ -37,15 +37,15 @@ class RetrofitLocationRepository: LocationRepository {
 
     /* 전체 검색 결과를 받는 함수 */
     override suspend fun searchTotalInfo(query: String, page: Int):List<LocationInfo> {
-        if(page == 1)
-            resetSearchSetting()
+        if(page == 1) resetSearchSetting()
 
-        //검색 실시
+        //검색 후 결과 추가
         val searchResponses = searchRestaurantInfo(query, page)
+        if(!searchFinish) extractResultsFromResponse(searchResponses)
 
-        //아직 식당 데이터가 남아 있으면 결과 추가
-        if(!isSearchFinish(searchResponses, searchFinish).also { searchFinish = it })
-            extractResultsFromResponse(searchResponses)
+        //검색 개수는 페이지 3번으로 제한
+        if(searchResponses.isSuccessful && searchResponses.body()?.meta?.is_end == true)
+            searchFinish = true
 
         return searchTotalResults
     }
@@ -77,8 +77,4 @@ class RetrofitLocationRepository: LocationRepository {
         searchTotalResults.clear()
         searchFinish = false
     }
-
-    /* 검색할 수 있는 상황인지 체크하는 함수 */
-    private fun isSearchFinish(response: Response<LocationSearch>, searchEnd: Boolean)
-        = response.isSuccessful && (searchEnd || (response.body()?.meta?.is_end ?: true))
 }
