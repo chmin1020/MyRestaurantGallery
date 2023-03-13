@@ -1,8 +1,8 @@
 package com.fallTurtle.myrestaurantgallery.model.retrofit.Interface
 
+import com.fallTurtle.myrestaurantgallery.BuildConfig
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
 import com.fallTurtle.myrestaurantgallery.model.retrofit.values.APIConstant
-import com.fallTurtle.myrestaurantgallery.model.retrofit.values.APIKey
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -15,7 +15,7 @@ interface LocationSearchInterface {
     //GET 명령을 해당 url 에게 보내서 searchLocation 정보를 얻어오는 함수를 정의한다. (LocationResponse 객체로 받아옴)
     @GET(APIConstant.KAKAOMAP_LOCATION)
     suspend fun getSearchLocationOfRestaurants(
-        @Header("Authorization") Authorization: String = APIKey.KAKAO,
+        @Header("Authorization") Authorization: String = BuildConfig.KAKAO_API_KEY,
         @Query("query") query: String,
         @Query("page") page: Int
         ): Response<LocationSearch>
