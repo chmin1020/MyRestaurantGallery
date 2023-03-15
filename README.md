@@ -35,9 +35,7 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 |로그인(백업)|리스트 확인|항목 생성|
 |------|---|---|
-|<img src="https://user-images.githubusercontent.com/70795841/225346940-7ef6cc09-d2b7-44e7-bfe5-8f093f083d84.gif)", width="720", height="1520"/>
-|![리스트확인](https://user-images.githubusercontent.com/70795841/225330825-b79d0d2b-f076-4483-97d6-26f341a28648.gif)
-|![항목생성](https://user-images.githubusercontent.com/70795841/225334464-5329031b-6957-47c0-b4d8-6948c01bf0c1.gif)|
+|![재로그인](https://user-images.githubusercontent.com/70795841/225350844-c2442078-a844-4e43-8a82-ffc72383b395.gif)|![리스트확인](https://user-images.githubusercontent.com/70795841/225330825-b79d0d2b-f076-4483-97d6-26f341a28648.gif)|![항목생성](https://user-images.githubusercontent.com/70795841/225334464-5329031b-6957-47c0-b4d8-6948c01bf0c1.gif)|
 
 
 
