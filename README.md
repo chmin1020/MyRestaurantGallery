@@ -4,7 +4,7 @@
 
 __맛집갤러리__ 는 본인이 좋아하는 맛집의 정보를 리스트의 형태로 저장할 수 있는 안드로이드 애플리케이션입니다.
 
-<img src="https://user-images.githubusercontent.com/70795841/225352998-d5b82130-1fd5-4848-974c-7718ee5f0cbd.PNG", width="600px", height="300px">
+<img src="https://user-images.githubusercontent.com/70795841/225352998-d5b82130-1fd5-4848-974c-7718ee5f0cbd.PNG" width="600" height="300">
 
 
 맛집갤러리에서는 식당에 방문한 날짜, 식당 이름, 이미지, 간단한 메모 등을 하나의 정보로 저장할 수 있으며, 위치 지정을 위해 gps를 통한 지도 인터페이스를 사용할 수 있습니다.
