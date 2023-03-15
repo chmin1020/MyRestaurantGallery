@@ -23,6 +23,28 @@ For providing those functions to users, I needed database for saving information
 You can check structure of code, used API for this app, each purpose of API, etc down below.
 
 
+## 사용 방법 How to use
+
+### 앱 사용
+
+데이터와 이미지를 백업하기 위해 사용한 파이어베이스의 요금제로 인해 따로 구글 플레이 스토어에 배포하지 않음.
+
+Sadly, I can't release this app on google play store because I use Firebase for back up data and images. (Firebase is not free for big data)
+
+### 앱 화면 예시
+
+|로그인(백업)|리스트 확인|항목 생성|
+|------|---|---|
+|![재로그인](https://user-images.githubusercontent.com/70795841/225330918-23000e21-7c41-474f-850b-a26ed1728c09.gif)|![리스트확인](https://user-images.githubusercontent.com/70795841/225330825-b79d0d2b-f076-4483-97d6-26f341a28648.gif)|![항목생성](https://user-images.githubusercontent.com/70795841/225334464-5329031b-6957-47c0-b4d8-6948c01bf0c1.gif)|
+
+
+
+|지도로 확인|식당 검색|다크 모드 변경|
+|------|---|---|
+|![지도확인](https://user-images.githubusercontent.com/70795841/225331008-d522dfca-6e16-4f59-9a3e-fc4dba3e1c84.gif)|![지도검색](https://user-images.githubusercontent.com/70795841/225330924-8465de1e-9a1d-42ba-9c40-2607c86192da.gif)|![다크모드](https://user-images.githubusercontent.com/70795841/225330680-1e9feb27-a830-4c81-827a-5967469558dd.gif)|
+
+
+
 ## 코드 구조와 기술 Code structure and API
 
 ### 코드 개요
@@ -85,24 +107,3 @@ Item을 위해서는 Firebase의 firestore와 storage, 안드로이드 AAC의 ro
 Map을 위해서는 Google Map API를 활용합니다. 무료로 기능을 제공할 뿐만 아니라, 내부 API 사용 측면에서도 공개되어 있는 정보가 많기 때문에 이 API를 선택했습니다. 여기서는 GPS를 통한 현재 위치(위도, 경도), 현재 주소를 얻어올 수 있습니다.
 
 Location Search를 위해서는 Kakao Map API를 활용하며, 통신을 위해서는 Retrofit2 API를 사용했습니다. Map을 위한 API와 다른 것은 검색 기능 구현을 위해 참고할 수 있는 가장 좋은 글이 Kakao 제공 API를 사용하고 있었기 때문입니다. 앱이 필요로 하는 것은 검색 키워드에 따른 결과를 받아오는 것만 있기 때문에, 카테고리를 식당, 카페로 한 GET 요청을 사용하고 이에 대한 응답을 받기 위한 클래스들을 활용합니다.
-
-
-## 사용 방법 How to use
-
-### 앱 사용
-
-데이터와 이미지를 백업하기 위해 사용한 파이어베이스의 요금제로 인해 따로 구글 플레이 스토어에 배포하지 않음.
-현재는 코드를 받아서 테스트를 통해서만 실행 가능.
-
-Sadly, I can't release this app on google play store because I use Firebase for back up data and images. (Firebase is not free for big data)
-So this app only can be installed by code test for now :(
-
-### 앱 화면 예시
-
-![mainActivity](https://user-images.githubusercontent.com/70795841/213852429-7809db0d-5633-44a6-8654-e7797f338d2b.jpg)
-![mapActivity](https://user-images.githubusercontent.com/70795841/193832437-0779f411-da09-451d-944f-4f9faeecd847.jpg)
-![addActivity](https://user-images.githubusercontent.com/70795841/193832441-ec87bd04-b683-457c-bdc7-daf41035fcc0.jpg)
-![locationListAcitivity](https://user-images.githubusercontent.com/70795841/193832443-9c3ee110-ec18-4abc-9b56-99a0ce76f324.jpg)
-
-순서대로 메인화면, 지도화면, 항목추가화면, 지역검색화면의 모습
-
