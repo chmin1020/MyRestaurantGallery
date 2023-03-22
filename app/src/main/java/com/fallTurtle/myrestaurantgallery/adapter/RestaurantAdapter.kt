@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.fallTurtle.myrestaurantgallery.activity.RecordActivity
+import com.fallTurtle.myrestaurantgallery.ui.record.RecordActivity
 import com.fallTurtle.myrestaurantgallery.databinding.ListItemRestaurantBinding
 import com.fallTurtle.myrestaurantgallery.etc.ITEM_ID
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo

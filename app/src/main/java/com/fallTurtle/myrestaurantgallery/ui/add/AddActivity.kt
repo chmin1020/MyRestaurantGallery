@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.add
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -22,7 +22,8 @@ import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
-import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
+import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import java.util.Calendar
 
 
@@ -33,7 +34,7 @@ import java.util.Calendar
  **/
 class AddActivity : AppCompatActivity(){
     //데이터 바인딩
-    private val binding:ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
+    private val binding: ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
     //뷰모델
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
@@ -73,8 +74,8 @@ class AddActivity : AppCompatActivity(){
     private val getLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
             //위도, 경도 적용
-            binding.info?.latitude = it.data?.getDoubleExtra(LATITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
-            binding.info?.longitude = it.data?.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION) ?: DEFAULT_LOCATION
+            binding.info?.latitude = it.data?.getDoubleExtra(LATITUDE, UNDECIDED_LOCATION) ?: UNDECIDED_LOCATION
+            binding.info?.longitude = it.data?.getDoubleExtra(LONGITUDE, UNDECIDED_LOCATION) ?: UNDECIDED_LOCATION
 
             //식당 이름 적용
             it.data?.getStringExtra(RESTAURANT_NAME)?.let {name->

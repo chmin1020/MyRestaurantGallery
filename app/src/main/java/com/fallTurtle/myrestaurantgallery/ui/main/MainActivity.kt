@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.main
 
 import android.Manifest
 import android.content.Intent
@@ -18,8 +18,10 @@ import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
 import com.fallTurtle.myrestaurantgallery.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
-import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
-import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
+import com.fallTurtle.myrestaurantgallery.ui.login.LoginActivity
+import com.fallTurtle.myrestaurantgallery.ui.view_model.UserViewModel
+import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 

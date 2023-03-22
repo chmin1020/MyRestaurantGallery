@@ -24,7 +24,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".activity.AddActivity">
+            tools:context=".ui.add.AddActivity">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

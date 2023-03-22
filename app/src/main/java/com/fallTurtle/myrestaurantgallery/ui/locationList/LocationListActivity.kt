@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.locationList
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.view_model.LocationViewModel
 import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
@@ -38,7 +37,7 @@ class LocationListActivity : AppCompatActivity() {
         ViewModelProvider(
             this,
             viewModelFactory
-        )[LocationViewModel::class.java]
+        )[LocationListViewModel::class.java]
     }
 
     //옵저버

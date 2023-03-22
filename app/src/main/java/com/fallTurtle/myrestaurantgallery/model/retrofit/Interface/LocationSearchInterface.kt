@@ -2,7 +2,7 @@ package com.fallTurtle.myrestaurantgallery.model.retrofit.Interface
 
 import com.fallTurtle.myrestaurantgallery.BuildConfig
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
-import com.fallTurtle.myrestaurantgallery.model.retrofit.values.APIConstant
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.APIConstant
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

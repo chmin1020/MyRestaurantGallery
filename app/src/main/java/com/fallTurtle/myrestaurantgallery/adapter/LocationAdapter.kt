@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.fallTurtle.myrestaurantgallery.activity.MapActivity
+import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.databinding.ListItemLocationBinding
-import com.fallTurtle.myrestaurantgallery.etc.DEFAULT_LOCATION
+import com.fallTurtle.myrestaurantgallery.etc.UNDECIDED_LOCATION
 import com.fallTurtle.myrestaurantgallery.etc.RESTAURANT_NAME
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 
@@ -92,8 +92,8 @@ class LocationAdapter: RecyclerView.Adapter<LocationAdapter.CustomViewHolder>(){
                 (itemView.context as Activity).apply {
                     val backTo = Intent(this, MapActivity::class.java).apply {
                         putExtra(RESTAURANT_NAME, binding.locationResult?.name)
-                        putExtra("x", binding.locationResult?.locationPair?.latitude ?: DEFAULT_LOCATION)
-                        putExtra("y", binding.locationResult?.locationPair?.longitude ?: DEFAULT_LOCATION)
+                        putExtra("x", binding.locationResult?.locationPair?.latitude ?: UNDECIDED_LOCATION)
+                        putExtra("y", binding.locationResult?.locationPair?.longitude ?: UNDECIDED_LOCATION)
                     }
                     this.setResult(AppCompatActivity.RESULT_OK, backTo)
                     this.finish()

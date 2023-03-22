@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.map
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,13 +6,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPair
-import com.fallTurtle.myrestaurantgallery.view_model.MapViewModel
-import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.etc.*
+import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
+import com.fallTurtle.myrestaurantgallery.ui.locationList.LocationListActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,13 +28,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //뷰 바인딩
     private val binding:ActivityMapBinding by lazy { ActivityMapBinding.inflate(layoutInflater) }
 
-    //뷰모델
-    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val mapViewModel by lazy { ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java] }
-
-    //옵저버
-    private val locationObserver = Observer<LocationPair?>{ moveCamera(it) }
-
     //지도 객체
     private lateinit var googleMap: GoogleMap
 
@@ -52,8 +43,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val getLocation = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
             binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME)
-            mapViewModel.updateLocationFromUser(
-                intent.getDoubleExtra("x", DEFAULT_LOCATION), intent.getDoubleExtra("y", DEFAULT_LOCATION)
+            moveCamera(
+                intent.getDoubleExtra("x", UNDECIDED_LOCATION),
+                intent.getDoubleExtra("y", UNDECIDED_LOCATION),
+                true
             )
         }
     }
@@ -76,8 +69,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        setObservers() //옵저버 세팅
-
         //체크 용도인 경우 데이터 갱신 가능성 배제
         if(intent.getBooleanExtra(FOR_CHECK, false)){
             with(binding){
@@ -85,7 +76,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 ivBack.visibility = View.GONE
                 btnCur.visibility = View.GONE
                 btnSearch.visibility = View.GONE
-                fabMyLocation.visibility = View.GONE
             }
         }
         else
@@ -119,8 +109,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.btnCur.setOnClickListener {
             val backTo = Intent(this, AddActivity::class.java).apply {
                 putExtra(IS_CHANGED, true)
-                putExtra(LATITUDE, mapViewModel.location.value?.latitude)
-                putExtra(LONGITUDE, mapViewModel.location.value?.longitude)
+                putExtra(LATITUDE, markerOps.position.latitude)
+                putExtra(LONGITUDE, markerOps.position.longitude)
 
                 //이미 이름이 있는지 여부
                 if(binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
@@ -128,12 +118,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             setResult(RESULT_OK, backTo)
             finish()
-        }
-
-        //gps fab 버튼을 눌렀을 때
-        binding.fabMyLocation.setOnClickListener{
-            mapViewModel.requestCurrentLocation()
-            Toast.makeText(this, R.string.gps_complete, Toast.LENGTH_SHORT).show()
         }
 
         //back 버튼(이미지)을 눌렀을 때
@@ -144,40 +128,36 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun initCamera(){
         //받은 정보 토대로 설정
         binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME) ?: NO_SELECTED_LOCATION
-        val latitude = intent.getDoubleExtra(LATITUDE, DEFAULT_LOCATION)
-        val longitude = intent.getDoubleExtra(LONGITUDE, DEFAULT_LOCATION)
+        val latitude = intent.getDoubleExtra(LATITUDE, UNDECIDED_LOCATION)
+        val longitude = intent.getDoubleExtra(LONGITUDE, UNDECIDED_LOCATION)
 
         //위치 저장 내용이 있으면 거기로
-        if(latitude == DEFAULT_LOCATION || longitude == DEFAULT_LOCATION) {
-            mapViewModel.requestCurrentLocation()
+        if(latitude == UNDECIDED_LOCATION || longitude == UNDECIDED_LOCATION) {
+            moveCamera(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, false)
             Toast.makeText(this, R.string.default_location, Toast.LENGTH_SHORT).show()
         }
         else
-            mapViewModel.updateLocationFromUser(latitude, longitude)
+            moveCamera(latitude, longitude, true)
     }
-
-    /* 뷰모델 - 옵저버 연결 함수 */
-    private fun setObservers(){
-        mapViewModel.location.observe(this, locationObserver)
-    }
-
 
     //--------------------------------------------
     // 내부 함수 영역 (옵저버 후속 작업)
 
     /* 맵 카메라 시점 현재 위치로 이동, 맵 마커도 옮기는 함수 */
-    private fun moveCamera(location: LocationPair?){
-        location?.let {
-            //현재 설정 위치 이동
-            val now = LatLng(it.latitude, it.longitude)
+    private fun moveCamera(latitude: Double?, longitude: Double?, mark: Boolean){
+        if(latitude == null || longitude == null)
+            Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show()
+        else{
+            val now = LatLng(latitude, longitude)
             val position = CameraPosition.Builder().target(now).zoom(16f).build()
-            markerOps.position(now)
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position))
 
             //기존 마커가 있다면 지우고, 새 위치에 마커를 추가
-            marker?.remove()
-            marker = googleMap.addMarker(markerOps)
-
-        } ?: Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show()
+            if(mark) {
+                markerOps.position(now)
+                marker?.remove()
+                marker = googleMap.addMarker(markerOps)
+            }
+        }
     }
 }

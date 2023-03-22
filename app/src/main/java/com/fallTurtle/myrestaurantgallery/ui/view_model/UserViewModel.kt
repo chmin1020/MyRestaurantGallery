@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.view_model
+package com.fallTurtle.myrestaurantgallery.ui.view_model
 
 import android.app.Application
 import androidx.lifecycle.*

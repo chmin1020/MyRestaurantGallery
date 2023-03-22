@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,8 +12,9 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
 import com.fallTurtle.myrestaurantgallery.etc.LOGIN_CHECK_PREFERENCE
-import com.fallTurtle.myrestaurantgallery.view_model.UserViewModel
-import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import com.fallTurtle.myrestaurantgallery.ui.main.MainActivity
+import com.fallTurtle.myrestaurantgallery.ui.view_model.UserViewModel
+import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 

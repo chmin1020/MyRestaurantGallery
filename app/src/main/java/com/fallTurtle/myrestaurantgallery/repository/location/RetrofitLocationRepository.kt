@@ -4,7 +4,7 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationPa
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.model.retrofit.Interface.LocationSearchInterface
 import com.fallTurtle.myrestaurantgallery.model.retrofit.response.LocationSearch
-import com.fallTurtle.myrestaurantgallery.model.retrofit.values.APIConstant
+import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.APIConstant
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

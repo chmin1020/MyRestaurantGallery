@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.activity
+package com.fallTurtle.myrestaurantgallery.ui.record
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,7 +15,9 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
-import com.fallTurtle.myrestaurantgallery.view_model.ItemViewModel
+import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
+import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
+import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
@@ -125,7 +127,7 @@ class RecordActivity : AppCompatActivity() {
     /* 위치 설정이 된 경우 지도 이동을 하는 함수 */
     private fun moveToMapDisplay(){
         //위치 좌표 값 설정이 되어 있지 않음
-        if(binding.info?.latitude == DEFAULT_LOCATION || binding.info?.longitude == DEFAULT_LOCATION )
+        if(binding.info?.latitude == UNDECIDED_LOCATION || binding.info?.longitude == UNDECIDED_LOCATION )
             Toast.makeText(this, R.string.no_location_selection, Toast.LENGTH_SHORT).show()
         else{
             //설정이 되어 있음 (설정 값 가지고 맵으로 이동)

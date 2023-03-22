@@ -3,7 +3,7 @@ package com.fallTurtle.myrestaurantgallery.model.room
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.fallTurtle.myrestaurantgallery.etc.DATE_PATTERN
-import com.fallTurtle.myrestaurantgallery.etc.DEFAULT_LOCATION
+import com.fallTurtle.myrestaurantgallery.etc.UNDECIDED_LOCATION
 import com.fallTurtle.myrestaurantgallery.etc.ID_PATTERN
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,6 +22,6 @@ data class RestaurantInfo(
     var rate: Int = 0,
     var memo: String = "",
     var date: String = SimpleDateFormat(DATE_PATTERN, Locale.KOREA).format(Date(System.currentTimeMillis())),
-    var latitude: Double = DEFAULT_LOCATION,
-    var longitude: Double = DEFAULT_LOCATION
+    var latitude: Double = UNDECIDED_LOCATION,
+    var longitude: Double = UNDECIDED_LOCATION
 )
