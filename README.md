@@ -67,12 +67,12 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 * 2023.01 추가 -> User, Item, Map, Location에 대한 데이터 로직을 ViewModel과 Repository로 분리.
 				 MVVM 패턴, Repository 패턴 추가 활용
 
-* 2023.03 추가 -> 안드로이드 공식 문서 가이드에 따라 UI / Domain / Data 구조로 코드 아키텍처를 바라보기 시도.
-		  이에 따라 기존의 아키텍처에서 ViewModel이 UI의 역할을 제대로 하지 않고 Repository와 유사한 역할을 하고 있다고 판단.
-		  따라서 각 뷰가 별도의 뷰모델로 관리되고, Domain에 각 Repository의 필요 기능을 뽑은 Usecase를 도입함.
-
-		  코드의 구성요소가 많아짐에 따라 각 요소 간의 결합성도 더 높아진다고 판단. 
-		  따라서 hilt 라이브러리를 적용하여 Repository, Usecase, Data(room)을 모듈로 하고 activity, viewMdoel로 의존성 주입.
+* 2023.03 추가 
+	- 안드로이드 공식 문서 가이드에 따라 UI / Domain / Data 구조로 코드 아키텍처를 바라보기 시도.
+	  이에 따라 기존의 아키텍처에서 ViewModel이 UI의 역할을 제대로 하지 않고 Repository와 유사한 역할을 하고 있다고 판단.
+          따라서 각 뷰가 별도의 뷰모델로 관리되고, Domain에 각 Repository의 필요 기능을 뽑은 Usecase를 도입함.
+	- 코드의 구성요소가 많아짐에 따라 각 요소 간의 결합성도 더 높아진다고 판단. 
+	  따라서 hilt 라이브러리를 적용하여 Repository, Usecase, Data(room)을 모듈로 하고 activity, viewMdoel로 의존성 주입.
 
 
 ### 구성 액티비티
