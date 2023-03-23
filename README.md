@@ -91,10 +91,10 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 ![코드 아키텍처 2](https://user-images.githubusercontent.com/70795841/227266719-0dda6780-b94e-4d43-b443-fc2ab09eec8f.PNG)
 
-코드의 디자인패턴은 View, ViewModel, Model로 분리되는 MVVM 구조를 기본적으로 사용했습니다. 
-여기에 Repository 패턴을 추가하여 Data Source의 중구난방한 데이터를 깔끔하게 분류하여 정리했습니다.
-이 후 Usecase를 통해 각 Repository의 기능을 추출하여 Domain 영역을 담당하게 했습니다.
-따로 처리할 데이터가 없는 mapActivity를 제외한 나머지 Activity는 각 ViewModel과 연결되고, ViewModel은 적절한 Usecase로 동작을 수행합니다.
+* 코드의 디자인패턴은 View, ViewModel, Model로 분리되는 MVVM 구조를 기본적으로 사용했습니다. 
+* 여기에 Repository 패턴을 추가하여 Data Source의 중구난방한 데이터를 깔끔하게 분류하여 정리했습니다.
+* 이 후 Usecase를 통해 각 Repository의 기능을 추출하여 Domain 영역을 담당하게 했습니다.
+* 따로 처리할 데이터가 없는 mapActivity를 제외한 나머지 Activity는 각 ViewModel과 연결되고, ViewModel은 적절한 Usecase로 동작을 수행합니다.
 
 ___ViewModel___
 
