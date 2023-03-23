@@ -47,35 +47,6 @@ class ItemViewModel
         }
     }
 
-    /* 모든 로컬에 저장된 아이템 리스트를 받아오는 함수 */
-    fun getAllItems(){
-        viewModelScope.launch(Dispatchers.IO) {
-            insideProgressing.postValue(true)
-            insideDataItems.postValue(itemRepository.getAllItems())
-            insideProgressing.postValue(false)
-        }
-    }
-
-    /* 기본적인 아이템 삽입 이벤트를 위한 함수 */
-    fun insertItem(item: RestaurantInfo, imgUri: Uri?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            insideProgressing.postValue(true)
-            itemRepository.itemInsert(item, imgUri)
-            insideProgressing.postValue(false)
-            insideWorkFinishFlag.postValue(true)
-        }
-    }
-
-    /* 기본적인 아이템 갱신 이벤트를 위한 함수 */
-    fun updateItem(item: RestaurantInfo, imgUri: Uri?, preImgPath: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            insideProgressing.postValue(true)
-            itemRepository.itemUpdate(item, imgUri, preImgPath)
-            insideProgressing.postValue(false)
-            insideWorkFinishFlag.postValue(true)
-        }
-    }
-
     /* 기본적인 아이템 삭제 이벤트를 위한 함수 */
     fun deleteItem(itemId: String) {
         viewModelScope.launch(Dispatchers.IO) {

@@ -61,22 +61,22 @@ object UseCaseModule {
 
     @Provides
     fun provideItemEachSelectUseCase(repository: ItemRepository): ItemEachSelectUseCase {
-        return ItemEachSelectUseCase()
+        return ItemEachSelectUseCase(repository)
     }
 
     @Provides
     fun provideItemInsertUseCase(repository: ItemRepository): ItemInsertUseCase {
-        return ItemInsertUseCase()
+        return ItemInsertUseCase(repository)
     }
 
     @Provides
     fun provideItemUpdateUseCase(repository: ItemRepository): ItemUpdateUseCase {
-        return ItemUpdateUseCase()
+        return ItemUpdateUseCase(repository)
     }
 
     @Provides
     fun provideItemDeleteUseCase(repository: ItemRepository): ItemDeleteUseCase {
-        return ItemDeleteUseCase()
+        return ItemDeleteUseCase(repository)
     }
 
     @Provides

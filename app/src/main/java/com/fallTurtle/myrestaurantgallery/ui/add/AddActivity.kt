@@ -23,7 +23,6 @@ import com.fallTurtle.myrestaurantgallery.ui.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
-import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
@@ -31,7 +30,7 @@ import java.util.Calendar
 /**
  * 항목 추가 화면 담당을 하는 activity.
  * 새로운 맛집 정보 저장을 하는 작업과 기존 내용을 수정을 하는 작업을 하게 해준다.
- * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
+ * 더하여 여기서 지역 주소 입력을 위해 지도로 이동할 수 있다.
  **/
 @AndroidEntryPoint
 class AddActivity : AppCompatActivity(){
@@ -39,7 +38,7 @@ class AddActivity : AppCompatActivity(){
     private val binding: ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
     //뷰모델
-    private val itemViewModel:ItemViewModel by viewModels()
+    private val viewModel:AddViewModel by viewModels()
 
     //옵저버(진행 과정 여부, 종료 여부, 선택된 아이템)
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }
@@ -58,7 +57,7 @@ class AddActivity : AppCompatActivity(){
 
 
     //--------------------------------------------
-    // 액티비티 결과 런처
+    // activity 결과 런처
 
     /* 갤러리에서 가지고 온 이미지 결과를 처리하는 런처 */
     private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
@@ -71,7 +70,7 @@ class AddActivity : AppCompatActivity(){
         }
     }
 
-    /* 위치 검색에서 선택하여 가져온 위치 결과를 처리하는 런처 */
+    /* 위치 검색 선택 결과로 가져온 위치 결과 처리 런처 */
     private val getLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if(it.data?.getBooleanExtra(IS_CHANGED, false) == true) {
             //위도, 경도 적용
@@ -88,7 +87,7 @@ class AddActivity : AppCompatActivity(){
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 영역
+    // 생명 주기 영역
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,8 +96,8 @@ class AddActivity : AppCompatActivity(){
         binding.info = RestaurantInfo()
         binding.spinnerEntries = resources.getStringArray(R.array.category_spinner)
 
-        //인텐트로 선택된 데이터 db 아이디 뷰모델에 적용
-        intent.getStringExtra(ITEM_ID)?.let { itemViewModel.setProperItem(it) }
+        //선택된 데이터 db 아이디 뷰모델 적용
+        intent.getStringExtra(ITEM_ID)?.let { viewModel.setProperItem(it) }
 
         //toolbar
         setSupportActionBar(binding.toolbar)
@@ -217,9 +216,9 @@ class AddActivity : AppCompatActivity(){
 
     /* 각 observer, viewModel 연결을 하는 함수 */
     private fun setObservers(){
-        itemViewModel.progressing.observe(this, progressObserver)
-        itemViewModel.workFinishFlag.observe(this, finishObserver)
-        itemViewModel.selectedItem.observe(this, selectedItemObserver)
+        viewModel.progressing.observe(this, progressObserver)
+        viewModel.workFinishFlag.observe(this, finishObserver)
+        viewModel.selectItem.observe(this, selectedItemObserver)
     }
 
 
@@ -270,12 +269,12 @@ class AddActivity : AppCompatActivity(){
 
     /* 기존 아이템 갱신 함수 */
     private fun updateItem(){
-        binding.info?.let { itemViewModel.updateItem(it, imgUri, preImgName) }
+        binding.info?.let { viewModel.updateItem(it, imgUri, preImgName) }
     }
 
     /* 새 아이템 추가 함수 */
     private fun insertItem(){
-        binding.info?.let{ itemViewModel.insertItem(it, imgUri) }
+        binding.info?.let{ viewModel.insertItem(it, imgUri) }
     }
 
 

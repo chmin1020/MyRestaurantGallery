@@ -26,14 +26,12 @@ class MainViewModel @Inject constructor(
     private val doLogout: LogoutUseCase,
     private val doWithDraw: WithdrawUseCase
 ): ViewModel() {
-    //----------------------------------------------------
-    // 라이브 데이터 프로퍼티 영역
 
     //아이템 리스트 상태 live data -> 로컬 데이터 참조
     private val insideDataItems = MutableLiveData<List<RestaurantInfo>>()
     val dataItems: LiveData<List<RestaurantInfo>> = insideDataItems
 
-    //아이템 처리 진행 여부를 알려주는 boolean live data
+    //아이템 처리 진행 여부를 알리는 boolean live data
     private val insideProgressing = MutableLiveData(false)
     val progressing: LiveData<Boolean> = insideProgressing
 
