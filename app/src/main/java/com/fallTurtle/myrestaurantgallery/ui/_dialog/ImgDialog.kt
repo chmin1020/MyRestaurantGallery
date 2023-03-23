@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.ui.dialog
+package com.fallTurtle.myrestaurantgallery.ui._dialog
 
 import android.app.Dialog
 import android.content.Context

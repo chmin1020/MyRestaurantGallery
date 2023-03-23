@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.etc.NetworkWatcher
 import com.fallTurtle.myrestaurantgallery.data.retrofit.value_object.LocationInfo
 import dagger.hilt.android.AndroidEntryPoint

@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.etc.IS_LOGIN
 import com.fallTurtle.myrestaurantgallery.data.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo

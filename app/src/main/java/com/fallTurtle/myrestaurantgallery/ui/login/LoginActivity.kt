@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLoginBinding
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.etc.IS_LOGIN
 import com.fallTurtle.myrestaurantgallery.data.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.ui.main.MainActivity

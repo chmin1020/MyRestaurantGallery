@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,8 +20,8 @@ import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ImgDialog
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ImgDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -157,18 +158,27 @@ class AddActivity : AppCompatActivity(){
 
         //날짜 항목 클릭 시
         binding.llDate.setOnClickListener {
-            //달력 요소, 달력 선택 리스너
+            //달력 숫자 설정
             val cal = Calendar.getInstance()
-            val dateSelectListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                val dText = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+            var (year, month, day) = listOf(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            binding.info?.date?.let { dateText ->
+                //edit 상황일 시 이전에 선택한 날짜로 설정
+                val originDates = dateText.replace("\\D".toRegex(),"@").split("@+".toRegex())
+                Log.d("뚜뚜", originDates.joinToString(" "))
+                year = originDates[0].toInt()
+                month = originDates[1].toInt() - 1
+                day = originDates[2].toInt()
+            }
+
+            //달력 선택 리스너 설정
+            val dateSelectListener = DatePickerDialog.OnDateSetListener { _, selectYear, selectMonth, selectDay ->
+                val dText = "${selectYear}년 ${selectMonth + 1}월 ${selectDay}일"
                 binding.info?.date = dText
                 binding.tvDate.text = dText
             }
 
             //데이트 피커 dialog 생성
-            DatePickerDialog(this, dateSelectListener,
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
-                .show()
+            DatePickerDialog(this, dateSelectListener, year, month, day).show()
         }
 
         //map 버튼 클릭 시

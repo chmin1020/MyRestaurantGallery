@@ -13,11 +13,10 @@ import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
-import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui._dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
-import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -34,7 +33,7 @@ class RecordActivity : AppCompatActivity() {
     private var itemId: String? = null
 
     //뷰모델
-    private val itemViewModel:ItemViewModel by viewModels()
+    private val viewModel:RecordViewModel by viewModels()
 
     //observers
     private val progressObserver = Observer<Boolean> { decideShowLoading(it)}
@@ -67,7 +66,7 @@ class RecordActivity : AppCompatActivity() {
         super.onStart()
 
         //아이디 없음 -> 화면 종료
-        itemId?.let { itemViewModel.setProperItem(it) }
+        itemId?.let { viewModel.setProperItem(it) }
             ?: run { Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show(); finish() }
     }
 
@@ -102,9 +101,9 @@ class RecordActivity : AppCompatActivity() {
 
     /* 데이터 변화 관찰을 위한 각 뷰모델, 옵저버 연결 함수 */
     private fun setObservers(){
-        itemViewModel.progressing.observe(this, progressObserver)
-        itemViewModel.workFinishFlag.observe(this, finishObserver)
-        itemViewModel.selectedItem.observe(this, itemObserver)
+        viewModel.progressing.observe(this, progressObserver)
+        viewModel.workFinishFlag.observe(this, finishObserver)
+        viewModel.selectItem.observe(this, itemObserver)
     }
 
 
@@ -122,7 +121,7 @@ class RecordActivity : AppCompatActivity() {
 
     /* 삭제를 원하는 것이 확실할 시 해당 이미지 삭제 작업 진행 함수 */
     private fun deleteCurrentItem(){
-        itemId?.let{ itemViewModel.deleteItem(it) }
+        itemId?.let{ viewModel.deleteItem(it) }
     }
 
     /* 위치 설정이 된 경우 지도 이동을 하는 함수 */
