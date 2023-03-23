@@ -39,13 +39,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     //--------------------------------------------
     // 액티비티 결과 런처
 
-    //지역 검색 화면에서 선택 데이터를 가져와 적용하는 런처
+    //지역 검색 화면에서 선택 데이터 가져와 적용
     private val getLocation = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         it.data?.let{ intent->
             binding.tvCurrentRestaurant.text = intent.getStringExtra(RESTAURANT_NAME)
             moveCamera(
-                intent.getDoubleExtra("x", UNDECIDED_LOCATION),
-                intent.getDoubleExtra("y", UNDECIDED_LOCATION),
+                intent.getDoubleExtra(LATITUDE, UNDECIDED_LOCATION),
+                intent.getDoubleExtra(LONGITUDE, UNDECIDED_LOCATION),
                 true
             )
         }
@@ -65,7 +65,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             finish()
         }
 
-        //지도 부분 세팅
+        //지도 생성 명령
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -84,9 +84,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     //--------------------------------------------
-    // 오버라이딩 영역
+    // overriding 영역
 
-    /* 지도가 준비되었을 때, 그 지도의 설정을 진행. */
+    /* 지도가 준비 완료 시, 지도의 설정을 진행. */
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
@@ -107,17 +107,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //current 버튼을 눌렀을 때
         binding.btnCur.setOnClickListener {
-            val backTo = Intent(this, AddActivity::class.java).apply {
-                putExtra(IS_CHANGED, true)
-                putExtra(LATITUDE, markerOps.position.latitude)
-                putExtra(LONGITUDE, markerOps.position.longitude)
+            if(marker != null) {
+                val backTo = Intent(this, AddActivity::class.java).apply {
+                    putExtra(IS_CHANGED, true)
+                    putExtra(LATITUDE, markerOps.position.latitude)
+                    putExtra(LONGITUDE, markerOps.position.longitude)
 
-                //이미 이름이 있는지 여부
-                if(binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
-                    putExtra(RESTAURANT_NAME, binding.tvCurrentRestaurant.text)
+                    //이미 이름이 있는지 여부
+                    if (binding.tvCurrentRestaurant.text != NO_SELECTED_LOCATION)
+                        putExtra(RESTAURANT_NAME, binding.tvCurrentRestaurant.text)
+                }
+                setResult(RESULT_OK, backTo)
+                finish()
             }
-            setResult(RESULT_OK, backTo)
-            finish()
+            else
+                notifyNoSelectLocation(false)
         }
 
         //back 버튼(이미지)을 눌렀을 때
@@ -132,10 +136,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val longitude = intent.getDoubleExtra(LONGITUDE, UNDECIDED_LOCATION)
 
         //위치 저장 내용이 있으면 거기로
-        if(latitude == UNDECIDED_LOCATION || longitude == UNDECIDED_LOCATION) {
-            moveCamera(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, false)
-            Toast.makeText(this, R.string.default_location, Toast.LENGTH_SHORT).show()
-        }
+        if(latitude == UNDECIDED_LOCATION || longitude == UNDECIDED_LOCATION)
+            notifyNoSelectLocation(true)
         else
             moveCamera(latitude, longitude, true)
     }
@@ -159,5 +161,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 marker = googleMap.addMarker(markerOps)
             }
         }
+    }
+
+    /* 현재 설정된 위치 없음 알림 */
+    private fun notifyNoSelectLocation(isInit: Boolean){
+        if(isInit)
+            moveCamera(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, false)
+        Toast.makeText(this, R.string.default_location, Toast.LENGTH_SHORT).show()
     }
 }
