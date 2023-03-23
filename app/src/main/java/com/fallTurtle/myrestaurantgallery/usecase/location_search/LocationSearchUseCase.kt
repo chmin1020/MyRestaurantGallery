@@ -1,15 +1,14 @@
 package com.fallTurtle.myrestaurantgallery.usecase.location_search
 
+import com.fallTurtle.myrestaurantgallery.di.RetrofitRepositoryForLocation
 import com.fallTurtle.myrestaurantgallery.repository.location.LocationRepository
-import com.fallTurtle.myrestaurantgallery.repository.location.RetrofitLocationRepository
+import javax.inject.Inject
 
 /**
  * Created by 최제민 on 2023-03-22.
  */
-class LocationSearchUseCase {
-    private val locationRepository: LocationRepository = RetrofitLocationRepository()
-
-    //검색 결과 flow
+class LocationSearchUseCase
+    @Inject constructor(private val repository: LocationRepository){
     suspend operator fun invoke(query: String, page: Int) =
-        locationRepository.searchTotalInfo(query, page)
+        repository.searchTotalInfo(query, page)
 }

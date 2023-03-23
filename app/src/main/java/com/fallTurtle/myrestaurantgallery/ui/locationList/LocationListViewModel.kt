@@ -6,18 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.usecase.location_search.LocationSearchUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by 최제민 on 2023-03-22.
  */
-class LocationListViewModel: ViewModel() {
-    val locationSearch = LocationSearchUseCase()
-
-    //----------------------------------------------------
-    // 라이브 데이터 프로퍼티 영역
-
+@HiltViewModel
+class LocationListViewModel
+    @Inject constructor(private val locationSearch: LocationSearchUseCase) : ViewModel(){
     //위치 검색 결과
     private val insideSearchResults = MutableLiveData<List<LocationInfo>>()
     val searchResults: LiveData<List<LocationInfo>> = insideSearchResults

@@ -24,8 +24,8 @@ class UserViewModel : ViewModel() {
     val workFinishFlag: LiveData<Boolean> = insideFinish
 
     //유저 존재 상태
-    val loginCompleteAnswer: LiveData<Boolean> = userRepository.getLoginCompleteAnswer()
-
+//    val loginCompleteAnswer: LiveData<Boolean> = userRepository.getLoginCompleteAnswer()
+//
 
     //----------------------------------------------------
     // 함수 영역 (유저 작업)

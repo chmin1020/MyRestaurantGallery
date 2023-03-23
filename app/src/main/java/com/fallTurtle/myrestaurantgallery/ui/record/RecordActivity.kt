@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
@@ -18,12 +18,14 @@ import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * 저장된 데이터를 확인할 때 사용하는 액티비티.
  * 인텐트를 통해서 시작이 되며, 여기서 extra 데이터로 받은 것들을 각 뷰에 적용해서 보여준다.
  * 메뉴를 통해 아이템을 삭제하거나 수정을 위한 AddActivity 제공 화면으로 이동할 수 있다.
  **/
+@AndroidEntryPoint
 class RecordActivity : AppCompatActivity() {
     //데이터 바인딩
     private val binding: ActivityRecordBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_record)}
@@ -32,8 +34,7 @@ class RecordActivity : AppCompatActivity() {
     private var itemId: String? = null
 
     //뷰모델
-    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+    private val itemViewModel:ItemViewModel by viewModels()
 
     //observers
     private val progressObserver = Observer<Boolean> { decideShowLoading(it)}

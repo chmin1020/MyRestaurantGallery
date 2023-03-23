@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -24,6 +25,7 @@ import com.fallTurtle.myrestaurantgallery.ui.view_model.UserViewModel
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * 앱을 처음 실행했을 때 나타나는 메인 화면을 담당하는 액티비티.
@@ -31,6 +33,7 @@ import com.gun0912.tedpermission.normal.TedPermission
  * 그 밖에 추가 버튼을 눌러 맛집 추가 페이지로 이동하거나, 메뉴를 통해 회원 로그아웃 및 탈퇴를 할 수 있다.
  * 정리하자면 리스트를 보여줌과 동시에, 앱에서 가진 모든 다른 화면으로 이동할 수 있는 창구의 역할을 한다.
  **/
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     //뷰 바인딩
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -40,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     //뷰모델 (식당 아이템, 유저)
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+    private val itemViewModel:ItemViewModel by viewModels()
+    //private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
     private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
 
     //식당 아이템 observers (아이템 목록, 관련 작업 진행 여부, 관련 작업 종료 여부)

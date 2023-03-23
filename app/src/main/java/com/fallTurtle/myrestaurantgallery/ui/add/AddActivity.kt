@@ -11,11 +11,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
@@ -24,6 +24,7 @@ import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
 
@@ -32,13 +33,13 @@ import java.util.Calendar
  * 새로운 맛집 정보 저장을 하는 작업과 기존 내용을 수정을 하는 작업을 하게 해준다.
  * 더하여 여기서 지역 주소 입력을 위해 Map 화면으로도 이동할 수 있다.
  **/
+@AndroidEntryPoint
 class AddActivity : AppCompatActivity(){
     //데이터 바인딩
     private val binding: ActivityAddBinding by lazy { DataBindingUtil.setContentView(this, R.layout.activity_add) }
 
     //뷰모델
-    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val itemViewModel by lazy { ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
+    private val itemViewModel:ItemViewModel by viewModels()
 
     //옵저버(진행 과정 여부, 종료 여부, 선택된 아이템)
     private val progressObserver = Observer<Boolean> { if(it) progressDialog.create() else progressDialog.destroy() }

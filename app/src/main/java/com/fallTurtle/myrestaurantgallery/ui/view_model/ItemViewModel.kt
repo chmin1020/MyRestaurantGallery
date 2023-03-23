@@ -1,19 +1,19 @@
 package com.fallTurtle.myrestaurantgallery.ui.view_model
 
-import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.repository.item.ItemRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class ItemViewModel(application: Application): AndroidViewModel(application) {
-    //데이터 비즈니스 로직 리포지토리
-    private val itemRepository = ItemRepository(application)
-
+@HiltViewModel
+class ItemViewModel
+@Inject constructor(private val itemRepository: ItemRepository) : ViewModel() {
 
     //----------------------------------------------------
     // 라이브 데이터 프로퍼티 영역

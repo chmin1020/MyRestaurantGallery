@@ -1,21 +1,13 @@
 package com.fallTurtle.myrestaurantgallery.repository.item.data
 
-import android.app.Application
+import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDao
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
-import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDatabase
+import javax.inject.Inject
 
 /**
  * Room API 기능을 통해 아이템 처리를 수행하는 리포지토리.
  **/
-class RoomRepository(application: Application): DataRepository {
-    //room DB 관련 인스턴스 (DB, DAO, elements)
-    private val database: InfoRoomDatabase = InfoRoomDatabase.getInstance(application)
-    private val roomDao = database.infoRoomDao()
-
-
-    //--------------------------------------------
-    // 오버라이딩 영역
-
+class RoomRepository @Inject constructor(private val roomDao: InfoRoomDao): DataRepository {
     /* 모든 데이터를 가져오는 함수 */
     override suspend fun getAllData(): List<RestaurantInfo> {
         return roomDao.getAllItems()

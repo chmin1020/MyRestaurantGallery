@@ -7,5 +7,5 @@ import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationIn
  **/
 interface LocationRepository {
     /* 전체 검색 결과를 받는 함수 */
-    suspend fun searchTotalInfo(query: String, page: Int):List<LocationInfo>
+    suspend fun searchTotalInfo(query: String, page: Int) : List<LocationInfo>
 }

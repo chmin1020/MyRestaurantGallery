@@ -1,7 +1,5 @@
 package com.fallTurtle.myrestaurantgallery.repository.user
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.fallTurtle.myrestaurantgallery.model.firebase.FirebaseUtils
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +12,7 @@ import kotlin.coroutines.suspendCoroutine
  * Firebase 구글 인증 방식으로 기능을 수행한다.
  **/
 class FirebaseUserRepository: UserRepository {
-    private val loginComplete: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    private val userExist = FirebaseUtils.userExist
 
 
     //---------------------------------------
@@ -27,7 +25,7 @@ class FirebaseUserRepository: UserRepository {
     // 오버라이딩 영역
 
     /* 유저 로그인 상태 확인 함수 */
-    override fun getLoginCompleteAnswer(): LiveData<Boolean> = loginComplete
+    override fun getLoginCompleteAnswer() = userExist
 
     /* 로그인 함수 (by token) */
     override suspend fun loginUser(idToken: String){
@@ -42,12 +40,12 @@ class FirebaseUserRepository: UserRepository {
         }
     }
 
-    /* 앱에서 로그아웃하는 함수 */
+    /* 앱에서 로그아웃 */
     override suspend fun logoutUser() {
         withContext(Dispatchers.IO){ FirebaseUtils.getAuth().signOut() }
     }
 
-    /* 앱에서 사용자 탈퇴하는 함수 */
+    /* 앱에서 사용자 탈퇴 */
     override suspend fun withDrawUser(){
         suspendCoroutine<Any?>{ continuation ->
             //현재 유저의 저장 데이터를 담은 레퍼런스들을 제거
@@ -66,9 +64,8 @@ class FirebaseUserRepository: UserRepository {
     //------------------------------------------
     // 내부 함수 영역
 
-    /* 현재 유저 상태를 갱신하는 함수 */
+    /* 현재 유저 상태를 갱신 */
     private fun updateUserState(){
         FirebaseUtils.updateUserState()
-        loginComplete.postValue(FirebaseUtils.getUser() != null)
     }
 }

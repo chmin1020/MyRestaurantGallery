@@ -1,31 +1,21 @@
 package com.fallTurtle.myrestaurantgallery.repository.item
 
-import android.app.Application
+import android.media.Image
 import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.data.FireStoreRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.data.RoomRepository
 import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.image.StorageRepository
-
+import javax.inject.Inject
 
 /**
  * 아이템 리포지토리의 역할을 정의한 클래스.
  * 데이터와 이미지 리포지토리의 역할을 종합적으로 수행하는 파사드의 역할을 한다.
  **/
-class ItemRepository(application: Application) {
-    //data 리포지토리
-    private val remoteDataRepository:DataRepository = FireStoreRepository()
-    private val localDataRepository:DataRepository = RoomRepository(application)
-
-    //image 리포지토리 (용량과 저장 시간 등의 문제로 이미지는 외부 저장만)
-    private val remoteImageRepository:ImageRepository = StorageRepository()
-
-
-    //-----------------------------------------
-    // 비즈니스 로직 함수 영역
-
+class ItemRepository @Inject constructor(
+    private val localDataRepository: DataRepository,
+    private val remoteDataRepository: DataRepository,
+    private val remoteImageRepository: ImageRepository
+) {
     /* 아이템 삽입 이벤트를 정의한 함수 */
     suspend fun itemInsert(item: RestaurantInfo, uri: Uri?) {
         item.imageName?.let { name -> uri?.let{ item.imagePath = remoteImageRepository.insertImage(name, it) } }

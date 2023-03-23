@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
@@ -15,12 +15,14 @@ import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBindin
 import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
 import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * 맛집을 검색하는 창을 제공하는 액티비티.
  * 이 액티비티에서는 직접 식당 이름을 검색하고, 그에 맞는 결과를 확인하여 선택할 수 있다.
  * 이 때, 검색 결과를 위해서 카카오 맵 API 를 Retrofit2 객체를 활용해서 사용했다.
  **/
+@AndroidEntryPoint
 class LocationListActivity : AppCompatActivity() {
     //뷰 바인딩
     private val binding: ActivityLocationListBinding by lazy { ActivityLocationListBinding.inflate(layoutInflater) }
@@ -32,13 +34,7 @@ class LocationListActivity : AppCompatActivity() {
     private val progressDialog by lazy { ProgressDialog(this) }
 
     //뷰모델
-    private val viewModelFactory by lazy { ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val locationViewModel by lazy {
-        ViewModelProvider(
-            this,
-            viewModelFactory
-        )[LocationListViewModel::class.java]
-    }
+    private val locationViewModel:LocationListViewModel by viewModels()
 
     //옵저버
     private val searchObserver = Observer<List<LocationInfo>> { taskWithResults(it) }

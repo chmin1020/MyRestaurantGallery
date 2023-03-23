@@ -2,12 +2,11 @@ package com.fallTurtle.myrestaurantgallery.adapter
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.*
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
-import coil.api.load
+import coil.load
 import com.fallTurtle.myrestaurantgallery.R
 
 
