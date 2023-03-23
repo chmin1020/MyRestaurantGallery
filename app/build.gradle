@@ -4,12 +4,13 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.gms.google-services'  // Google Services plugin
+    id 'com.google.dagger.hilt.android'
 }
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def googleMapApiKey = properties.getProperty('google_map_api_key')
-def kakaoSdkAppKey = properties.getProperty('kakao_sdk_app_key')
+def googleMapKey=properties.getProperty('google_map_api_key')
+def kakaoSdkKey=properties.getProperty('kakao_sdk_app_key')
 
 
 android {
@@ -25,8 +26,8 @@ android {
 
         buildConfigField("String","KAKAO_API_KEY", properties['kakao_api_key'])
 
-        manifestPlaceholders["google_map_api_key"] = googleMapApiKey
-        manifestPlaceholders["kakao_sdk_app_key"] = kakaoSdkAppKey
+        manifestPlaceholders["google_map_key"] = googleMapKey
+        manifestPlaceholders["kakao_sdk_app_key"] = kakaoSdkKey
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -109,9 +110,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
-    //viewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-
     //firebase_ui
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
 
@@ -129,6 +127,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     //coil
-    implementation "io.coil-kt:coil:0.11.0"
+    implementation "io.coil-kt:coil:2.2.2"
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    //viewModel
+    implementation 'androidx.activity:activity-ktx:1.2.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.5'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
 
 }

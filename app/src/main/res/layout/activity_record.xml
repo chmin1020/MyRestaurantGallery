@@ -9,13 +9,13 @@
 
         <variable
             name="info"
-            type="com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo" />
+            type="com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activity.MainActivity">
+        tools:context=".ui.main.MainActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
