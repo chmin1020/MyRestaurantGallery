@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.ui.adapter
+package com.fallTurtle.myrestaurantgallery.ui
 
 import android.text.Editable
 import android.text.TextWatcher

@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.ui.adapter
+package com.fallTurtle.myrestaurantgallery.ui.main
 
 import android.app.Activity
 import android.app.ActivityOptions
@@ -11,6 +11,7 @@ import com.fallTurtle.myrestaurantgallery.ui.record.RecordActivity
 import com.fallTurtle.myrestaurantgallery.databinding.ListItemRestaurantBinding
 import com.fallTurtle.myrestaurantgallery.data.etc.ITEM_ID
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.ui.AdapterDiffCallback
 
 /**
  * 각 맛집 데이터를 보여줄 리사이클러뷰를 위한 adapter

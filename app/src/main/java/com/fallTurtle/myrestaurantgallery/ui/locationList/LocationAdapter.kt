@@ -1,4 +1,4 @@
-package com.fallTurtle.myrestaurantgallery.ui.adapter
+package com.fallTurtle.myrestaurantgallery.ui.locationList
 
 import android.app.Activity
 import android.content.Intent
@@ -14,6 +14,7 @@ import com.fallTurtle.myrestaurantgallery.data.etc.LONGITUDE
 import com.fallTurtle.myrestaurantgallery.data.etc.UNDECIDED_LOCATION
 import com.fallTurtle.myrestaurantgallery.data.etc.RESTAURANT_NAME
 import com.fallTurtle.myrestaurantgallery.data.retrofit.value_object.LocationInfo
+import com.fallTurtle.myrestaurantgallery.ui.AdapterDiffCallback
 
 /**
  * 위치 정보 검색 결과에 대한 리스트를 위한 recyclerView 전용 어댑터
