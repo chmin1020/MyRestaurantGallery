@@ -10,7 +10,7 @@
 
         <variable
             name="info"
-            type="com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo" />
+            type="com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo" />
 
         <variable
             name="spinnerEntries"

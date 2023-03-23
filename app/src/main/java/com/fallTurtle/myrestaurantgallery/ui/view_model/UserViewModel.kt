@@ -2,8 +2,8 @@ package com.fallTurtle.myrestaurantgallery.ui.view_model
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.fallTurtle.myrestaurantgallery.repository.user.FirebaseUserRepository
-import com.fallTurtle.myrestaurantgallery.repository.user.UserRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.user.FirebaseUserRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.user.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

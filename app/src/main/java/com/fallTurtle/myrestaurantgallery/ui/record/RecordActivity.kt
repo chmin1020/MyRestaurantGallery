@@ -11,19 +11,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.R
+import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityRecordBinding
-import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
-import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * 저장된 데이터를 확인할 때 사용하는 액티비티.
- * 인텐트를 통해서 시작이 되며, 여기서 extra 데이터로 받은 것들을 각 뷰에 적용해서 보여준다.
- * 메뉴를 통해 아이템을 삭제하거나 수정을 위한 AddActivity 제공 화면으로 이동할 수 있다.
+ * 저장된 데이터 확인을 위한 activity.
+ * extra 데이터 통해 받은 것들을 각 뷰에 적용 .
+ * 메뉴를 통해 현재 아이템 삭제, 또는 수정을 위한 AddActivity 화면 이동이 가능.
  **/
 @AndroidEntryPoint
 class RecordActivity : AppCompatActivity() {
@@ -68,7 +69,7 @@ class RecordActivity : AppCompatActivity() {
 
         //아이디 없음 -> 화면 종료
         itemId?.let { itemViewModel.setProperItem(it) }
-            ?: run { Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show(); finish() }
+            ?: run { Toast.makeText(this, R.string.error_happened, Toast.LENGTH_SHORT).show(); finish() }
     }
 
 

@@ -2,7 +2,7 @@ package com.fallTurtle.myrestaurantgallery.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 
 /**
  * Created by 최제민 on 2023-03-22.

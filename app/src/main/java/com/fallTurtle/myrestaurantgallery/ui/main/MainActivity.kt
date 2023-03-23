@@ -13,12 +13,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.adapter.RestaurantAdapter
+import com.fallTurtle.myrestaurantgallery.ui.adapter.RestaurantAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMainBinding
-import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.IS_LOGIN
-import com.fallTurtle.myrestaurantgallery.etc.LOGIN_CHECK_PREFERENCE
-import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.data.etc.IS_LOGIN
+import com.fallTurtle.myrestaurantgallery.data.etc.LOGIN_CHECK_PREFERENCE
+import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.login.LoginActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.UserViewModel
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     //recyclerView 어댑터
-    private val itemsAdapter by lazy { RestaurantAdapter(resources.displayMetrics.widthPixels)}
+    private val itemsAdapter by lazy { RestaurantAdapter(resources.displayMetrics.widthPixels) }
 
     //뷰모델 (식당 아이템, 유저)
     private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }

@@ -1,16 +1,16 @@
 package com.fallTurtle.myrestaurantgallery.di
 
-import com.fallTurtle.myrestaurantgallery.model.room.InfoRoomDao
-import com.fallTurtle.myrestaurantgallery.repository.item.ItemRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.data.DataRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.data.FireStoreRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.data.RoomRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.image.ImageRepository
-import com.fallTurtle.myrestaurantgallery.repository.item.image.StorageRepository
-import com.fallTurtle.myrestaurantgallery.repository.location.LocationRepository
-import com.fallTurtle.myrestaurantgallery.repository.location.RetrofitLocationRepository
-import com.fallTurtle.myrestaurantgallery.repository.user.FirebaseUserRepository
-import com.fallTurtle.myrestaurantgallery.repository.user.UserRepository
+import com.fallTurtle.myrestaurantgallery.data.room.InfoRoomDao
+import com.fallTurtle.myrestaurantgallery.data.repository.item.ItemRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.item.data.DataRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.item.data.FireStoreRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.item.data.RoomRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.item.image.ImageRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.item.image.StorageRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.location.LocationRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.location.RetrofitLocationRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.user.FirebaseUserRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.user.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,13 +41,13 @@ object RepositoryModule {
 
     @Provides
     @FireStoreRepositoryForData
-    fun provideFireStoreRepository(): DataRepository{
+    fun provideFireStoreRepository(): DataRepository {
         return FireStoreRepository()
     }
 
     @Provides
     @StorageRepositoryForImage
-    fun provideStorageRepository(): ImageRepository{
+    fun provideStorageRepository(): ImageRepository {
         return StorageRepository()
     }
 
@@ -56,7 +56,7 @@ object RepositoryModule {
         @RoomRepositoryForData localDataRepository: DataRepository,
         @FireStoreRepositoryForData remoteDataRepository: DataRepository,
         @StorageRepositoryForImage remoteImageRepository: ImageRepository
-    ): ItemRepository{
+    ): ItemRepository {
         return ItemRepository(localDataRepository, remoteDataRepository, remoteImageRepository)
     }
 

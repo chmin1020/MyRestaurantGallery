@@ -20,7 +20,7 @@
     <uses-permission android:name="com.fallTurtle.myrestaurantgallery.permission.MAPS_RECEIVE" />
 
     <application
-        android:name=".MyRestaurantGalleryApplication"
+        android:name=".di.MyRestaurantGalleryApplication"
         android:allowBackup="false"
         android:fullBackupContent="true"
         android:icon="@mipmap/app_logo"

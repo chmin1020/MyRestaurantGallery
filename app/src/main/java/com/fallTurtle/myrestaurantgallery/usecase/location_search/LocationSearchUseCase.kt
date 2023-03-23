@@ -1,7 +1,7 @@
 package com.fallTurtle.myrestaurantgallery.usecase.location_search
 
 import com.fallTurtle.myrestaurantgallery.di.RetrofitRepositoryForLocation
-import com.fallTurtle.myrestaurantgallery.repository.location.LocationRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.location.LocationRepository
 import javax.inject.Inject
 
 /**

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
+import com.fallTurtle.myrestaurantgallery.data.retrofit.value_object.LocationInfo
 import com.fallTurtle.myrestaurantgallery.usecase.location_search.LocationSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

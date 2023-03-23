@@ -17,11 +17,12 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.fallTurtle.myrestaurantgallery.R
+import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
-import com.fallTurtle.myrestaurantgallery.dialog.ImgDialog
-import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.ui.dialog.ImgDialog
+import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
 import com.fallTurtle.myrestaurantgallery.etc.*
-import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,7 +80,7 @@ class AddActivity : AppCompatActivity(){
             binding.info?.longitude = it.data?.getDoubleExtra(LONGITUDE, UNDECIDED_LOCATION) ?: UNDECIDED_LOCATION
 
             //식당 이름 적용
-            it.data?.getStringExtra(RESTAURANT_NAME)?.let {name->
+            it.data?.getStringExtra(RESTAURANT_NAME)?.let { name->
                 binding.info?.name = name
                 binding.etName.setText(name)
             }

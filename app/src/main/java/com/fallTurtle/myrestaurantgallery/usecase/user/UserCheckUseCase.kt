@@ -1,6 +1,6 @@
 package com.fallTurtle.myrestaurantgallery.usecase.user
 
-import com.fallTurtle.myrestaurantgallery.repository.user.UserRepository
+import com.fallTurtle.myrestaurantgallery.data.repository.user.UserRepository
 import javax.inject.Inject
 
 /**

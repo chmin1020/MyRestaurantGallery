@@ -10,11 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fallTurtle.myrestaurantgallery.R
-import com.fallTurtle.myrestaurantgallery.adapter.LocationAdapter
+import com.fallTurtle.myrestaurantgallery.ui.adapter.LocationAdapter
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityLocationListBinding
-import com.fallTurtle.myrestaurantgallery.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.NetworkWatcher
-import com.fallTurtle.myrestaurantgallery.model.retrofit.value_object.LocationInfo
+import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
+import com.fallTurtle.myrestaurantgallery.data.etc.NetworkWatcher
+import com.fallTurtle.myrestaurantgallery.data.retrofit.value_object.LocationInfo
 import dagger.hilt.android.AndroidEntryPoint
 
 /**

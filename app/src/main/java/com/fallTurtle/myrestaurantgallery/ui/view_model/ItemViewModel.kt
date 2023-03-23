@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fallTurtle.myrestaurantgallery.model.room.RestaurantInfo
-import com.fallTurtle.myrestaurantgallery.repository.item.ItemRepository
+import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
+import com.fallTurtle.myrestaurantgallery.data.repository.item.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
