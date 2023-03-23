@@ -38,19 +38,21 @@ class FirebaseUserRepository: UserRepository {
                 continuation.resume(null)
             }
         }
+        updateUserState()
     }
 
     /* 앱에서 로그아웃 */
     override suspend fun logoutUser() {
-        withContext(Dispatchers.IO){ FirebaseUtils.getAuth().signOut() }
+        FirebaseUtils.getAuth().signOut()
+        updateUserState()
     }
 
     /* 앱에서 사용자 탈퇴 */
     override suspend fun withDrawUser(){
         suspendCoroutine<Any?>{ continuation ->
             //현재 유저의 저장 데이터를 담은 레퍼런스들을 제거
-            FirebaseUtils.getStoreRef().delete()
-            FirebaseUtils.getStorageRef().delete()
+            FirebaseUtils.getStoreRef()?.delete()
+            FirebaseUtils.getStorageRef()?.delete()
 
             //유저를 파이어베이스 시스템 내부에서 삭제
             FirebaseUtils.getUser()?.delete()?.addOnCompleteListener { task ->
@@ -58,6 +60,7 @@ class FirebaseUserRepository: UserRepository {
                 continuation.resume(null)
             }
         }
+        updateUserState()
     }
 
 

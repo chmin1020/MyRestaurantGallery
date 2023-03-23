@@ -123,8 +123,6 @@ class LoginActivity: AppCompatActivity() {
 
     /* 로그인 완료(user 존재) 확인 후 메인 화면을 실행 */
     private fun showMain(){
-        if(!userExist) return
-
         //새 로그인 안내 토스트 메시지
         Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show()
 
@@ -138,7 +136,7 @@ class LoginActivity: AppCompatActivity() {
         if(loginProgress) progressDialog.create()
         else {
             progressDialog.destroy()
-            loginCompletePostWork()
+            if(userExist) loginCompletePostWork()
         }
     }
 }

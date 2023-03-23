@@ -47,35 +47,6 @@ class ItemViewModel
         }
     }
 
-    /* 재 로그인 시 파이어베이스로부터 데이터를 받아오는 함수 */
-    fun restoreItemsFromAccount(){
-        viewModelScope.launch(Dispatchers.IO) {
-            insideProgressing.postValue(true)
-            itemRepository.restorePreviousItem()
-            insideProgressing.postValue(false)
-            insideWorkFinishFlag.postValue(true)
-        }
-    }
-
-    /* 룸 DB(로컬 데이터) 내용을 모두 지울 때 사용하는 함수 */
-    fun clearAllLocalItems(){
-        viewModelScope.launch(Dispatchers.IO) {
-            insideProgressing.postValue(true)
-            itemRepository.localItemClear()
-            insideProgressing.postValue(false)
-            insideWorkFinishFlag.postValue(true)
-        }
-    }
-
-    fun clearAllRemoteItems(){
-        viewModelScope.launch(Dispatchers.IO){
-            insideProgressing.postValue(true)
-            itemRepository.remoteItemClear()
-            insideProgressing.postValue(false)
-            insideWorkFinishFlag.postValue(true)
-        }
-    }
-
     /* 모든 로컬에 저장된 아이템 리스트를 받아오는 함수 */
     fun getAllItems(){
         viewModelScope.launch(Dispatchers.IO) {

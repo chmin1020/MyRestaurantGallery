@@ -25,11 +25,11 @@ class StorageRepository: ImageRepository {
     /* 특정 이미지를 추가하는 함수 */
     override suspend fun insertImage(imageName: String, uri: Uri):String?{
         suspendCoroutine<Any?> { continuation ->
-            storageRef.child(imageName).putFile(uri).addOnCompleteListener{ continuation.resume(null)}
+            storageRef?.child(imageName)?.putFile(uri)?.addOnCompleteListener{ continuation.resume(null)}
         }
 
         return suspendCoroutine { continuation ->
-            storageRef.child(imageName).downloadUrl.addOnCompleteListener {
+            storageRef?.child(imageName)?.downloadUrl?.addOnCompleteListener {
                 if(it.isSuccessful)
                     continuation.resume(it.result.toString())
             }
@@ -39,7 +39,7 @@ class StorageRepository: ImageRepository {
     /* 특정 이미지를 제거하는 함수 */
     override suspend fun deleteImage(imageName: String){
         suspendCoroutine<Any?> { continuation ->
-            storageRef.child(imageName).delete().addOnCompleteListener { continuation.resume(null) }
+            storageRef?.child(imageName)?.delete()?.addOnCompleteListener { continuation.resume(null) }
         }
     }
 
@@ -51,7 +51,7 @@ class StorageRepository: ImageRepository {
     private suspend fun getAllImages(): List<String> {
         return suspendCoroutine { continuation ->
             val images = mutableListOf<String>()
-            storageRef.listAll().addOnCompleteListener {
+            storageRef?.listAll()?.addOnCompleteListener {
                 if(it.isSuccessful){
                     it.result.items.forEach{ ref -> images.add(ref.name) }
                 }

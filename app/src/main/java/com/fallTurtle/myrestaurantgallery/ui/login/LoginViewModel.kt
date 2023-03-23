@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -39,10 +40,12 @@ class LoginViewModel
 
     //로그인
     fun loginUser(idToken: String){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             insideProgressing.postValue(true)
-            login(idToken)
-            restoreItems()
+            withContext(Dispatchers.IO){
+                login(idToken)
+                restoreItems()
+            }
             insideProgressing.postValue(false)
         }
     }

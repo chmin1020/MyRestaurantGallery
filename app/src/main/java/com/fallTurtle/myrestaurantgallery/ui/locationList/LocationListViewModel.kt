@@ -9,6 +9,7 @@ import com.fallTurtle.myrestaurantgallery.usecase.location_search.LocationSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -30,9 +31,9 @@ class LocationListViewModel
 
     /* 인자대로 검색하여 결과를 livedata 내에 적용하는 함수 */
     fun searchLocationWithQuery(query: String, page: Int){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             insideProgressing.postValue(true)
-            insideSearchResults.postValue(locationSearch(query, page))
+            withContext(Dispatchers.IO){ insideSearchResults.postValue(locationSearch(query, page)) }
             insideProgressing.postValue(false)
         }
     }

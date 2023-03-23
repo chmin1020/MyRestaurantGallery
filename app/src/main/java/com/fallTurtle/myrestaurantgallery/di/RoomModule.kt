@@ -3,7 +3,6 @@ package com.fallTurtle.myrestaurantgallery.di
 import android.content.Context
 import androidx.room.Room
 import com.fallTurtle.myrestaurantgallery.data.room.*
-import com.fallTurtle.myrestaurantgallery.model.room.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

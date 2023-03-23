@@ -21,7 +21,6 @@ import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityAddBinding
 import com.fallTurtle.myrestaurantgallery.ui.dialog.ImgDialog
 import com.fallTurtle.myrestaurantgallery.ui.dialog.ProgressDialog
-import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.map.MapActivity
 import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.data.etc.*
 import com.fallTurtle.myrestaurantgallery.databinding.ActivityMapBinding
-import com.fallTurtle.myrestaurantgallery.etc.*
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.locationList.LocationListActivity
 import com.google.android.gms.maps.CameraUpdateFactory

@@ -14,8 +14,8 @@ object FirebaseUtils {
     //파이어베이스 각 요소들(Auth, User, Store reference, Storage reference)
     private val baseAuth = FirebaseAuth.getInstance()
     private var curUser: FirebaseUser? = null
-    private lateinit var storeRef: DocumentReference
-    private lateinit var storageRef: StorageReference
+    private var storeRef: DocumentReference? = null
+    private var storageRef: StorageReference? = null
 
     private val insideUserExist = MutableStateFlow(curUser != null)
     val userExist: StateFlow<Boolean> = insideUserExist
@@ -24,17 +24,23 @@ object FirebaseUtils {
     fun updateUserState(){
         //유저 갱신
         curUser = baseAuth.currentUser
-        insideUserExist.value = (curUser != null)
+        insideUserExist.value = (curUser != null).also { if(it) resetReferences() }
 
         //유저 id에 따른 reference 갱신
-        val id = curUser?.email.toString()
-        storeRef = Firebase.firestore.collection("users").document(id)
-        storageRef = Firebase.storage.reference.child(id)
+        curUser?.email?.let {
+            storeRef = Firebase.firestore.collection("users").document(it)
+            storageRef = Firebase.storage.reference.child(it)
+        }
     }
 
     /* 파이어베이스의 각 요소(Auth, User, Store reference, Storage reference) 제공 함수들 */
     fun getAuth(): FirebaseAuth = baseAuth
     fun getUser(): FirebaseUser? = curUser
-    fun getStoreRef(): DocumentReference = storeRef
-    fun getStorageRef(): StorageReference=  storageRef
+    fun getStoreRef(): DocumentReference? = storeRef
+    fun getStorageRef(): StorageReference? =  storageRef
+
+    private fun resetReferences(){
+        storeRef = null
+        storageRef = null
+    }
 }

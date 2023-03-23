@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fallTurtle.myrestaurantgallery.R
 import com.fallTurtle.myrestaurantgallery.ui.adapter.RestaurantAdapter
@@ -21,40 +20,33 @@ import com.fallTurtle.myrestaurantgallery.data.etc.LOGIN_CHECK_PREFERENCE
 import com.fallTurtle.myrestaurantgallery.data.room.RestaurantInfo
 import com.fallTurtle.myrestaurantgallery.ui.add.AddActivity
 import com.fallTurtle.myrestaurantgallery.ui.login.LoginActivity
-import com.fallTurtle.myrestaurantgallery.ui.view_model.UserViewModel
-import com.fallTurtle.myrestaurantgallery.ui.view_model.ItemViewModel
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * 앱을 처음 실행했을 때 나타나는 메인 화면을 담당하는 액티비티.
- * 이 액티비티에서는 맛집 리스트의 현황을 볼 수 있고, 리스트 검색을 할 수 있다.
- * 그 밖에 추가 버튼을 눌러 맛집 추가 페이지로 이동하거나, 메뉴를 통해 회원 로그아웃 및 탈퇴를 할 수 있다.
- * 정리하자면 리스트를 보여줌과 동시에, 앱에서 가진 모든 다른 화면으로 이동할 수 있는 창구의 역할을 한다.
+ * 앱 최초 실행 시 나오는 메인 화면을 담당 activity.
+ * 저장된 모든 맛집 데이터 현황을 볼 수 있다.
+ * 그 밖에 추가 버튼을 눌러 맛집 추가 페이지 이동, 메뉴를 통해 회원 logout 및 탈퇴를 할 수 있다.
  **/
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     //뷰 바인딩
     private val binding:ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
+    //뷰모델 (식당 아이템, 유저)
+    private val viewModel:MainViewModel by viewModels()
+
     //recyclerView 어댑터
     private val itemsAdapter by lazy { RestaurantAdapter(resources.displayMetrics.widthPixels) }
 
-    //뷰모델 (식당 아이템, 유저)
-    private val viewModelFactory by lazy{ ViewModelProvider.AndroidViewModelFactory(this.application) }
-    private val itemViewModel:ItemViewModel by viewModels()
-    //private val itemViewModel by lazy{ ViewModelProvider(this, viewModelFactory)[ItemViewModel::class.java] }
-    private val userViewModel by lazy { ViewModelProvider(this, viewModelFactory)[UserViewModel::class.java] }
-
-    //식당 아이템 observers (아이템 목록, 관련 작업 진행 여부, 관련 작업 종료 여부)
-    private val itemsObserver = Observer<List<RestaurantInfo>> { itemsAdapter.update(it) }
-    private val itemProgressObserver = Observer<Boolean> { itemProgress = it; decideShowLoading() }
-    private val itemFinishObserver = Observer<Boolean> { itemFinish = it; tryActivityFinish() }
-
     //유저 아이템 observers (유저 작업 진행 여부, 작업 종료 여부)
-    private val userProgressObserver = Observer<Boolean> { userProgress = it; decideShowLoading()}
-    private val userFinishObserver = Observer<Boolean> { userFinish = it; tryActivityFinish() }
+    private val itemsObserver = Observer<List<RestaurantInfo>> { itemsAdapter.update(it) }
+    private val progressObserver = Observer<Boolean> { decideShowLoading(it) }
+    private val userExistObserver = Observer<Boolean> {
+        sharedPreferences.edit().putBoolean(IS_LOGIN, it).apply()
+        tryToShowLoginWindow()
+    }
 
     //로딩 dialog
     private val progressDialog by lazy { ProgressDialog(this) }
@@ -62,18 +54,12 @@ class MainActivity : AppCompatActivity() {
     //공유 설정 (로그인 유지 여부)
     private val sharedPreferences by lazy{ getSharedPreferences(LOGIN_CHECK_PREFERENCE, MODE_PRIVATE) }
 
-    // 유저와 아이템 부분의 business 작업의 상태 등을 판별할 property
-    private var itemProgress = false
-    private var itemFinish = false
-    private var userProgress = false
-    private var userFinish = false
-
-    // 로그아웃 또는 탈퇴 시 출력할 적절한 메시지
+    // logout 또는 탈퇴 시 출력할 적절한 메시지
     private var endToastMessage = R.string.logout_success
 
 
     //--------------------------------------------
-    // 액티비티 생명주기 영역
+    // 생명 주기 영역
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,20 +67,11 @@ class MainActivity : AppCompatActivity() {
 
         //로그인 여부 확인 (로그인 상태 아니면 로그인 activity 이동)
         if(sharedPreferences.getBoolean(IS_LOGIN, false)){
-            //권한 허락을 위한 dialog
             showPermissionDialog()
-
-            //클릭 리스너 지정
             initListeners()
-
-            //viewModel 관찰하는 옵저버들 설정
             setObservers()
         }
-        else{
-            //앱과 유저 연결 필요 -> 로그인 activity 이동
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-        }
+        else goToLoginWindow()
 
         //recyclerView 세팅 (GridLayout)
         binding.recyclerView.layoutManager = GridLayoutManager(this,2)
@@ -107,12 +84,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        itemViewModel.getAllItems() //식당 아이템 목록 변경 사항 갱신
+        viewModel.getAllItems() //식당 아이템 목록 변경 사항 갱신
     }
 
 
     //--------------------------------------------
-    // 오버라이딩 영역
+    // overriding 영역
 
     /* 툴바 메뉴 생성 콜백 */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -124,19 +101,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             //logout 선택 시
-            R.id.menu_logout -> {
-                //logout 상태로 변경
-                endToastMessage = R.string.logout_success
-                sharedPreferences.edit().putBoolean(IS_LOGIN, false).apply()
+            R.id.menu_logout -> logoutCurrentUser()
 
-                //logout, 로컬 데이터 초기화
-                userViewModel.logoutUser()
-                itemViewModel.clearAllLocalItems()
-            }
-
-            //탈퇴 선택 시
+            //탈퇴 선택 시 (잘못 누르는 경우 치명적 -> dialog 재질문
             R.id.menu_withdrawal -> {
-                //탈퇴는 잘못 누르는 경우 치명적 -> 따라서 dialog 통해 재질문
                 AlertDialog.Builder(this)
                     .setMessage(R.string.withdrawal_ask)
                     .setPositiveButton(R.string.yes) {_,_ -> withdrawCurrentUser() }
@@ -161,18 +129,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /* 데이터 변화 관찰을 위한 각 viewModel, observer 연결 함수 */
+    /* 데이터 변화 관찰을 위한 각 viewModel, observer 연결 */
     private fun setObservers(){
         //각 뷰모델 속 작업 진행 여부 변화 관찰
-        userViewModel.progressing.observe(this, userProgressObserver)
-        itemViewModel.progressing.observe(this, itemProgressObserver)
-
-        //각 뷰모델 속 작업 종료 여부 변화 관찰
-        userViewModel.workFinishFlag.observe(this, userFinishObserver)
-        itemViewModel.workFinishFlag.observe(this, itemFinishObserver)
-
-        //아이템 뷰모델 속 데이터 리스트 변화 관찰
-        itemViewModel.dataItems.observe(this, itemsObserver)
+        viewModel.progressing.observe(this, progressObserver)
+        viewModel.userExist.observe(this, userExistObserver)
+        viewModel.dataItems.observe(this, itemsObserver)
     }
 
     /* 앱 실행 전 권한을 받기 위한 dialog 생성 (TedPermission 사용) */
@@ -198,31 +160,38 @@ class MainActivity : AppCompatActivity() {
 
 
     //--------------------------------------------
-    // 내부 함수 영역 (옵저버 후속 작업)
+    // 내부 함수 영역
 
     /* 유저와 아이템 작업 진행 여부에 따라 로딩 dialog 띄우는 함수 */
-    private fun decideShowLoading(){
-        if(userProgress && itemProgress) progressDialog.create()
+    private fun decideShowLoading(progress: Boolean){
+        if(progress) progressDialog.create()
         else progressDialog.destroy()
     }
 
-    /* 유저와 아이템 작업 종료 시 화면을 끄는 함수 */
-    private fun tryActivityFinish(){
-        if(userFinish && itemFinish) {
-            Toast.makeText(this, endToastMessage, Toast.LENGTH_SHORT).show()
-            finish()
-        }
+    /* 유저 존재 여부 확인에 따른 로그인 창 이동 결정 */
+    private fun tryToShowLoginWindow(){
+        //유저 없는 상태일 때만 로그인 창으로 변경
+        if(sharedPreferences.getBoolean(IS_LOGIN, false)) return
+
+        Toast.makeText(this, endToastMessage, Toast.LENGTH_SHORT).show()
+        goToLoginWindow()
     }
 
-    /* 사용자 탈퇴 처리를 위한 함수 */
-    private fun withdrawCurrentUser(){
-        //탈퇴 관련 설정
-        endToastMessage = R.string.withdrawal_success
-        sharedPreferences.edit().putBoolean(IS_LOGIN, false).apply()
+    /* 실제 로그인 창 이동 */
+    private fun goToLoginWindow(){
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
 
-        //회원 탈퇴 및 로컬과 외부 데이터 모두 초기화
-        itemViewModel.clearAllRemoteItems()
-        itemViewModel.clearAllLocalItems()
-        userViewModel.withdrawUser()
+    /* 사용자 logout */
+    private fun logoutCurrentUser(){
+        endToastMessage = R.string.logout_success
+        viewModel.logoutUser()
+    }
+
+    /* 사용자 탈퇴 처리 */
+    private fun withdrawCurrentUser(){
+        endToastMessage = R.string.withdrawal_success
+        viewModel.withdrawUser()
     }
 }

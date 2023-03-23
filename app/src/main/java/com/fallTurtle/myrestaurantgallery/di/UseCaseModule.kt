@@ -35,13 +35,19 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideLogoutUseCase(@FirebaseRepositoryForUser repository: UserRepository): LogoutUseCase {
-        return LogoutUseCase()
+    fun provideLogoutUseCase(
+        @FirebaseRepositoryForUser userRepository: UserRepository,
+        itemRepository: ItemRepository
+    ): LogoutUseCase {
+        return LogoutUseCase(userRepository, itemRepository)
     }
 
     @Provides
-    fun provideWithdrawUseCase(@FirebaseRepositoryForUser repository: UserRepository): WithdrawUseCase {
-        return WithdrawUseCase()
+    fun provideWithdrawUseCase(
+        @FirebaseRepositoryForUser userRepository: UserRepository,
+        itemRepository: ItemRepository
+    ): WithdrawUseCase {
+        return WithdrawUseCase(userRepository, itemRepository)
     }
 
 
@@ -49,27 +55,27 @@ object UseCaseModule {
     // 아이템 useCase
 
     @Provides
-    fun provideItemAllSelectUseCase(repository: ItemRepository): ItemAllSelectUseCase{
-        return ItemAllSelectUseCase()
+    fun provideItemAllSelectUseCase(repository: ItemRepository): ItemAllSelectUseCase {
+        return ItemAllSelectUseCase(repository)
     }
 
     @Provides
-    fun provideItemEachSelectUseCase(repository: ItemRepository): ItemEachSelectUseCase{
+    fun provideItemEachSelectUseCase(repository: ItemRepository): ItemEachSelectUseCase {
         return ItemEachSelectUseCase()
     }
 
     @Provides
-    fun provideItemInsertUseCase(repository: ItemRepository): ItemInsertUseCase{
+    fun provideItemInsertUseCase(repository: ItemRepository): ItemInsertUseCase {
         return ItemInsertUseCase()
     }
 
     @Provides
-    fun provideItemUpdateUseCase(repository: ItemRepository): ItemUpdateUseCase{
+    fun provideItemUpdateUseCase(repository: ItemRepository): ItemUpdateUseCase {
         return ItemUpdateUseCase()
     }
 
     @Provides
-    fun provideItemDeleteUseCase(repository: ItemRepository): ItemDeleteUseCase{
+    fun provideItemDeleteUseCase(repository: ItemRepository): ItemDeleteUseCase {
         return ItemDeleteUseCase()
     }
 

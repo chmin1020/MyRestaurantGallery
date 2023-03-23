@@ -55,11 +55,8 @@
         </activity>
 
         <activity android:name=".ui.login.LoginActivity" />
-
         <activity android:name=".ui.add.AddActivity" />
-
         <activity android:name=".ui.record.RecordActivity" />
-
         <activity android:name=".ui.map.MapActivity" />
 
     </application>

@@ -11,7 +11,7 @@ import kotlin.coroutines.suspendCoroutine
  **/
 class FireStoreRepository: DataRepository {
     //파이어스토어에서 적절한 수행을 하기 위한 레퍼런스
-    private fun collectionRef(): CollectionReference = FirebaseUtils.getStoreRef().collection("restaurants")
+    private fun collectionRef(): CollectionReference? = FirebaseUtils.getStoreRef()?.collection("restaurants")
 
 
     //--------------------------------------------
@@ -20,7 +20,7 @@ class FireStoreRepository: DataRepository {
     /* 모든 데이터를 가져오는 함수 */
     override suspend fun getAllData(): List<RestaurantInfo> {
         return suspendCoroutine { continuation ->
-            collectionRef().get().addOnCompleteListener {
+            collectionRef()?.get()?.addOnCompleteListener {
                 if(it.isSuccessful) continuation.resume(it.result.toObjects(RestaurantInfo::class.java))
                 else continuation.resume(listOf())
             }
@@ -30,7 +30,7 @@ class FireStoreRepository: DataRepository {
     /* 특정 데이터를 가져오는 함수 */
     override suspend fun getProperData(id: String): RestaurantInfo? {
         return suspendCoroutine { continuation ->
-            collectionRef().document(id).get().addOnCompleteListener {
+            collectionRef()?.document(id)?.get()?.addOnCompleteListener {
                 if(it.isSuccessful) continuation.resume(it.result.toObject(RestaurantInfo::class.java))
                 else continuation.resume(null)
             }
@@ -45,26 +45,26 @@ class FireStoreRepository: DataRepository {
     /* 특정 데이터를 추가하는 함수 */
     override suspend fun insertData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
-            collectionRef().document(data.dbID).set(data).addOnCompleteListener { continuation.resume(null) }
+            collectionRef()?.document(data.dbID)?.set(data)?.addOnCompleteListener { continuation.resume(null) }
         }
     }
 
     /* 특정 데이터를 갱신하는 함수 */
     override suspend fun updateData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
-            with(collectionRef().document(data.dbID)){
-                update("category", data.category)
-                update("categoryNum", data.categoryNum)
-                update("date", data.date)
-                update("imageName", data.imageName)
-                update("imagePath", data.imagePath)
-                update("latitude", data.latitude)
-                update("longitude", data.longitude)
-                update("memo", data.memo)
-                update("name", data.name)
-                update("rate", data.rate)
-            }.addOnCompleteListener {
-                continuation.resume(null)
+            collectionRef()?.let {
+                with(it.document(data.dbID)) {
+                    update("category", data.category)
+                    update("categoryNum", data.categoryNum)
+                    update("date", data.date)
+                    update("imageName", data.imageName)
+                    update("imagePath", data.imagePath)
+                    update("latitude", data.latitude)
+                    update("longitude", data.longitude)
+                    update("memo", data.memo)
+                    update("name", data.name)
+                    update("rate", data.rate)
+                }.addOnCompleteListener { continuation.resume(null) }
             }
         }
     }
@@ -72,7 +72,7 @@ class FireStoreRepository: DataRepository {
     /* 특정 데이터를 제거하는 함수 */
     override suspend fun deleteData(data: RestaurantInfo) {
         suspendCoroutine<Any?> { continuation ->
-            collectionRef().document(data.dbID).delete().addOnCompleteListener { continuation.resume(null) }
+            collectionRef()?.document(data.dbID)?.delete()?.addOnCompleteListener { continuation.resume(null) }
         }
     }
 }
