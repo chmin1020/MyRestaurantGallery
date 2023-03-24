@@ -67,7 +67,7 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 * 2023.01 추가
 	- 데이터 처리와 뷰 표시가 모두 Activity 코드 내에 존재하여 코드 구조가 복잡하고 가독성이 떨어진다고 판단.
 	
-	  이에 따라 User, Item, Map, Location에 대한 데이터 로직을 별도의 ViewModel과 Repository로 분리 (MVVM 패턴, Repository 패턴 활용)
+	  이에 따라 User, Item, Map, Location에 대한 데이터 로직을 별도의 ViewModel과 Repository로 분리
 
 * 2023.03 추가 
 	- 안드로이드 공식 문서 가이드에 따라 UI / Domain / Data 구조로 코드 아키텍처를 바라보기 시도.
@@ -98,7 +98,7 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 ![코드 아키텍처 2](https://user-images.githubusercontent.com/70795841/227266719-0dda6780-b94e-4d43-b443-fc2ab09eec8f.PNG)
 
-* 코드의 디자인패턴은 View, ViewModel, Model로 분리되는 MVVM 구조를 기본적으로 사용했습니다. 
+* 코드의 디자인패턴은 View, ViewModel로 대표되는 UI 영역과 그 밖의 data source로 대표되는 Data 영역으로 분리하는 방식이었습니다.
 * 여기에 Repository 패턴을 추가하여 Data Source의 중구난방한 데이터를 깔끔하게 분류하여 정리했습니다.
 * 이 후 Usecase를 통해 각 Repository의 기능을 추출하여 Domain 영역을 담당하게 했습니다.
 * 따로 처리할 데이터가 없는 mapActivity를 제외한 나머지 Activity는 각 ViewModel과 연결되고, ViewModel은 적절한 Usecase로 동작을 수행합니다.
@@ -110,7 +110,6 @@ ___ViewModel___
 최초의 ViewModel 구조에서는 ViewModel을 Activity와 조금 더 가까운 Repository처럼 활용했으나, 추가 갱신을 통해 각 Activity가 별도의 뷰모델을 통해 로직을 처리하도록 했습니다. 이는 각 뷰모델의 역할 및 코드 복잡성 자체를 단순화하기 위함입니다. 여기서 겹칠 수 있는 기능은 Usecase로 처리했습니다.
 
 이러한 기능 수행을 위해 Android AAC의 ViewModel, LiveData를 활용하였으며 일부 액티비티에서는 자동적인 데이터 표시를 위해 Databinding을 활용했습니다.
-엄밀히 따지면 AAC의 ViewModel은 MVVM의 뷰모델을 의미하지 않지만, 별개의 생명주기로 동작하는 특성상 사용을 하기에 적합하다고 판단했습니다.
 
 ___UseCase___
 
