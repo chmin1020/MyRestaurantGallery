@@ -6,9 +6,9 @@ __맛집갤러리__ 는 본인이 좋아하는 맛집의 정보를 리스트의 
 
 <p align="center"><img src="https://user-images.githubusercontent.com/70795841/225352998-d5b82130-1fd5-4848-974c-7718ee5f0cbd.PNG" width="700" height="350"></p>
 
-맛집갤러리에서는 식당에 방문한 날짜, 식당 이름, 이미지, 간단한 메모 등을 하나의 정보로 저장할 수 있으며, 위치 지정을 위해 gps를 통한 지도 인터페이스를 사용할 수 있습니다.
-이렇게 저장된 정보들은 (사진, 이름, 카테고리, 별점)의 간단한 정보로 표시한 틀을 토대로 리스트 형태로 표시됩니다. 여기서 각각의 정보를 눌러서 저장한 정보를 확인할 수 있고,
-수정 버튼을 눌러 내용을 변경할 수 있습니다. 사진을 따로 저장하지 않은 정보에는 기본 이미지가 제공됩니다. 각 앱이 어떤 방식으로 이러한 기능들은 제공하는지는 아래의 몇몇 스크린샷 이미지로 확인하실 수 있습니다.
+맛집갤러리에서는 식당에 방문한 날짜, 식당 이름, 이미지, 간단한 메모 등을 하나의 정보로 저장할 수 있으며, 위치 지정을 위해 검색을 지원하는 지도 인터페이스를 사용할 수 있습니다.
+이렇게 저장된 정보는 (사진, 이름, 카테고리, 별점)으로 정리한 간단한 틀을 토대로 리스트 형태로 표시됩니다. 여기서 각각의 정보를 눌러서 저장한 정보를 확인할 수 있고,
+수정 버튼을 눌러 내용을 변경할 수 있습니다. 사진을 따로 저장하지 않은 정보에는 식당 카테고리에 따른 기본 이미지가 제공됩니다. 각 앱이 어떤 방식으로 이러한 기능들은 제공하는지는 아래의 몇몇 gif 이미지로 확인하실 수 있습니다.
 
 이러한 저장 내용들을 언제든지 백업해놨다가 다시 가져올 수 있게 하기 위해서, 이 앱을 사용할 때는 구글 계정을 통해 로그인을 해야하도록 조치했습니다. 이에 따라 회원탈퇴를 하지 않았다면 나중에 앱을 다시 깔거나 다른 기기로 변경했더라도 언제든지 기존에 사용하던 정보를 가져올 수 있습니다.
 
@@ -17,12 +17,12 @@ __맛집갤러리__ 는 본인이 좋아하는 맛집의 정보를 리스트의 
 
 
 __MyRestaurantGallery__ is an android application which allows you to save impressive restaurant information that you know as list forms.
-You can save data such as date, name, image, and simple memo as one information item, and you can use GPS on the map interface for getting location.
-This information are displayed as simple form list that have (image, name, category, rate) in it. You can show each information by clicking each item in the list, or edit saved information by clicking the edit button. If you don't designate a proper image for your item, the app provides default images automatically. You can check how those functions work in the real app environment with screenshot images down below :)
+You can save data such as date, name, image, and simple memo as one information item, and you can use map interface with search function for getting location.
+This information are displayed as simple form list that have (image, name, category, rate) in it. You can show each information by clicking each item in the list, or edit saved information by clicking the edit button. If you don't designate a proper image for your item, the app provides proper default images automatically by category selection. You can check how those functions work in the real app environment with gif images down below :)
 
-In order to back up and restore those saved contents, I make the app user must login for using this app by google authentications. Thanks to that, you can restore your old saved data when you install this app again later except the situation that you already withdrew your account.
+In order to back up and restore those saved contents, I make the app user must login for using this app by google authentication. Thanks to that, you can restore your old saved data when you install this app again later except the situation that you already withdrew your account.
 
-For providing those functions to users, I needed database for saving information, authentication system for back up those data, and network searching API for location search of restaurants. So I applied authentication and database of Firebase, room database for local DB, and kakao map API with Retrofit2 interface on this app.
+For providing those functions to users, I needed database for saving information, authentication system for back up those data, and network searching API for location search of restaurants. So I applied authentication and database of Firebase(Firestore and Storage), room database for local DB, and kakao map API with Retrofit2 interface on this app.
 You can check structure of code, used API for this app, each purpose of API, etc down below.
 
 
@@ -47,7 +47,7 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 |지도로 확인|식당 검색|다크 모드 변경|
 |------|---|---|
-|![지도확인](https://user-images.githubusercontent.com/70795841/225331008-d522dfca-6e16-4f59-9a3e-fc4dba3e1c84.gif)|![지도검색](https://user-images.githubusercontent.com/70795841/225330924-8465de1e-9a1d-42ba-9c40-2607c86192da.gif)|![다크모드](https://user-images.githubusercontent.com/70795841/225330680-1e9feb27-a830-4c81-827a-5967469558dd.gif)|
+|![지도확인](https://user-images.githubusercontent.com/70795841/227405104-8086b6f2-9a22-49f1-a80f-61381352a590.gif)|![지도검색](https://user-images.githubusercontent.com/70795841/227404406-2498a02e-33e8-4169-9c0f-1e6c94f8da86.gif)|![다크모드](https://user-images.githubusercontent.com/70795841/225330680-1e9feb27-a830-4c81-827a-5967469558dd.gif)|
 
 - 지도 검색을 통해 식당을 지정하면 버튼을 눌러 구글맵을 통한 위치 정보를 제공받을 수 있습니다.
 - 지도 화면에서 버튼을 클릭해 찾고 있는 식당을 검색하고 원하는 식당을 선택해서 가져올 수 있습니다.
@@ -64,8 +64,10 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 * 이미지 로드를 위해서는 Glide 모듈을 사용 -> 2022.12 Coil 라이브러리를 통한 로드로 변경함. (여러 이미지 라이브러리 활용 경험을 위함)
 * 네트워크 작업과 데이터베이스 작업을 위한 비동기 로직은 코틀린 코루틴을 활용함.
 
-* 2023.01 추가 -> User, Item, Map, Location에 대한 데이터 로직을 ViewModel과 Repository로 분리.
-				 MVVM 패턴, Repository 패턴 추가 활용
+* 2023.01 추가
+	- 데이터 처리와 뷰 표시가 모두 Activity 코드 내에 존재하여 코드 구조가 복잡하고 가독성이 떨어진다고 판단.
+	
+	  이에 따라 User, Item, Map, Location에 대한 데이터 로직을 별도의 ViewModel과 Repository로 분리 (MVVM 패턴, Repository 패턴 활용)
 
 * 2023.03 추가 
 	- 안드로이드 공식 문서 가이드에 따라 UI / Domain / Data 구조로 코드 아키텍처를 바라보기 시도.
