@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MapActivity">
+    tools:context=".ui.map.MapActivity">
 
     <LinearLayout
         android:id="@+id/ll_searchBar"
@@ -86,22 +86,5 @@
             android:layout_height="match_parent"
             tools:layout="@layout/dialog_progress" />
     </FrameLayout>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_my_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:contentDescription="@string/current_gps_pictogram_description"
-        android:elevation="16dp"
-        android:scaleType="center"
-        app:fabCustomSize="75dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:maxImageSize="42dp"
-        app:srcCompat="@drawable/my_location" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
