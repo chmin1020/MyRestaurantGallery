@@ -93,9 +93,9 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 * __MainActivity__: 시작 및 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
 * __LoginActivity__: 로그인이 가능한 액티비티이며 구글 로그인 기능을 제공한다. 로그인 상태가 아닐 시에만 앱 시작할 때 나타난다.
-* __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름, 지역 등의 정보를 추가하여 저장할 수 있다.
+* __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름 등의 정보를 추가하여 저장할 수 있다.
 * __RecordActivity__: 이미 저장되어 있는 항목을 확인할 때 나타나며, AddActivity와 유사하지만 수정 기능을 제공하지 않는다.
-* __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있고, GPS를 통해 현재 위치를 선택하는 것도 가능하다. 더하여 record 모드로 변환도 가능하다.
+* __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있으며, 검색으로 갈 수 없는 record 모드로 변환도 가능하다.
 * __LocationListActivity__: 카카오 맵 API를 사용하여 식당의 이름을 검색 및 선택할 수 있으며, MapActivity에서 버튼을 눌러 진입할 수 있다.
 
 
