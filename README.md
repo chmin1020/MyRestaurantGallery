@@ -63,6 +63,11 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 * 구글 계정 연동 및 데이터 저장을 위해서는 구글이 제공하는 FireBase의 Authentication, FireStore, Storage를 활용함.
 * 이미지 로드를 위해서는 Glide 모듈을 사용 -> 2022.12 Coil 라이브러리를 통한 로드로 변경함. (여러 이미지 라이브러리 활용 경험을 위함)
 * 네트워크 작업과 데이터베이스 작업을 위한 비동기 로직은 코틀린 코루틴을 활용함.
+* 안드로이드 jetpack AAC 요소 활용
+	- Room: 네트워크 상황 등을 대비하여 각 데이터는 로컬 DB에도 Room을 사용하여 저장함.
+	- ViewModel: UI와 데이터를 최대한 분리하고 UI 돌발 상황에도 안전한 데이터 복원을 할 수 있도록 하기 위해 사용함.
+	- Databinding: 특정 액티비티 내 저장된 정보를 표현하는 과정에서 boilerplate 코드를 줄이고 뷰와 데이터가 자동 연결되도록 함.
+	- Livedata: ViewModel과 Activity 사이 데이터를 observer 패턴을 적용하여 느슨하게 연결할 수 있도록 하기 위해 사용함.
 
 * 2023.01 추가
 	- 데이터 처리와 뷰 표시가 모두 Activity 코드 내에 존재하여 코드 구조가 복잡하고 가독성이 떨어진다고 판단.
@@ -95,9 +100,9 @@ Sadly, I can't release this app on google play store because I use Firebase for 
 
 * __MainActivity__: 시작 및 메인 액티비티로서 항목 확인, 메뉴를 통한 항목 추가나 로그아웃 등의 행위가 가능하다.
 * __LoginActivity__: 로그인이 가능한 액티비티이며 구글 로그인 기능을 제공한다. 로그인 상태가 아닐 시에만 앱 시작할 때 나타난다.
-* __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름, 지역 등의 정보를 추가하여 저장할 수 있다.
+* __AddActivity__: 항목을 추가 혹은 수정하고자 할 때 나타나는 화면을 담당하며, 날짜나 식당 이름 등의 정보를 추가하여 저장할 수 있다.
 * __RecordActivity__: 이미 저장되어 있는 항목을 확인할 때 나타나며, AddActivity와 유사하지만 수정 기능을 제공하지 않는다.
-* __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있고, GPS를 통해 현재 위치를 선택하는 것도 가능하다. 더하여 record 모드로 변환도 가능하다.
+* __MapActivity__: 구글 맵 API를 사용하여 지도를 확인할 수 있으며, 검색으로 갈 수 없는 record 모드로 변환도 가능하다.
 * __LocationListActivity__: 카카오 맵 API를 사용하여 식당의 이름을 검색 및 선택할 수 있으며, MapActivity에서 버튼을 눌러 진입할 수 있다.
 
 
