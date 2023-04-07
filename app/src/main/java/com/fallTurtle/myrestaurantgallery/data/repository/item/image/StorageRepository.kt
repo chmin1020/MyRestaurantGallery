@@ -2,8 +2,7 @@ package com.fallTurtle.myrestaurantgallery.data.repository.item.image
 
 import android.net.Uri
 import com.fallTurtle.myrestaurantgallery.data.firebase.FirebaseUtils
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.tasks.await
 
 /**
  * Firebase Storage API 기능을 통해 이미지 처리를 수행하는 리포지토리.
@@ -23,24 +22,14 @@ class StorageRepository: ImageRepository {
     }
 
     /* 특정 이미지를 추가하는 함수 */
-    override suspend fun insertImage(imageName: String, uri: Uri):String?{
-        suspendCoroutine<Any?> { continuation ->
-            storageRef?.child(imageName)?.putFile(uri)?.addOnCompleteListener{ continuation.resume(null)}
-        }
-
-        return suspendCoroutine { continuation ->
-            storageRef?.child(imageName)?.downloadUrl?.addOnCompleteListener {
-                if(it.isSuccessful)
-                    continuation.resume(it.result.toString())
-            }
-        }
+    override suspend fun insertImage(imageName: String, uri: Uri):String{
+        storageRef?.child(imageName)?.putFile(uri)?.await()
+        return storageRef?.child(imageName)?.downloadUrl?.await().toString()
     }
 
     /* 특정 이미지를 제거하는 함수 */
     override suspend fun deleteImage(imageName: String){
-        suspendCoroutine<Any?> { continuation ->
-            storageRef?.child(imageName)?.delete()?.addOnCompleteListener { continuation.resume(null) }
-        }
+        storageRef?.child(imageName)?.delete()?.await()
     }
 
 
@@ -49,14 +38,10 @@ class StorageRepository: ImageRepository {
 
     /* 저장된 모든 이미지의 이름을 가져오는 함수 */
     private suspend fun getAllImages(): List<String> {
-        return suspendCoroutine { continuation ->
-            val images = mutableListOf<String>()
-            storageRef?.listAll()?.addOnCompleteListener {
-                if(it.isSuccessful){
-                    it.result.items.forEach{ ref -> images.add(ref.name) }
-                }
-                continuation.resume(images)
-            }
-        }
+        val images = mutableListOf<String>()
+        val imageRefs = storageRef?.listAll()?.await()
+
+        imageRefs?.items?.forEach { images.add(it.name) }
+        return images
     }
 }

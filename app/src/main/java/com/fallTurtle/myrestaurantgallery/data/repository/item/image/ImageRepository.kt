@@ -10,7 +10,7 @@ interface ImageRepository {
     suspend fun clearImages()
 
     /* 특정 이미지를 추가하는 함수 */
-    suspend fun insertImage(imageName: String, uri: Uri): String?
+    suspend fun insertImage(imageName: String, uri: Uri): String
 
     /* 특정 이미지를 제거하는 함수 */
     suspend fun deleteImage(imageName: String)

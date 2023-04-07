@@ -22,3 +22,16 @@ const val DEFAULT_LONGITUDE = 126.986
 const val UNDECIDED_LOCATION = -1.0
 const val NO_SELECTED_LOCATION = "설정 위치 없음"
 const val PLEASE_INSERT_NAME = "식당 이름을 입력해주세요"
+
+//파이어베이스 경로
+const val REF_PATH_RESTAURANTS = "restaurants"
+const val FIELD_CATEGORY = "category"
+const val FIELD_CATEGORY_NUM = "categoryNum"
+const val FIELD_DATE = "date"
+const val FIELD_IMAGE_NAME = "imageName"
+const val FIELD_IMAGE_PATH = "imagePath"
+const val FIELD_LATITUDE = "latitude"
+const val FIELD_LONGITUDE = "longitude"
+const val FIELD_MEMO = "memo"
+const val FIELD_NAME = "name"
+const val FIELD_RATE = "rate"
