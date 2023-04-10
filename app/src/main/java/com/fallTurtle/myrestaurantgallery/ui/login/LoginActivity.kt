@@ -16,6 +16,10 @@ import com.fallTurtle.myrestaurantgallery.ui.main.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 로그인 화면 담당 activity.
@@ -48,9 +52,13 @@ class LoginActivity: AppCompatActivity() {
     //로그인 요청에 대한 결과 처리 수행 런처
     private val getSignLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         //토큰 여부에 따라 후속 작업
-        getTokenForLogin(it.data)
-            ?.let { token-> viewModel.loginUser(token) } //성공 시 로그인
-            ?: run{ Toast.makeText(this, R.string.google_auth_failure, Toast.LENGTH_SHORT).show()} //실패 시 메시지 출력
+        CoroutineScope(Dispatchers.IO).launch {
+            getTokenForLogin(it.data)
+                ?.let { token -> viewModel.loginUser(token) } //성공 시 로그인
+                ?: withContext(Dispatchers.Main){
+                    Toast.makeText(this@LoginActivity, R.string.google_auth_failure, Toast.LENGTH_SHORT).show()
+                } //실패 시 메시지 출력
+        }
     }
 
 
@@ -87,11 +95,13 @@ class LoginActivity: AppCompatActivity() {
 
     /* 로그인 런처 intent 실행 함수 */
     private fun trySignIn(){
-        val loginOption = getOptionForLogin(getString(R.string.firebase_client_id))
+        CoroutineScope(Dispatchers.IO).launch {
+            val loginOption = getOptionForLogin(getString(R.string.firebase_client_id))
 
-        //로그인 인텐트 생성 및 실행
-        val signInIntent = GoogleSignIn.getClient(this, loginOption).signInIntent
-        getSignLauncher.launch(signInIntent)
+            //로그인 인텐트 생성 및 실행
+            val signInIntent = GoogleSignIn.getClient(this@LoginActivity, loginOption).signInIntent
+            getSignLauncher.launch(signInIntent)
+        }
     }
 
     /* 로그인 옵션을 반환 */
